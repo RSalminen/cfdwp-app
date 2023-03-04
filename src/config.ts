@@ -1,7 +1,7 @@
 let apiUrl : string | undefined;
 
 if (process.env.NODE_ENV === "production") {
-    apiUrl="https://coral-betta-hose.cyclic.app"
+    apiUrl="https://api-cfdwp.onrender.com"
 } else {
     apiUrl=""
 }
