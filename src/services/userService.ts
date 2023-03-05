@@ -24,18 +24,18 @@ const login = async (username:string, password:string) => {
 
 }
 
-const validateTeacher = async () => {
+const validateTeacher = async (simId:string) => {
 
     try {
         const response = await axiosinstance({
             method: "get",
             url: "/api/teacher/validate",
-            headers: { Authorization: `Bearer ${token}`}
+            headers: { Authorization: `Bearer ${token}`},
+            params: {simId}
         });
     
         return response.status === 200;
     } catch (e) {
-        console.log(e);
         return false;
     }
 }

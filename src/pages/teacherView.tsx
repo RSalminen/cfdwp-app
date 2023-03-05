@@ -52,22 +52,24 @@ import { vec3 } from 'gl-matrix';
 import { FieldDataTypes } from '@kitware/vtk.js/Common/DataModel/DataSet/Constants';
 import { userService } from '../services/userService';
 
+interface IVTKContext {
+  openGLRenderer?: vtkOpenGLRenderWindow;
+  renderWindow?: vtkRenderWindow;
+  renderer?: vtkRenderer;
+  actor?: vtkActor;
+  mapper?: vtkMapper;
+  RenderWindowInteractor?: vtkRenderWindowInteractor;
+  currentTimeStep?:number,
+  allData: any;
+  sceneImporter: any;
+  widgetManager:vtkWidgetManager;
+  scalarBarActor:vtkScalarBarActor;
+  lookupTable:any;
+}
 
 const TeacherView = () => {
-  interface IVTKContext {
-    openGLRenderer?: vtkOpenGLRenderWindow;
-    renderWindow?: vtkRenderWindow;
-    renderer?: vtkRenderer;
-    actor?: vtkActor;
-    mapper?: vtkMapper;
-    RenderWindowInteractor?: vtkRenderWindowInteractor;
-    currentTimeStep?:number,
-    allData: any;
-    sceneImporter: any;
-    widgetManager:vtkWidgetManager;
-    scalarBarActor:vtkScalarBarActor;
-    lookupTable:any;
-  }
+
+  const { simid, teacherid } = useParams();
 
   const navigate = useNavigate();
 
@@ -82,7 +84,6 @@ const TeacherView = () => {
 
   const [selectedFields, setSelectedFields] = useState<string[] | null>([]);
 
-  const { simid, teacherid } = useParams();
 
   const timerContext = useRef<NodeJS.Timer | null>(null);
   const [playing, setPlaying] = useState<boolean>(false);
@@ -111,7 +112,7 @@ const TeacherView = () => {
 
   const load = async () => {
 
-    const teacherValid = await userService.validateTeacher();
+    const teacherValid = await userService.validateTeacher(simid!);
     
     if (!teacherValid) {
       navigate('/login');
