@@ -14,7 +14,10 @@ const Login = () => {
 
     const loginClicked = async () => {
         const loggedUser = await userService.login(username, password);
-        if (loggedUser) navigate(`/teacher/${loggedUser.id}`);
+        if (loggedUser) {
+            window.localStorage.setItem('loggedCFDWPUser', JSON.stringify(loggedUser));
+            navigate(`/teacher/${loggedUser.id}`);
+        }
         else {
             setUsername("");
             setPassword("");

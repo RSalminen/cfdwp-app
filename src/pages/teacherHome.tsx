@@ -8,6 +8,7 @@ import { userService } from '../services/userService';
 interface ITeacherSimObj {
     id:string,
     simtitle: string,
+    added_date: string,
 }
 
 const TeacherHome = () => {
@@ -26,9 +27,13 @@ const TeacherHome = () => {
     
 
     const loadSimulations = async () => {
-
-        await userService.validateTeacher();
         
+        const loggedUserJSON = window.localStorage.getItem('loggedCFDWPUser');
+        if (loggedUserJSON) {
+            const user = JSON.parse(loggedUserJSON);
+            userService.setToken(user.token);
+        }
+
         const teacherData = await fileService.getSimulationsByTeacher(teacherid!);
         
         if (teacherData.length > 10) setActiveSims(teacherData.slice(0,12));
@@ -92,7 +97,7 @@ const TeacherHome = () => {
                                     <tr className="border-b">
                                         <td className="border-b border-emerald-600 py-[4px] font-medium">{simObj.simtitle}</td>
                                         <td className="border-b border-emerald-600 py-[4px]">vtkjs</td>
-                                        <td className="border-b border-emerald-600 py-[4px]">2.8.2023</td>
+                                        <td className="border-b border-emerald-600 py-[4px]">{simObj.added_date}</td>
                                         <td className="border-b border-emerald-600 py-[4px]">
                                             <div className="flex space-x-1 justify-center">
                                                 <SmallButtonDarkLink btnText="View" url={`/view/${simObj.id}/`} />

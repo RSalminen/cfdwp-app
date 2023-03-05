@@ -461,10 +461,10 @@ const TeacherView = () => {
 
   return (
     <>
-      <div className='overflow-hidden h-[100vh] flex flex-col'>
+      <div className='overflow-hidden h-full flex flex-col'>
 
         {(!simLoaded) && 
-        <div className="flex flex-col w-[100vw] h-[100vh] bg-white absolute z-[50] justify-center items-center">
+        <div className="flex flex-col w-[100vw] h-full bg-white absolute z-[50] justify-center items-center">
           <p>Loading...</p>
           <p>{loadProgress}%</p>
         </div>}
@@ -511,7 +511,7 @@ const TeacherView = () => {
       </div>
 
       {(menuVisible) &&
-      <div className="h-[calc(100vh-120px)] overflow-y-hidden flex flex-col min-w-[300px] w-[20vw] right-0 top-[120px] bg-white absolute z-[2] bg-opacity-95 px-4 py-2">
+      <div className="h-[calc(100%-120px)] overflow-y-hidden flex flex-col min-w-[300px] w-[20vw] right-0 top-[120px] bg-white absolute z-[2] bg-opacity-95 px-4 py-2">
         
         <div className="flex space-x-4 pb-2 mb-2 border-b border-emerald-600">
           <div className={`${menuTab === "General" && "border-b-[3px] border-emerald-600"} hover:cursor-pointer`} onClick={() => setMenuTab("General")}>General</div>

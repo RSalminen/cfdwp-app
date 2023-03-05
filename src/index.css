@@ -7,7 +7,14 @@ body {
   -moz-osx-font-smoothing: grayscale;
 
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: fill-available;
+  min-height: -webkit-fill-available;
+}
+
+html {
+  height: fill-available;
+  height: -webkit-fill-available;
 }
 
 code {

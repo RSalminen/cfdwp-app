@@ -4,6 +4,8 @@ let token:string = "";
 
 const getToken = () => {return token}
 
+const setToken = (newToken:string) => token = newToken;
+
 const login = async (username:string, password:string) => {
 
     try {
@@ -38,4 +40,4 @@ const validateTeacher = async () => {
     }
 }
 
-export const userService = { login, validateTeacher, getToken }
+export const userService = { login, validateTeacher, getToken, setToken }
