@@ -43,7 +43,7 @@ import { ITeacherOptions, IWidget } from '../types';
 import WidgetCard from '../components/widgetCard';
 import Draggable from 'react-draggable';
 
-import vtkFPSMonitor from '@kitware/vtk.js/Interaction/UI/FPSMonitor';
+//import vtkFPSMonitor from '@kitware/vtk.js/Interaction/UI/FPSMonitor';
 
 
 const TeacherView = () => {
@@ -283,9 +283,9 @@ const TeacherView = () => {
   
     const { mapper, renderer, renderWindow, allData, sceneImporter, currentTimeStep, scalarBarActor, lookupTable } : IVTKContext = context.current;
 
-    const fpsMonitor = vtkFPSMonitor.newInstance();
+    /* const fpsMonitor = vtkFPSMonitor.newInstance();
     fpsMonitor.setRenderWindow(renderWindow);
-    fpsMonitor.setContainer(fpsContainerRef.current);
+    fpsMonitor.setContainer(fpsContainerRef.current); */
 
     let source;
     if (sceneImporter) source = sceneImporter.getScene()[0].source.getOutputData();
@@ -465,7 +465,7 @@ const TeacherView = () => {
 
       }
 
-      <div ref={fpsContainerRef} className="absolute z-50 top-0 left-0 bg-white"></div>
+      {/* <div ref={fpsContainerRef} className="absolute z-50 top-0 left-0 bg-white"></div> */}
     </div>
   );
 }
