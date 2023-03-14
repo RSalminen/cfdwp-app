@@ -41,7 +41,7 @@ const Login = () => {
                 <form onSubmit={loginClicked} className="flex flex-col space-y-3 w-full">
                     <h3 className="text-center text-[20px] font-semibold mb-2">Login</h3>
                     <CustomInput currentValue={username} labelText="username" onChange={(e:any) => setUsername(e.target.value)} />
-                    <div className="flex w-full">
+                    <div className="flex w-full sm:block">
                         <div className="w-full"><CustomInput currentValue={password} labelText="password" onChange={(e:any) => setPassword(e.target.value)} showPassword={showPassword} /></div>
                         <div className="bg-gray-200 border-b-2 border-emerald-700 px-1 flex items-center">
                             {showPassword
