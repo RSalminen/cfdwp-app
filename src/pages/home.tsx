@@ -15,7 +15,7 @@ const Home = () => {
 
   return (
     <Div100vh>
-      <div className="flex justify-center min-h-[100vh] w-[100vw] py-2">
+      <div className="flex justify-center h-full w-full py-2">
         
         {/* background */}
         <img transition-style="in:wipe:right" role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg" onLoad={() => setBgLoaded(true)}/>
