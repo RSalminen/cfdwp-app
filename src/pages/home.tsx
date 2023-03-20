@@ -10,7 +10,10 @@ const Home = () => {
   const [bgLoaded, setBgLoaded] = useState<boolean>(false);
 
   if (!bgLoaded) return (
-    <img className="hidden" width={isMobile ? 240 : 320} src="/cfdviewernew.svg" alt="Sublayer logo" onLoad={() => setBgLoaded(true)} />
+    <div>
+      <img role="presentation" className="hidden h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
+      <img className="hidden" width={isMobile ? 200 : 320} src="/cfdviewernew.svg" alt="CFD Viewer logo" onLoad={() => setBgLoaded(true)} />
+    </div>
   )
 
   return (
@@ -18,14 +21,14 @@ const Home = () => {
       <div className="flex justify-center h-full w-full py-2">
         
         {/* background */}
-        <img transition-style="in:wipe:right" role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg" onLoad={() => setBgLoaded(true)}/>
+        <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
         <div className="fixed w-full h-full top-0 left-0 -z-[11] backgroundcolor"></div>
 
 
         <div className="w-[95%] sm:w-[80%] flex flex-col space-y-44">
           <div className="flex justify-between items-center">
 
-            <img width={isMobile ? 200 : 320} src="/cfdviewernew.svg" alt="Sublayer logo" onLoad={() => setBgLoaded(true)} />
+            <img width={isMobile ? 200 : 320} src="/cfdviewernew.svg" alt="CFD Viewer logo" />
 
             <Link to="/login">
               <div className="flex flex-row items-center border border-black bg-white bg-opacity-60 px-2 py-1 rounded-sm text-[14px] sm:text-[16px] font-medium">
