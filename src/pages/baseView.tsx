@@ -197,6 +197,8 @@ const TeacherView = () => {
         fileNameArray.push(__filename);
       }
 
+      console.log(fileNameArray);
+
       const fileDataArray = await Promise.all(fileNameArray.map(async (filename:string) => {
         const filedata = await zip.file(filename)?.async('arraybuffer');
         const vtpReader = vtkXMLPolyDataReader.newInstance();

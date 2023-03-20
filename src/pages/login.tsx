@@ -36,8 +36,8 @@ const Login = () => {
     }
 
     return (
-        <div className="h-[100vh] w-[100vw] flex justify-center items-center">
-            <div className="border py-6 px-10 w-[280px] rounded-md shadow-md shadow-gray-400">
+        <div className="h-[100vh] w-[100vw] flex justify-center items-center bg-wave2">
+            <div className="border py-6 px-10 w-[280px] rounded-md shadow-lg shadow-gray-700 bg-white">
                 <form onSubmit={loginClicked} className="flex flex-col space-y-3 w-full">
                     <h3 className="text-center text-[20px] font-semibold mb-2">Login</h3>
                     <CustomInput currentValue={username} labelText="username" onChange={(e:any) => setUsername(e.target.value)} />
