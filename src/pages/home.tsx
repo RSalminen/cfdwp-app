@@ -25,10 +25,10 @@ const Home = () => {
         <div className="w-[95%] sm:w-[80%] flex flex-col space-y-44">
           <div className="flex justify-between items-center">
 
-            <img width={isMobile ? 240 : 320} src="/cfdviewernew.svg" alt="Sublayer logo" onLoad={() => setBgLoaded(true)} />
+            <img width={isMobile ? 200 : 320} src="/cfdviewernew.svg" alt="Sublayer logo" onLoad={() => setBgLoaded(true)} />
 
             <Link to="/login">
-              <div className="flex flex-row items-center border border-black bg-white bg-opacity-60 px-2 py-1 rounded-sm">
+              <div className="flex flex-row items-center border border-black bg-white bg-opacity-60 px-2 py-1 rounded-sm text-[14px] sm:text-[16px] font-medium">
                 <p>Login</p>
                 <svg className="h-5 w-5" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M13 16L18 12 13 8 13 11 4 11 4 13 13 13z"></path><path d="M20,3h-9C9.897,3,9,3.897,9,5v4h2V5h9v14h-9v-4H9v4c0,1.103,0.897,2,2,2h9c1.103,0,2-0.897,2-2V5C22,3.897,21.103,3,20,3z"></path></svg>
               </div>
@@ -41,7 +41,7 @@ const Home = () => {
                 Simulations
               </h3>
               <div className="flex flex-wrap">
-                <div className="flex flex-col h-32 w-52 border rounded-md hover:cursor-pointer hover:-translate-y-2 transition-all">
+                <div className="flex flex-col h-36 w-60 sm:h-32 sm:w-52 border rounded-md md:hover:cursor-pointer md:hover:-translate-y-2 transition-all">
                   <div className="h-[60%] w-full bg-gray-200 flex justify-center items-center">
                     <svg className="h-8 w-8 fill-gray-600" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M113.5 281.2v85.3L256 448l142.5-81.5v-85.3L256 362.7l-142.5-81.5zM256 64L32 192l224 128 183.3-104.7v147.4H480V192L256 64z"></path></svg>
                   </div>
