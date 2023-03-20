@@ -21,7 +21,7 @@ const Home = () => {
       <div className="flex justify-center h-full w-full py-2">
         
         {/* background */}
-        <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
+        <img transition-style="in:wipe:right" role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
         <div className="fixed w-full h-full top-0 left-0 -z-[11] backgroundcolor"></div>
 
 
