@@ -39,9 +39,9 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="flex-grow flex flex-col space-y-6">
+          <div className="flex-grow flex flex-col space-y-6 justify-center">
             
-            <div className="fade-in-card w-full bg-white shadow-md shadow-gray-600 rounded-md px-7 py-4 flex flex-col space-y-4 items-center sm:items-start">
+            <div className="fade-in-card w-fit md:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start">
               <h3 className="text-[22px] font-semibold">
                 Simulations
               </h3>
@@ -61,7 +61,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="fade-in-card w-full bg-white shadow-md shadow-gray-600 rounded-md px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
+            <div className="fade-in-card w-fit md:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
               <h3 className="text-[22px] font-semibold">
                 Collections
               </h3>
