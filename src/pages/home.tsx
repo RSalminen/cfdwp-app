@@ -26,7 +26,7 @@ const Home = () => {
         <img transition-style="in:wipe:right" role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
         <div className="fixed w-full h-full top-0 left-0 -z-[11] backgroundcolor"></div>
 
-        <div className="w-[95%] sm:w-[80%] flex flex-col space-y-28 mb-4">
+        <div className="w-[90%] sm:w-[80%] flex flex-col space-y-28 mb-4">
           <div className="flex justify-between items-center">
 
             <img width={isMobile ? 200 : 300} src="/cfdviewernew.svg" alt="CFD Viewer logo" />
@@ -39,9 +39,9 @@ const Home = () => {
             </Link>
           </div>
 
-          <div className="flex-grow flex flex-col space-y-6 justify-center">
+          <div className="flex-grow flex flex-col space-y-6 items-center">
             
-            <div className="fade-in-card w-fit md:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start">
+            <div className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start">
               <h3 className="text-[22px] font-semibold">
                 Simulations
               </h3>
@@ -61,7 +61,7 @@ const Home = () => {
               </div>
             </div>
 
-            <div className="fade-in-card w-fit md:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
+            <div className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
               <h3 className="text-[22px] font-semibold">
                 Collections
               </h3>
