@@ -386,10 +386,10 @@ const TeacherView = () => {
 
   return (
     <div className="h-full w-full overflow-hidden">
-      <div className='overflow-hidden h-[100vh] flex flex-col'>
+      <div className='overflow-hidden h-full flex flex-col'>
 
         {(!simLoaded) && 
-        <div className="flex flex-col w-[100vw] h-[100vh] bg-white absolute z-[50] justify-center items-center">
+        <div className="flex flex-col w-full h-full bg-white absolute z-[50] justify-center items-center">
           <p>Loading...</p>
           <p>{loadProgress}%</p>
         </div>}
@@ -419,12 +419,12 @@ const TeacherView = () => {
           </div>
         </div>
 
-        <div ref={vtkContainerRef} className="h-[calc(100vh-60px)]">
+        <div ref={vtkContainerRef} className="h-[calc(100%-60px)]">
         </div>
       </div>
 
       {(menuVisible) &&
-      <div className="h-[calc(100vh-60px)] transition-all overflow-y-hidden flex flex-col min-w-[300px] w-[20vw] right-0 top-[60px] bg-white absolute z-[2] bg-opacity-95 pl-4 pr-8 py-2">
+      <div className="h-[calc(100%-60px)] transition-all overflow-y-hidden flex flex-col min-w-[300px] w-[20vw] right-0 top-[60px] bg-white absolute z-[2] bg-opacity-95 pl-4 pr-8 py-2">
         
         <div className="flex space-x-4 pb-2 mb-2 border-b border-emerald-600">
           <div className={`${menuTab === "Notes" && "border-b-[3px] border-emerald-600"} hover:cursor-pointer`} onClick={() => setMenuTab("Notes")}>Notes</div>
