@@ -507,7 +507,7 @@ const TeacherView = () => {
           </div>
         </div>
 
-        <div ref={vtkContainerRef} className="h-[calc(100vh-120px)]">
+        <div ref={vtkContainerRef} className="h-[calc(100%-120px)]">
         </div>
       </div>
 

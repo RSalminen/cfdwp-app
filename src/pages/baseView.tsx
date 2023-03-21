@@ -385,7 +385,7 @@ const TeacherView = () => {
 
 
   return (
-    <div className="h-[100vh] w-[100vw] overflow-hidden">
+    <div className="h-full w-full overflow-hidden">
       <div className='overflow-hidden h-[100vh] flex flex-col'>
 
         {(!simLoaded) && 
