@@ -1,13 +1,15 @@
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive'
 import { useEffect, useState } from 'react';
-import Div100vh from 'react-div-100vh';
+import Div100vh, { use100vh } from 'react-div-100vh';
 
 const Home = () => {
   
   const isMobile = useMediaQuery({ query: `(max-width: 640px)` });
 
   const [bgLoaded, setBgLoaded] = useState<boolean>(false);
+
+  const height = use100vh();
 
   if (!bgLoaded) return (
     <div>
@@ -17,13 +19,12 @@ const Home = () => {
   )
 
   return (
-    <Div100vh>
+    <div className="h-full w-full">
       <div className="flex justify-center h-full w-full py-2">
         
         {/* background */}
         <img transition-style="in:wipe:right" role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
         <div className="fixed w-full h-full top-0 left-0 -z-[11] backgroundcolor"></div>
-
 
         <div className="w-[95%] sm:w-[80%] flex flex-col space-y-44">
           <div className="flex justify-between items-center">
@@ -61,7 +62,7 @@ const Home = () => {
           </div>
         </div>
       </div>
-    </Div100vh>
+    </div>
   );
 }
 
