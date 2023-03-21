@@ -385,7 +385,7 @@ const TeacherView = () => {
 
 
   return (
-    <div className="h-full w-full overflow-hidden">
+    <div className="fixed h-full w-full overflow-hidden">
       <div className='overflow-hidden h-full flex flex-col'>
 
         {(!simLoaded) && 
@@ -419,7 +419,7 @@ const TeacherView = () => {
           </div>
         </div>
 
-        <div ref={vtkContainerRef} className="h-[calc(100vh-60px)]">
+        <div ref={vtkContainerRef} className="h-[calc(100%-60px)]">
         </div>
       </div>
 
