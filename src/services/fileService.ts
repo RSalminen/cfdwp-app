@@ -85,4 +85,12 @@ const getContent = async (simId:string) => {
     return response.data[0];
 }
 
-export const fileService = { postFile, getSimulationsByTeacher, getFile, updateContent, getContent };
+const getAllSims = async () => {
+    const response = await axiosinstance({
+        method:"get",
+        url: "/api/getallsims"
+    });
+    return response.data;
+}
+
+export const fileService = { postFile, getSimulationsByTeacher, getFile, updateContent, getContent, getAllSims };
