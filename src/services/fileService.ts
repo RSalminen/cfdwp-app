@@ -26,7 +26,7 @@ const postFile = async (file:File, contentType:string, simName:string, teacherId
 }
 
 const getSimulationsByTeacher = async (teacherId:string) => {
-
+    
     const response = await axiosinstance({
         method: "get",
         url: "/api/teacher/getfiles",

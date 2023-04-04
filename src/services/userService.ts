@@ -1,3 +1,4 @@
+import { AxiosError } from "axios";
 import axiosinstance from "./customAxios";
 
 let token:string = "";
@@ -24,7 +25,7 @@ const login = async (username:string, password:string) => {
 
 }
 
-const validateTeacher = async (simId:string) => {
+const validateTeacherSim = async (simId:string) => {
 
     try {
         const response = await axiosinstance({
@@ -40,4 +41,21 @@ const validateTeacher = async (simId:string) => {
     }
 }
 
-export const userService = { login, validateTeacher, getToken, setToken }
+const validateToken = async (teacherid:string) => {
+
+    try {
+        const response = await axiosinstance({
+            method: "get",
+            url: "/api/teacher/validatetoken",
+            headers: { Authorization: `Bearer ${token}`},
+            params: {teacherid}
+        });
+    
+        return response.status;
+    } catch (e) {
+        const err = e as AxiosError;
+        return err.response?.status;
+    }
+}
+
+export const userService = { login, validateTeacherSim, validateToken, getToken, setToken }

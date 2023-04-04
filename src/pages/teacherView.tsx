@@ -111,8 +111,13 @@ const TeacherView = () => {
   }
 
   const load = async () => {
+    const loggedUserJSON = window.localStorage.getItem('loggedCFDWPUser');
+    if (loggedUserJSON) {
+        const user = JSON.parse(loggedUserJSON);
+        userService.setToken(user.token);
+    }
 
-    const teacherValid = await userService.validateTeacher(simid!);
+    const teacherValid = await userService.validateTeacherSim(simid!);
     
     if (!teacherValid) {
       navigate('/login');
