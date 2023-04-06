@@ -1,24 +1,27 @@
 import { MouseEvent, useState } from "react";
 import { useParams } from "react-router-dom";
-import ButtonDark from "./buttonDark";
 import { fileService } from "../services/fileService";
 import CustomInput from "./customInput";
+import Dropzone from "react-dropzone";
+import Selection from "./selection";
+import ButtonDark from "./buttonDark";
 
 
 const AddFile = ({onReturn} : {onReturn:Function}) => {
-    const [selectedFile, setSelectedVTPFile] = useState<File>();
+    const [fileToAdd, setFileToAdd] = useState<File>();
     const [simNameInput, setSimNameInput] = useState<string>("");
     const { teacherid } = useParams();
+
+    const [filetypeSelection, setFiletypeSelection] = useState<string>(".vtp");
 
 
     const submitFile = (e:MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
-        if (!selectedFile) return;
+        if (!fileToAdd) return;
 
-        console.log(selectedFile?.type);
+        console.log(fileToAdd.type);
 
-        if (selectedFile?.type === "application/x-zip-compressed") fileService.postFile(selectedFile!, "application/zip", simNameInput, teacherid!);
-        if (selectedFile?.type === "") fileService.postFile(selectedFile!, "application/vtkjs", simNameInput, teacherid!);
+        fileService.postFile(fileToAdd, filetypeSelection, simNameInput, teacherid!);
     }
 
     return (
@@ -32,27 +35,28 @@ const AddFile = ({onReturn} : {onReturn:Function}) => {
                         <CustomInput currentValue={simNameInput} labelText="title" onChange={(e:any) => setSimNameInput(e.target.value)} />
                     </div>
 
-                    <div className="flex items-center justify-center w-full">
-                        <label className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                            <div className="flex flex-col items-center justify-center py-6 px-5">
-                                <svg aria-hidden="true" className="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>
-                                <p className="text-xs text-gray-500 dark:text-gray-400">Zip file containing the .vtp, .vtkjs or .vti files</p>
+
+                    <Dropzone onDrop={acceptedFiles => setFileToAdd(acceptedFiles[0])}>
+
+                        {({getRootProps, getInputProps}) => (
+                            <section>
+                            <div className="bg-gray-200 px-3 py-2 border-2 border-dashed border-gray-700" {...getRootProps()}>
+                                <input {...getInputProps()} />
+                                <p>Drag 'n' drop some files here, or click to select files</p>
                             </div>
-                            <input 
-                                type="file"
-                                accept='.zip, .vtkjs'
-                                onChange={(e) => setSelectedVTPFile(e.target.files![0])}
-                                className="hidden"
-                            />
-                        </label>
+                            </section>
+                        )}
+
+                    </Dropzone>
+
+                    <div className="flex justify-center w-[90%] space-x-4 items-center">
+                        <p>Filetype:</p>
+                        <Selection allItems={[".vtp", "vti", "vtkjs"]} onChangeFn={(item:string) => setFiletypeSelection(item)} thisItem={null} selectedItem={filetypeSelection} light={true} fullWidth={true} />
                     </div>
 
-                    <ButtonDark btnText="Post" onClickFn={submitFile} fullWidth={true} />
-
-                    <div className="flex justify-end items-center w-full hover:cursor-pointer" onClick={() => onReturn()}>
-                        <p className="font-semibold text-[14px]">Return</p>
-                        <svg className="h-5 w-5" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fill="none" stroke="#000" stroke-width="2" d="M9,4 L4,9 L9,14 M18,19 L18,9 L5,9" transform="matrix(1 0 0 -1 0 23)"></path></svg>
+                    <div className="flex w-[90%] space-x-2">
+                        <ButtonDark btnText="Cancel" onClickFn={() => onReturn()} fullWidth={true} />
+                        <ButtonDark btnText="Post" onClickFn={submitFile} fullWidth={true} />
                     </div>
 
                 </div>

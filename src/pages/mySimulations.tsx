@@ -11,6 +11,7 @@ import LoginFallback from '../components/loginFallback';
 import { AxiosError } from 'axios';
 import LoadingSpinner from '../components/loadingSpinner';
 import useComponentVisible from '../hooks/useComponentIsVisible';
+import ButtonDarkSmall from '../components/buttonDarkSmall';
 
 interface ITeacherSimObj {
     id:string,
@@ -18,28 +19,34 @@ interface ITeacherSimObj {
     added_date: string,
 }
 
+const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teacherid:string}) => (
+    <div className="absolute border shadow-md translate-x-[-65px] px-3 py-2 bg-white rounded-sm">
+        <div className="flex flex-col space-y-1">
+            <SmallButtonDarkLink btnText="View" url={`/view/${simObj.id}/`} fullWidth={true} />
+            <SmallButtonDarkLink btnText="Edit" url={`/view/${simObj.id}/${teacherid}`} fullWidth={true} />
+            <ButtonDarkSmall btnText="Add to collection" onClickFn={() => {}} fullWidth={true} />
+            <ButtonDarkSmall btnText="Delete" onClickFn={() => {}} fullWidth={true} />
+        </div>
+    </div>
+)
+
 const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacherid:string, idx:number}) => {
 
     const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
+
+    const addedDate = new Date(simObj.added_date);
 
     return(
         <tr key={simObj.id} className={`${idx%2 === 0 && " bg-gradient-to-r from-emerald-50 to-gray-100"}`}>
             <td className="py-1 px-1 font-medium min-w-[100px]">{simObj.simtitle}</td>
             <td className="py-1 px-1">vtkjs</td>
-            <td className="py-1 px-1">{simObj.added_date}</td>
-            <td className="py-1 px-1">
-                <div className="flex space-x-1 justify-center">
-                    <SmallButtonDarkLink btnText="View" url={`/view/${simObj.id}/`} />
-                    <SmallButtonDarkLink btnText="Edit" url={`/view/${simObj.id}/${teacherid}`} />
-                </div>
-            </td>
+            <td className="py-1 px-1">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</td>
+            <td className="py-1 px-1">None</td>
             <td className="py-1 px-1 w-[0px]">
-                <div ref={ref} className="relative">
-                    <svg className="hover:cursor-pointer" onClick={() => setIsComponentVisible(!isComponentVisible)} stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                <div ref={ref} className="">
+                    <svg className={`${isComponentVisible && "stroke-emerald-600"} hover:cursor-pointer`} onClick={() => setIsComponentVisible(!isComponentVisible)} stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                     {isComponentVisible && 
-                    <div className="absolute h-5 w-5 bg-black right-[16px] bottom-0">
-                        
-                    </div>
+                    <SimulationActionsCard simObj={simObj} teacherid={teacherid} />
                     }
                 </div>
             </td>
@@ -157,7 +164,7 @@ const MySimulations = () => {
                                                     <th className="py-1 px-1">Name</th>
                                                     <th className="py-1 px-1">Filetype</th>
                                                     <th className="py-1 px-1">Date added</th>
-                                                    <th className="py-1 px-1">Actions</th>
+                                                    <th className="py-1 px-1">Collection</th>
                                                 </tr>
                                             </thead>
 

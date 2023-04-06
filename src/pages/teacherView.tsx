@@ -496,7 +496,7 @@ const TeacherView = () => {
             
             {simLoaded &&
               <div className="">
-                <Selection selectedItem={activeField} setSelectedItem={setActiveField} allItems={selectedFields!} thisItem="Select Field..." />
+                <Selection selectedItem={activeField} onChangeFn={(item:string) => setActiveField(item)} allItems={selectedFields!} thisItem="Select Field..." />
               </div>
             }
 

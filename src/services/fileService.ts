@@ -3,13 +3,17 @@ import axiosinstance from "./customAxios";
 import { userService } from "./userService";
 
 
-const postFile = async (file:File, contentType:string, simName:string, teacherId:string) => {
+const postFile = async (file:File, fileType:string, simName:string, teacherId:string) => {
+
+    const postDate = new Date();
 
     const formData = new FormData();
     formData.append("file", file);
     formData.append("simName", simName);
-    formData.append("fileType", contentType);
+    formData.append("fileType", fileType);
     formData.append("teacherId", teacherId);
+    formData.append("date", postDate.toISOString());
+
 
     const response = await axiosinstance({
         method:"post",
