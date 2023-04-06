@@ -140,6 +140,7 @@ const Home = () => {
 
             <img width={isMobile ? 200 : 280} src="/cfdviewernew.svg" alt="CFD Viewer logo" />
 
+            {/* Login button */}
             <Link to="/login">
               <div className="flex flex-row items-center border border-black bg-white bg-opacity-60 px-2 py-1 rounded-sm text-[14px] sm:text-[16px] font-medium">
                 <p>Login</p>
@@ -148,6 +149,7 @@ const Home = () => {
             </Link>
           </div>
 
+          {/* Simulations card */}
           <div className="flex-grow flex flex-col space-y-6 items-center">
             
             <div ref={simCardRef} className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 py-4 flex flex-col space-y-4 items-center sm:items-start">
@@ -165,18 +167,21 @@ const Home = () => {
             
             </div>
 
-            <div className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
-              <h3 className="text-[22px] font-semibold">
-                Collections
-              </h3>
-              <div className="flex flex-wrap w-full justify-center">
-                {collsToShow ? simulations.slice(0, collsToShow).map((simulation:ISimCard) => (
-                <Link to={`/view/${simulation.id}`} key={simulation.id}>
-                  <SingleCard title={simulation.simtitle} type={2} />
-                </Link>))
-                : <div>Loading...</div>}
+            <div className="w-full h-full pb-1.5">
+              {/* Collections card */}
+              <div className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
+                <h3 className="text-[22px] font-semibold">
+                  Collections
+                </h3>
+                <div className="flex flex-wrap w-full justify-center">
+                  {collsToShow ? simulations.slice(0, collsToShow).map((simulation:ISimCard) => (
+                  <Link to={`/view/${simulation.id}`} key={simulation.id}>
+                    <SingleCard title={simulation.simtitle} type={2} />
+                  </Link>))
+                  : <div>Loading...</div>}
+                </div>
+                <ShowMore isVisible={collShowmoreVisible} showMoreClick={showMoreColls} showLessClick={showLessColls} />
               </div>
-              <ShowMore isVisible={collShowmoreVisible} showMoreClick={showMoreColls} showLessClick={showLessColls} />
             </div>
 
           </div>

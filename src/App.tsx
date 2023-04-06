@@ -1,15 +1,12 @@
-import { BrowserRouter, Routes, Route, RouteProps, createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
 import BaseView from "./pages/baseView";
 import Home from "./pages/home";
-import TeacherHome from "./pages/teacherHome";
 import TeacherView from "./pages/teacherView";
-import AddFilePage from "./pages/addFilePage";
-import { useState } from "react";
 import Login from "./pages/login";
 import { ErrorBoundary } from "react-error-boundary";
 import MyCollections from "./pages/myCollections";
-import AddCollection from "./pages/addCollection";
+import MySimulations from "./pages/mySimulations";
 
 const Fallback = ({error} : {error:any}) => {
   return (
@@ -38,19 +35,11 @@ function App() {
         },
         {
           path: "teacher/:teacherid",
-          element: <TeacherHome />,
-        },
-        {
-          path: "teacher/:teacherid/addfile",
-          element: <AddFilePage />,
+          element: <MySimulations />,
         },
         {
           path: "teacher/:teacherid/collections",
           element: <MyCollections />,
-        },
-        {
-          path: "teacher/:teacherid/addcollection",
-          element: <AddCollection />,
         },
         {
           path: "view/:simid/:teacherid",

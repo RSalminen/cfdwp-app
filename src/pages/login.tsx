@@ -36,7 +36,12 @@ const Login = () => {
     }
 
     return (
-        <div className="h-[100vh] w-[100vw] flex justify-center items-center bg-wave2">
+        <div className="h-[100vh] w-[100vw] flex justify-center items-center">
+
+            {/* background */}
+            <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none fade-in-card" src="wavebg2.svg"/>
+            <div className="h-full w-full fixed object-cover z-[-11] top-0 left-0 loginBackgroundColor" />
+
             <div className="border py-6 px-10 w-[280px] rounded-md shadow-lg shadow-gray-700 bg-white">
                 <form onSubmit={loginClicked} className="flex flex-col space-y-3 w-full">
                     <h3 className="text-center text-[20px] font-semibold mb-2">Login</h3>

@@ -84,8 +84,14 @@ img {
 
 .fade-in-card { animation: fadeIn 2s }
 
+.fade-in-card-fast { animation: fadeIn 0.25s }
+
 .backgroundcolor {
   background-color: #ADE4B6;
+}
+
+.loginBackgroundColor {
+  background-color: #7DD48C;
 }
 
 @tailwind base;
@@ -97,4 +103,8 @@ img {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 500ms;
+}
+
+.hover-translate-child:hover div {
+  transform: translateX(4px);
 }

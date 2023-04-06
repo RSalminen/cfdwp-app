@@ -24,6 +24,7 @@ const LoginFallback = ({onLoginSuccess}:{onLoginSuccess:Function}) => {
         const loggedUser = await userService.login(username, password);
         if (loggedUser) {
             window.localStorage.setItem('loggedCFDWPUser', JSON.stringify(loggedUser));
+            userService.setToken(loggedUser.token);
             onLoginSuccess();
         }
         else {
@@ -33,8 +34,8 @@ const LoginFallback = ({onLoginSuccess}:{onLoginSuccess:Function}) => {
     }
 
     return (
-        <div className="h-full w-full absolute z-20 bg-opacity-90 bg-white flex justify-center items-center">
-            <div className="border py-6 px-10 w-[280px] rounded-md shadow-lg shadow-gray-700 bg-white">
+        <div className="h-full w-full fixed z-20 bg-opacity-90 bg-white flex justify-center items-center">
+            <div className="border py-6 px-10 w-[280px] rounded-md shadow-lg bg-white">
                 <form onSubmit={loginClicked} className="flex flex-col space-y-3 w-full">
                     <h3 className="text-center text-[20px] font-semibold mb-2">Login</h3>
                     <CustomInput currentValue={username} labelText="username" onChange={(e:any) => setUsername(e.target.value)} />
