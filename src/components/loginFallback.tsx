@@ -5,7 +5,7 @@ import { userService } from "../services/userService";
 const ButtonDarkForm = ({btnText, fullWidth}:{btnText:string, fullWidth:boolean}) => {
 
     return (
-        <button type="submit" className={`bg-emerald-900 text-[15px] rounded-[3px] px-3 py-2 text-white flex justify-center items-center hover:cursor-pointer h-fit ${fullWidth ? "w-full" : "w-fit"}`}>
+        <button type="submit" className={`bg-emerald-900 text-[15px] rounded-[3px] px-3 py-2 text-white flex justify-center items-center cursor-pointer h-fit ${fullWidth ? "w-full" : "w-fit"}`}>
             {btnText}
         </button>
     );

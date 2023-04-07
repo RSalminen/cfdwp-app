@@ -43,7 +43,7 @@ const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacher
             <td className="py-1 px-1">None</td>
             <td className="py-1 px-1 w-[0px]">
                 <div ref={ref} className="">
-                    <svg className={`${isComponentVisible && "stroke-emerald-600"} hover:cursor-pointer`} onClick={() => setIsComponentVisible(!isComponentVisible)} stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                    <svg className={`${isComponentVisible && "stroke-emerald-600"} cursor-pointer`} onClick={() => setIsComponentVisible(!isComponentVisible)} stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                     {isComponentVisible && 
                     <SimulationActionsCard simObj={simObj} teacherid={teacherid} />
                     }
@@ -177,7 +177,7 @@ const MySimulations = () => {
                                     {Array.from(Array(Math.ceil(allSims.current.length / simsPerPage)), (e,i) => (
                                         activePage === (i+1) 
                                         ? <div key={i} className="border-b border-emerald-600 h-[21px] flex items-center">{i + 1}</div>
-                                        : <div key={i} onClick={() => setActivePage(i+1)} className="hover:cursor-pointer text-gray-700 h-[20px] flex items-center">{i+1}</div>
+                                        : <div key={i} onClick={() => setActivePage(i+1)} className="cursor-pointer text-gray-700 h-[20px] flex items-center">{i+1}</div>
                                     ))}
                                 </div>}
                             </div>
