@@ -1,17 +1,16 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react'
 import { fileService } from '../services/fileService';
 import ButtonDark from '../components/buttonDark';
 import SmallButtonDarkLink from '../components/smallButtonDarkLink';
-import { userService } from '../services/userService';
 import TeacherTopBar from '../components/teacherTopBar';
 import TeacherNav from '../components/teacherNav';
 import { validateHelper } from '../helpers/validate';
 import LoginFallback from '../components/loginFallback';
-import { AxiosError } from 'axios';
 import LoadingSpinner from '../components/loadingSpinner';
 import useComponentVisible from '../hooks/useComponentIsVisible';
 import ButtonDarkSmall from '../components/buttonDarkSmall';
+import useMyStore from '../store/store';
 
 interface ITeacherSimObj {
     id:string,
@@ -65,26 +64,18 @@ const MySimulations = () => {
     const [activePage, setActivePage] = useState<number>(1);
     
     const [loaded, setLoaded] = useState<boolean>(false);
-    const [loginFailed, setLoginFailed] = useState<boolean>(false);
 
     const ranStart = useRef<boolean>(false);
     const navigate = useNavigate();
 
     const { teacherid } = useParams();
-    
-    let teacherData : ITeacherSimObj[];
+
+    const { authHasFailed, reLoginSuccess } = useMyStore();
     
     const loadSimulations = async () => {
-        try {
-            teacherData = await fileService.getSimulationsByTeacher(teacherid!);
-        } catch (e:any) {
-            const err = e as AxiosError;
-            if (err.response?.status === 401) {
-                setLoginFailed(true);
-                setLoaded(true);
-                return;
-            }
-        }
+ 
+        const teacherData : ITeacherSimObj[] = await fileService.getSimulationsByTeacher(teacherid!);
+        if (!teacherData) return;
 
         if (teacherData.length >= simsPerPage) setActiveSims(teacherData.slice(0,simsPerPage));
         else setActiveSims(teacherData);
@@ -102,9 +93,11 @@ const MySimulations = () => {
     }, []);
 
     const onLoginSuccess = () => {
-        setLoginFailed(false);
+        //update store isLoggedIn
+        reLoginSuccess();
+
         const tokenId = validateHelper.getTokenId();
-        
+        //Try loading the simulations if the teacherId of the logged in user matches the address, otherwise relocate
         if (tokenId.toString() === teacherid) {
             loadSimulations();
         }
@@ -119,32 +112,36 @@ const MySimulations = () => {
         }
     }, [activePage])
 
-    if (!loaded) return (
-        <div className="flex flex-col w-full h-full">
-            <TeacherTopBar teacherid={teacherid!} />
-            <TeacherNav currentPage={0} teacherid={teacherid!} />
+    //Loading view and login fallback
+    if (!loaded || authHasFailed) return (
+        <>
+            <div className="flex flex-col w-full h-full">
+                <TeacherTopBar teacherid={teacherid!} />
+                <TeacherNav currentPage={0} teacherid={teacherid!} />
 
-            <div className="flex-grow flex justify-center items-center">
-                <div className="w-12 h-12">
-                    <LoadingSpinner />
+                <div className="flex-grow flex justify-center items-center">
+                    <div className="w-12 h-12">
+                        {!authHasFailed && <LoadingSpinner />}
+                    </div>
                 </div>
             </div>
-        </div>
+            {/* Handle login fail */}
+            {authHasFailed &&
+                <LoginFallback onLoginSuccess={() => onLoginSuccess()} />
+            }
+        </>
     );
 
+    //basic page after load
     return (
-        <>
-            {loginFailed &&
-            <LoginFallback onLoginSuccess={() => onLoginSuccess()} />
-            }
-            
+        <>  
             <div className="w-full h-full overflow-y-auto">
                 <div className="flex flex-col">
                     
                     <TeacherTopBar teacherid={teacherid!} />
                     <TeacherNav currentPage={0} teacherid={teacherid!} />
                     
-                    <div className="w-full h-full overflow-x-auto overflow-y-hidden">
+                    {!authHasFailed && <div className="w-full h-full overflow-x-auto overflow-y-hidden">
                         <div className="flex flex-col items-center mt-4 flex-grow w-[95%] md:w-[85%] mx-auto">
                             <h3 className="mb-2 font-[600] text-[17px]">My simulations</h3>
                             {activeSims.length === 0 ?
@@ -188,6 +185,7 @@ const MySimulations = () => {
                             
                         </div>
                     </div>
+                    }
                 </div>
             </div>
         </>

@@ -1,6 +1,8 @@
+import { AxiosError } from "axios";
 import { ITeacherOptions, IWidget } from "../types";
 import axiosinstance from "./customAxios";
 import { userService } from "./userService";
+import useMyStore from "../store/store";
 
 
 const postFile = async (file:File, fileType:string, simName:string, teacherId:string) => {
@@ -14,31 +16,44 @@ const postFile = async (file:File, fileType:string, simName:string, teacherId:st
     formData.append("teacherId", teacherId);
     formData.append("date", postDate.toISOString());
 
+    try {
+        const response = await axiosinstance({
+            method:"post",
+            url:"/api/teacher/postfile",
+            data: formData,
+            headers: {
+                "Content-Type": "multipart/form-data",
+                Authorization: `Bearer ${userService.getToken()}`
+            }
+        });
 
-    const response = await axiosinstance({
-        method:"post",
-        url:"/api/teacher/postfile",
-        data: formData,
-        headers: {
-            "Content-Type": "multipart/form-data" ,
-            Authorization: `Bearer ${userService.getToken()}`
+        return response.status === 200;
+    } catch (e) {
+        const err = e as AxiosError;
+        if (err.response?.status === 401) {
+            useMyStore.getState().authFailed();
         }
-    });
-
-    return response.status === 200;
+    }
     
 }
 
 const getSimulationsByTeacher = async (teacherId:string) => {
     
-    const response = await axiosinstance({
-        method: "get",
-        url: "/api/teacher/getfiles",
-        params: {teacherId: teacherId},
-        headers: {Authorization: `Bearer ${userService.getToken()}`}
-    });
+    try {
+        const response = await axiosinstance({
+            method: "get",
+            url: "/api/teacher/getfiles",
+            params: {teacherId: teacherId},
+            headers: {Authorization: `Bearer ${userService.getToken()}`}
+        });
 
-    return response.data;
+        return response.data;
+
+    } catch (e) {
+        const err = e as AxiosError;
+        if (err.response?.status === 401) useMyStore.getState().authFailed();
+    }
+
     
 }
 
@@ -67,15 +82,19 @@ const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetSt
 }
 
 const updateContent = async (widgets:IWidget[], teacherOptions:ITeacherOptions, simId:string) => {
+    try {
+        const response = await axiosinstance({
+            method: "put",
+            url: "/api/teacher/updatecontent",
+            data: {simId, teacherOptions, widgets},
+            headers: {Authorization: `Bearer ${userService.getToken()}`}
+        });
 
-    const response = await axiosinstance({
-        method: "put",
-        url: "/api/teacher/updatecontent",
-        data: {simId, teacherOptions, widgets},
-        headers: {Authorization: `Bearer ${userService.getToken()}`}
-    });
-
-    return response.status === 200;
+        return response.status === 200;
+    } catch (e) {
+        const err = e as AxiosError;
+        if (err.response?.status === 401) useMyStore.getState().authFailed();
+    }
 }
 
 const getContent = async (simId:string) => {

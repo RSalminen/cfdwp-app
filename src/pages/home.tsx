@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive'
 import { useEffect, useRef, useState } from 'react';
-import Div100vh, { use100vh } from 'react-div-100vh';
 import { fileService } from '../services/fileService';
 
 interface ISimCard {

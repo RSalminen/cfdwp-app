@@ -1,5 +1,6 @@
 import { AxiosError } from "axios";
 import axiosinstance from "./customAxios";
+import useMyStore from "../store/store";
 
 let token:string = "";
 
@@ -20,7 +21,8 @@ const login = async (username:string, password:string) => {
 
         return response.data;
     } catch (e) {
-        return null;
+        const err = e as AxiosError;
+        if (err.response?.status === 401) useMyStore.getState().authFailed();
     }
 
 }
@@ -37,7 +39,8 @@ const validateTeacherSim = async (simId:string) => {
     
         return response.status === 200;
     } catch (e) {
-        return false;
+        const err = e as AxiosError;
+        if (err.response?.status === 401) useMyStore.getState().authFailed();
     }
 }
 
@@ -54,7 +57,7 @@ const validateToken = async (teacherid:string) => {
         return response.status;
     } catch (e) {
         const err = e as AxiosError;
-        return err.response?.status;
+        if (err.response?.status === 401) useMyStore.getState().authFailed();
     }
 }
 

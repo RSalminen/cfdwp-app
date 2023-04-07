@@ -1,11 +1,7 @@
 import { userService } from "../services/userService";
 
-const validate = async (teacherid:string, setLoginFailed:React.Dispatch<React.SetStateAction<boolean>>) => {
-
-    const teacherValid = await userService.validateToken(teacherid);
-    if (teacherValid === 401) {
-        setLoginFailed(true);
-    }
+const validate = async (teacherid:string) => {
+    await userService.validateToken(teacherid);
 }
 
 const checkToken = () => {
