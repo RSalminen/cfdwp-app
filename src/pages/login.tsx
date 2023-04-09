@@ -46,7 +46,7 @@ const Login = () => {
             <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none fade-in-card" src="wavebg2.svg"/>
             <div className="h-full w-full fixed object-cover z-[-11] top-0 left-0 loginBackgroundColor" />
 
-            <div className="border py-6 px-6 sm:px-12 min-w-[240px] rounded-md shadow-lg shadow-gray-700 bg-white">
+            <div className="border py-6 px-12 min-w-[240px] rounded-md shadow-lg shadow-gray-700 bg-white">
                 <img className="mx-auto mb-5" width={isMobile ? 140 : 170} src="/cfdviewerlogo.svg" alt="CFD Viewer logo" />
                 <form onSubmit={loginClicked} className="flex flex-col space-y-3 w-full">
                     <h3 className="text-center text-[20px] font-semibold mb-2">Sign in</h3>
