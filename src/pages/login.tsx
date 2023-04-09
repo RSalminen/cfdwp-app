@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CustomInput from "../components/customInput";
 import { userService } from "../services/userService";
 import useMyStore from "../store/store";
+import { useMediaQuery } from "react-responsive";
 
 const ButtonDarkForm = ({btnText, fullWidth}:{btnText:string, fullWidth:boolean}) => {
 
@@ -21,6 +22,7 @@ const Login = () => {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
 
+    const isMobile = useMediaQuery({ query: `(max-width: 640px)` });
 
     const navigate = useNavigate();
 
@@ -44,9 +46,10 @@ const Login = () => {
             <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none fade-in-card" src="wavebg2.svg"/>
             <div className="h-full w-full fixed object-cover z-[-11] top-0 left-0 loginBackgroundColor" />
 
-            <div className="border py-6 px-10 w-[280px] rounded-md shadow-lg shadow-gray-700 bg-white">
+            <div className="border py-6 px-12 min-w-[280px] rounded-md shadow-lg shadow-gray-700 bg-white">
+                <img className="mx-auto mb-5" width={180} src="/cfdviewerlogo.svg" alt="CFD Viewer logo" />
                 <form onSubmit={loginClicked} className="flex flex-col space-y-3 w-full">
-                    <h3 className="text-center text-[20px] font-semibold mb-2">Login</h3>
+                    <h3 className="text-center text-[20px] font-semibold mb-2">Sign in</h3>
                     <CustomInput currentValue={username} labelText="username" onChange={(e:any) => setUsername(e.target.value)} />
                     <div className="w-full flex">
                         <div className="w-[176px]"><CustomInput currentValue={password} labelText="password" onChange={(e:any) => setPassword(e.target.value)} showPassword={showPassword} /></div>
@@ -57,9 +60,9 @@ const Login = () => {
                             }
                         </div>
                     </div>
-                    <div className="pt-1 flex flex-col space-y-0.5">
+                    <div className="pt-1 flex flex-col space-y-1 w-full">
                         <ButtonDarkForm btnText="Log in" fullWidth={true} />
-                        <div className="text-end text-[13px]">Forgot password?</div>
+                        <div className="flex justify-end text-[13px]"><p className="border-b border-gray-600 border-dashed">Forgot password?</p></div>
                     </div>
                 </form>
             </div>

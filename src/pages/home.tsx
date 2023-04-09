@@ -156,7 +156,7 @@ const Home = () => {
         <div className="w-[90%] sm:w-[80%] flex flex-col space-y-20 mb-4">
           <div className="flex justify-between items-center">
 
-            <img width={isMobile ? 200 : 280} src="/cfdviewernew.svg" alt="CFD Viewer logo" />
+            <img width={isMobile ? 200 : 280} src="/cfdviewerlogo.svg" alt="CFD Viewer logo" />
 
             {/* Login button */}
             <Link to="/login">
@@ -171,7 +171,7 @@ const Home = () => {
           <div className="flex-grow flex flex-col space-y-6 items-center">
             
             <div ref={simCardRef} className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 py-4 flex flex-col space-y-4 items-center sm:items-start">
-              <h3 className="text-[22px] font-semibold">
+              <h3 className="text-[18px] md:text-[22px] font-semibold">
                 Simulations
               </h3>
               <div className="flex flex-wrap w-full justify-center">
@@ -190,14 +190,13 @@ const Home = () => {
             <div className="w-full h-full pb-1.5">
               {/* Collections card */}
               <div className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
-                <h3 className="text-[22px] font-semibold">
+                <h3 className="text-[18px] md:text-[22px] font-semibold">
                   Collections
                 </h3>
                 <div className="flex flex-wrap w-full justify-center">
                   {dataLoaded ? collections.slice(0, collsToShow).map((collection:ICollCard) => (
-                  <Link to={`/view/${collection.id}`} key={collection.id}>
-                    <SingleCard title={collection.name} type={2} />
-                  </Link>))
+                  <SingleCard title={collection.name} type={2} />
+                  ))
                   : <div className="h-36 w-36 p-6">
                       <LoadingSpinner />
                     </div>}

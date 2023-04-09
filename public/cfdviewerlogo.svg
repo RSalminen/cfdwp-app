@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="383.12704"
+   height="64.966698"
+   viewBox="0 0 101.36904 17.189108"
+   version="1.1"
+   id="svg5"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2">
+    <linearGradient
+       id="linearGradient12142">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0.20555556"
+         id="stop12138" />
+      <stop
+         style="stop-color:#001900;stop-opacity:1;"
+         offset="0.44999999"
+         id="stop12146" />
+      <stop
+         style="stop-color:#003100;stop-opacity:1;"
+         offset="1"
+         id="stop12140" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient8273">
+      <stop
+         style="stop-color:#000000;stop-opacity:1"
+         offset="0.05555556"
+         id="stop8269" />
+      <stop
+         style="stop-color:#001600;stop-opacity:1;"
+         offset="0.51159006"
+         id="stop10355" />
+      <stop
+         style="stop-color:#004700;stop-opacity:1;"
+         offset="1"
+         id="stop8271" />
+    </linearGradient>
+    <rect
+       x="148.88576"
+       y="22.759607"
+       width="333.80756"
+       height="62.588917"
+       id="rect4607" />
+    <linearGradient
+       xlink:href="#linearGradient8273"
+       id="linearGradient8275"
+       x1="280.43515"
+       y1="30.015985"
+       x2="280.9093"
+       y2="69.593063"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       xlink:href="#linearGradient12142"
+       id="linearGradient12144"
+       x1="-31.982174"
+       y1="34.394772"
+       x2="-31.982174"
+       y2="45.058399"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.5176471,0,0,1.5176471,21.213528,-19.714211)" />
+  </defs>
+  <g
+     id="layer1"
+     transform="translate(41.391255,-31.446593)">
+    <text
+       xml:space="preserve"
+       transform="matrix(0.26458333,0,0,0.26458333,-50.130966,26.332822)"
+       id="text4605"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;font-family:Corbel;-inkscape-font-specification:'Corbel, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect4607);display:inline;fill:url(#linearGradient8275);fill-opacity:1"><tspan
+         x="148.88672"
+         y="69.087863"
+         id="tspan12208">CFD Viewer</tspan></text>
+    <path
+       style="fill:url(#linearGradient12144);fill-opacity:1;stroke-width:0.401544"
+       d="m -39.509439,32.19932 c 0,0 13.550133,0.895081 14.740924,1.10007 2.073803,0.356994 4.898432,1.299544 6.258352,2.361698 2.147099,1.676971 3.342654,3.505923 3.18134,6.16383 -0.241571,3.980283 -5.521852,6.558023 -5.521852,6.558023 L -30.45274,40.05462 c 0,0 0.326617,-1.68073 -1.097196,-3.017052 -1.423814,-1.336323 -3.554317,-1.017424 -3.554317,-1.017424 z"
+       id="path12136" />
+  </g>
+</svg>
