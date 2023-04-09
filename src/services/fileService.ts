@@ -33,8 +33,28 @@ const postFile = async (file:File, fileType:string, simName:string, teacherId:st
         if (err.response?.status === 401) {
             useMyStore.getState().authFailed();
         }
+    }   
+}
+
+const deleteSimulation = async (simId:string, teacherId:string) => {
+    try {
+        const response = await axiosinstance({
+            method:"delete",
+            url:"/api/teacher/deletefile",
+            params: { simId, teacherId },
+            headers: {
+                Authorization: `Bearer ${userService.getToken()}`
+            }
+        });
+
+        return response.status;
+
+    } catch (e) {
+        const err = e as AxiosError;
+        if (err.response?.status === 401) {
+            useMyStore.getState().authFailed();
+        }
     }
-    
 }
 
 const getSimulationsByTeacher = async (teacherId:string) => {
@@ -43,7 +63,7 @@ const getSimulationsByTeacher = async (teacherId:string) => {
         const response = await axiosinstance({
             method: "get",
             url: "/api/teacher/getfiles",
-            params: {teacherId: teacherId},
+            params: { teacherId },
             headers: {Authorization: `Bearer ${userService.getToken()}`}
         });
 
@@ -52,6 +72,7 @@ const getSimulationsByTeacher = async (teacherId:string) => {
     } catch (e) {
         const err = e as AxiosError;
         if (err.response?.status === 401) useMyStore.getState().authFailed();
+        return false;
     }
 
     
@@ -109,6 +130,7 @@ const getContent = async (simId:string) => {
 }
 
 const getAllSims = async () => {
+
     const response = await axiosinstance({
         method:"get",
         url: "/api/getallsims"
@@ -116,4 +138,4 @@ const getAllSims = async () => {
     return response.data;
 }
 
-export const fileService = { postFile, getSimulationsByTeacher, getFile, updateContent, getContent, getAllSims };
+export const fileService = { postFile, deleteSimulation, getSimulationsByTeacher, getFile, updateContent, getContent, getAllSims };

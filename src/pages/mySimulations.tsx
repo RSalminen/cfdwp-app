@@ -11,6 +11,7 @@ import LoadingSpinner from '../components/loadingSpinner';
 import useComponentVisible from '../hooks/useComponentIsVisible';
 import ButtonDarkSmall from '../components/buttonDarkSmall';
 import useMyStore from '../store/store';
+import ConfirmCard from '../components/confirmCard';
 
 interface ITeacherSimObj {
     id:string,
@@ -18,16 +19,32 @@ interface ITeacherSimObj {
     added_date: string,
 }
 
-const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teacherid:string}) => (
-    <div className="absolute border shadow-md translate-x-[-65px] px-3 py-2 bg-white rounded-sm">
-        <div className="flex flex-col space-y-1">
-            <SmallButtonDarkLink btnText="View" url={`/view/${simObj.id}/`} fullWidth={true} />
-            <SmallButtonDarkLink btnText="Edit" url={`/view/${simObj.id}/${teacherid}`} fullWidth={true} />
-            <ButtonDarkSmall btnText="Add to collection" onClickFn={() => {}} fullWidth={true} />
-            <ButtonDarkSmall btnText="Delete" onClickFn={() => {}} fullWidth={true} />
+const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teacherid:string}) => {
+    
+    const [confirmDeleteActive, setConfirmDeleteActive] = useState<boolean>(false);
+   
+    const deleteSimulation = async () => {
+        const response = await fileService.deleteSimulation(simObj.id, teacherid);
+        setConfirmDeleteActive(false);
+    }
+
+    return (
+    <>
+        {confirmDeleteActive && 
+            <ConfirmCard message="Are you sure you want to delete simulation" itemName={simObj.simtitle} onConfirm={deleteSimulation} onCancel={() => setConfirmDeleteActive(false)} />
+        }
+
+        <div className="absolute z-[2] border shadow-md translate-x-[-65px] px-3 py-2 bg-white rounded-sm">
+            <div className="flex flex-col space-y-1">
+                <SmallButtonDarkLink btnText="View" url={`/view/${simObj.id}/`} fullWidth={true} />
+                <SmallButtonDarkLink btnText="Edit" url={`/view/${simObj.id}/${teacherid}`} fullWidth={true} />
+                <ButtonDarkSmall btnText="Add to collection" onClickFn={() => {}} fullWidth={true} />
+                <ButtonDarkSmall btnText="Delete" onClickFn={() => setConfirmDeleteActive(true)} fullWidth={true} />
+            </div>
         </div>
-    </div>
-)
+    </>
+    )
+}
 
 const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacherid:string, idx:number}) => {
 
@@ -42,7 +59,7 @@ const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacher
             <td className="py-1 px-1">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</td>
             <td className="py-1 px-1">None</td>
             <td className="py-1 px-1 w-[0px]">
-                <div ref={ref} className="">
+                <div ref={ref} className="relative">
                     <svg className={`${isComponentVisible && "stroke-emerald-600"} cursor-pointer`} onClick={() => setIsComponentVisible(!isComponentVisible)} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                     {isComponentVisible && 
                     <SimulationActionsCard simObj={simObj} teacherid={teacherid} />
@@ -115,6 +132,10 @@ const MySimulations = () => {
     //Loading view and login fallback
     if (!loaded || authHasFailed) return (
         <>
+            {/* Handle login fail */}
+            {authHasFailed &&
+                <LoginFallback onLoginSuccess={() => onLoginSuccess()} />
+            }
             <div className="flex flex-col w-full h-full">
                 <TeacherTopBar teacherid={teacherid!} />
                 <TeacherNav currentPage={0} teacherid={teacherid!} />
@@ -125,10 +146,6 @@ const MySimulations = () => {
                     </div>
                 </div>
             </div>
-            {/* Handle login fail */}
-            {authHasFailed &&
-                <LoginFallback onLoginSuccess={() => onLoginSuccess()} />
-            }
         </>
     );
 
@@ -136,14 +153,15 @@ const MySimulations = () => {
     return (
         <>  
             <div className="w-full h-full overflow-y-auto">
-                <div className="flex flex-col">
+                <div className="flex flex-col h-full">
                     
                     <TeacherTopBar teacherid={teacherid!} />
                     <TeacherNav currentPage={0} teacherid={teacherid!} />
                     
-                    {!authHasFailed && <div className="w-full h-full overflow-x-auto overflow-y-hidden">
+                    {!authHasFailed && 
+                    <div className="w-full h-full overflow-x-auto">
                         <div className="flex flex-col items-center mt-4 flex-grow w-[95%] md:w-[85%] mx-auto">
-                            <h3 className="mb-2 font-[600] text-[17px]">My simulations</h3>
+                            <h3 className="mb-2 font-[600] text-[17px]">My Simulations</h3>
                             {activeSims.length === 0 ?
                             <div className="flex flex-col justify-evenly h-1/2">
                                 <p>You haven't posted any simulations yet</p>

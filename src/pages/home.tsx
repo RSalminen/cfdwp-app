@@ -2,9 +2,16 @@ import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive'
 import { useEffect, useRef, useState } from 'react';
 import { fileService } from '../services/fileService';
+import LoadingSpinner from '../components/loadingSpinner';
+
 
 interface ISimCard {
   simtitle: string;
+  id: string;
+}
+
+interface ICollCard {
+  name: string;
   id: string;
 }
 
@@ -54,6 +61,7 @@ const Home = () => {
 
   const [bgLoaded, setBgLoaded] = useState<boolean>(false);
   const [simulations, setSimulations] = useState<ISimCard[]>([]);
+  const [collections, setCollections] = useState<ICollCard[]>([]);
 
   const [simsToShow, setSimsToShow] = useState<number>();
   const [collsToShow, setCollsToShow] = useState<number>();
@@ -61,26 +69,37 @@ const Home = () => {
   const [simShowmoreVisible, setSimShowmoreVisible] = useState<boolean>(true);
   const [collShowmoreVisible, setCollShowmoreVisible] = useState<boolean>(true);
 
-  const loadSims = async () => {
-    const sims : ISimCard[] = await fileService.getAllSims();
-    for (var i = sims.length - 1; i > 0; i--) {
+  const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+
+  const scrambleList = (oldList:ISimCard[] | ICollCard[]) => {
+    for (var i = oldList.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
-      var temp = sims[i];
-      sims[i] = sims[j];
-      sims[j] = temp;
+      var temp = oldList[i];
+      oldList[i] = oldList[j];
+      oldList[j] = temp;
     }
-    setSimulations(sims);
+
+    return oldList;
   }
-  const loadCollections = async () => {
-    const sims = await fileService.getAllSims();
+
+  const loadSims = async () => {
+    const data : {sims:ISimCard[], colls:ICollCard[]} = await fileService.getAllSims();
+
+    const scrambledSims = scrambleList(data.sims) as ISimCard[];
+    const scrambledColls = scrambleList(data.colls) as ICollCard[];
+
+    setDataLoaded(true);
+
+    setSimulations(scrambledSims);
+    setCollections(scrambledColls);
   }
+
   //const height = use100vh();
 
   //Load the content at startup
   useEffect(() => {
     if (!startEffectRun.current) {
       loadSims();
-      loadCollections();
     }
     return () => {startEffectRun.current = true;}
 
@@ -156,11 +175,13 @@ const Home = () => {
                 Simulations
               </h3>
               <div className="flex flex-wrap w-full justify-center">
-                {simsToShow ? simulations.slice(0,simsToShow).map((simulation:ISimCard) => (
+                {dataLoaded ? simulations.slice(0,simsToShow).map((simulation:ISimCard) => (
                 <Link to={`/view/${simulation.id}`} key={simulation.id}>
                   <SingleCard title={simulation.simtitle} type={1} />
                 </Link>))
-                : <div>Loading...</div>}
+                : <div className="h-36 w-36 p-6">
+                    <LoadingSpinner />
+                  </div>}
               </div>
               <ShowMore isVisible={simShowmoreVisible} showMoreClick={showMoreSims} showLessClick={showLessSims} />
             
@@ -173,11 +194,13 @@ const Home = () => {
                   Collections
                 </h3>
                 <div className="flex flex-wrap w-full justify-center">
-                  {collsToShow ? simulations.slice(0, collsToShow).map((simulation:ISimCard) => (
-                  <Link to={`/view/${simulation.id}`} key={simulation.id}>
-                    <SingleCard title={simulation.simtitle} type={2} />
+                  {dataLoaded ? collections.slice(0, collsToShow).map((collection:ICollCard) => (
+                  <Link to={`/view/${collection.id}`} key={collection.id}>
+                    <SingleCard title={collection.name} type={2} />
                   </Link>))
-                  : <div>Loading...</div>}
+                  : <div className="h-36 w-36 p-6">
+                      <LoadingSpinner />
+                    </div>}
                 </div>
                 <ShowMore isVisible={collShowmoreVisible} showMoreClick={showMoreColls} showLessClick={showLessColls} />
               </div>

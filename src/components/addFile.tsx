@@ -5,6 +5,7 @@ import CustomInput from "./customInput";
 import Dropzone from "react-dropzone";
 import Selection from "./selection";
 import ButtonDark from "./buttonDark";
+import ButtonCancel from "./buttonCancel";
 
 
 const AddFile = ({onReturn} : {onReturn:Function}) => {
@@ -77,12 +78,12 @@ const AddFile = ({onReturn} : {onReturn:Function}) => {
 
                     <div className="flex justify-center w-[90%] space-x-2 items-center">
                         <p>Filetype:</p>
-                        <Selection allItems={[".vtp", ".vti", ".vtkjs"]} onChangeFn={(item:string) => setFiletypeSelection(item)} thisItem={null} selectedItem={filetypeSelection} light={true} fullWidth={true} />
+                        <div className="min-w-[90px]"><Selection allItems={[".vtp", ".vti", ".vtkjs"]} onChangeFn={(item:string) => setFiletypeSelection(item)} thisItem={null} selectedItem={filetypeSelection} light={true} fullWidth={true} /></div>
                     </div>
 
                     <div className="flex w-[90%] space-x-2">
-                        <ButtonDark btnText="Cancel" onClickFn={() => onReturn()} fullWidth={true} />
-                        <ButtonDark btnText="Post" onClickFn={submitFile} fullWidth={true} />
+                        <ButtonDark btnText="Submit" onClickFn={submitFile} fullWidth={true} />
+                        <ButtonCancel btnText="Cancel" onClickFn={() => onReturn()} />
                     </div>
 
                 </div>
