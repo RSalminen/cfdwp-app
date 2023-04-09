@@ -2,9 +2,9 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="383.12704"
-   height="64.966698"
-   viewBox="0 0 101.36904 17.189108"
+   width="379.14856"
+   height="65.313156"
+   viewBox="0 0 100.31639 17.280777"
    version="1.1"
    id="svg5"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -64,22 +64,22 @@
        x2="-31.982174"
        y2="45.058399"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.5176471,0,0,1.5176471,21.213528,-19.714211)" />
+       gradientTransform="matrix(1.5176471,0,0,1.5176471,23.068821,-12.437854)" />
   </defs>
   <g
      id="layer1"
-     transform="translate(41.391255,-31.446593)">
+     transform="translate(39.693162,-38.848404)">
     <text
        xml:space="preserve"
-       transform="matrix(0.26458333,0,0,0.26458333,-50.130966,26.332822)"
+       transform="matrix(0.26458333,0,0,0.26458333,-50.005512,33.609179)"
        id="text4605"
        style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:53.3333px;font-family:Corbel;-inkscape-font-specification:'Corbel, Bold';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;white-space:pre;shape-inside:url(#rect4607);display:inline;fill:url(#linearGradient8275);fill-opacity:1"><tspan
          x="148.88672"
          y="69.087863"
-         id="tspan12208">CFD Viewer</tspan></text>
+         id="tspan12446">CFD Viewer</tspan></text>
     <path
        style="fill:url(#linearGradient12144);fill-opacity:1;stroke-width:0.401544"
-       d="m -39.509439,32.19932 c 0,0 13.550133,0.895081 14.740924,1.10007 2.073803,0.356994 4.898432,1.299544 6.258352,2.361698 2.147099,1.676971 3.342654,3.505923 3.18134,6.16383 -0.241571,3.980283 -5.521852,6.558023 -5.521852,6.558023 L -30.45274,40.05462 c 0,0 0.326617,-1.68073 -1.097196,-3.017052 -1.423814,-1.336323 -3.554317,-1.017424 -3.554317,-1.017424 z"
+       d="m -37.742856,40.007935 c 0,0 15.076684,0.409523 16.259872,0.654616 1.571985,0.32563 3.079884,1.07777 4.439804,2.139924 2.147099,1.676971 3.387009,3.727697 3.225695,6.385604 -0.241571,3.980283 -5.177897,6.471219 -5.177897,6.471219 l -9.602065,-8.328321 c 0,0 0.326617,-1.68073 -1.097196,-3.017052 -1.423814,-1.336323 -3.554317,-1.017424 -3.554317,-1.017424 z"
        id="path12136" />
   </g>
 </svg>

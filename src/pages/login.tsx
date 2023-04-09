@@ -40,7 +40,7 @@ const Login = () => {
     }
 
     return (
-        <div className="h-[100vh] w-[100vw] flex justify-center items-center">
+        <div className="h-full w-full flex justify-center items-center">
 
             {/* background */}
             <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none fade-in-card" src="wavebg2.svg"/>

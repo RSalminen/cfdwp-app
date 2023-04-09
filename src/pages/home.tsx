@@ -111,7 +111,9 @@ const Home = () => {
       const {width} = simCardRef.current.getBoundingClientRect();
       const totalwidth = width - 53;
       let fitCount = Math.floor(totalwidth / 224);
-      if (fitCount < 3 && fitCount > 0) fitCount = 4
+      console.log(fitCount);
+      
+      if (fitCount < 3) fitCount = 4;
 
       setSimsToShow(fitCount);
       setCollsToShow(fitCount);
@@ -141,7 +143,7 @@ const Home = () => {
   if (!bgLoaded) return (
     <div>
       <img role="presentation" className="hidden h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
-      <img className="hidden" width={isMobile ? 200 : 320} src="/cfdviewernew.svg" alt="CFD Viewer logo" onLoad={() => setBgLoaded(true)} />
+      <img className="hidden" width={isMobile ? 200 : 280} src="/cfdviewerlogo.svg" alt="CFD Viewer logo" onLoad={() => setBgLoaded(true)} />
     </div>
   )
 
@@ -170,7 +172,7 @@ const Home = () => {
           {/* Simulations card */}
           <div className="flex-grow flex flex-col space-y-6 items-center">
             
-            <div ref={simCardRef} className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 py-4 flex flex-col space-y-4 items-center sm:items-start">
+            <div ref={simCardRef} className="fade-in-card w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 py-4 flex flex-col space-y-4 items-center sm:items-start">
               <h3 className="text-[18px] md:text-[22px] font-semibold">
                 Simulations
               </h3>
@@ -187,15 +189,15 @@ const Home = () => {
             
             </div>
 
-            <div className="w-full h-full pb-1.5">
+            <div className="w-full pb-1.5">
               {/* Collections card */}
-              <div className="fade-in-card w-fit sm:w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
+              <div className="fade-in-card w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
                 <h3 className="text-[18px] md:text-[22px] font-semibold">
                   Collections
                 </h3>
                 <div className="flex flex-wrap w-full justify-center">
                   {dataLoaded ? collections.slice(0, collsToShow).map((collection:ICollCard) => (
-                  <SingleCard title={collection.name} type={2} />
+                  <SingleCard key={collection.id} title={collection.name} type={2} />
                   ))
                   : <div className="h-36 w-36 p-6">
                       <LoadingSpinner />
