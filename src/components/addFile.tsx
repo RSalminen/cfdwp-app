@@ -43,7 +43,7 @@ const AddFile = ({onReturn} : {onReturn:Function}) => {
     }
 
     return (
-        <div className="w-full h-full fixed top-0 left-0 z-[20] bg-white bg-opacity-90 flex justify-center items-center fade-in-card-fast">
+        <div className="w-full h-full min-h-[500px] absolute top-0 left-0 z-[20] bg-white bg-opacity-90 flex justify-center items-center fade-in-card-fast">
 
             <div className="flex flex-col space-y-4 bg-white py-4 sm:py-5 px-5 sm:px-10 border rounded-md mx-1 shadow-lg">
                 <h3 className="font-semibold text-center">Add simulation</h3>
@@ -83,7 +83,7 @@ const AddFile = ({onReturn} : {onReturn:Function}) => {
 
                     <div className="flex w-[90%] space-x-2">
                         <ButtonDark btnText="Submit" onClickFn={submitFile} fullWidth={true} />
-                        <ButtonCancel btnText="Cancel" onClickFn={() => onReturn()} />
+                        <ButtonCancel btnText="Cancel" onClickFn={() => onReturn()} fullWidth={true} />
                     </div>
 
                 </div>

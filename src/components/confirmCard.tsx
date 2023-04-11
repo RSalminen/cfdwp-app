@@ -12,7 +12,7 @@ const ConfirmCard = ({message, itemName="", onConfirm, onCancel} : {message:stri
                 </div>
                 <div className="flex w-[80%] justify-center">
                     <ButtonDark btnText="Confirm" onClickFn={onConfirm} fullWidth={true} />
-                    <ButtonCancel btnText="Cancel" onClickFn={onCancel} />
+                    <ButtonCancel btnText="Cancel" onClickFn={onCancel} fullWidth={true} />
                 </div>
             </div>
         </div>

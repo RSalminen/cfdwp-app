@@ -12,16 +12,90 @@ import useComponentVisible from '../hooks/useComponentIsVisible';
 import ButtonDarkSmall from '../components/buttonDarkSmall';
 import useMyStore from '../store/store';
 import ConfirmCard from '../components/confirmCard';
+import { ITeacherCollObj, ITeacherSimObj } from '../types';
+import { collectionService } from '../services/collectionService';
+import ButtonCancel from '../components/buttonCancel';
 
-interface ITeacherSimObj {
-    id:string,
-    simtitle: string,
-    added_date: string,
+const Ifiletype : { [key:number] : string } = {
+    1: "vtp",
+    2: "vti",
+    3: "vtkjs"
+}
+
+
+const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:ITeacherSimObj, teacherid:string, onCancel:Function, onSuccess:Function}) => {
+
+    const [colls, setColls] = useState<ITeacherCollObj[]>([]);
+    const startEffectRun = useRef<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const [selected, setSelected] = useState<ITeacherCollObj | null>(null);
+
+    const sendUpdate = async () => {
+        const response = await fileService.updateSimulation(simObj.id, teacherid, selected!.id);
+        if (response) onSuccess();
+    }
+
+    const loadCollections = async () => {
+        const teacherData : ITeacherCollObj[] = await collectionService.getCollectionsByTeacher(teacherid);
+        setLoading(false);
+        if (!teacherData) return;
+
+        setColls(teacherData);
+    }
+
+    useEffect(() => {
+        if (!startEffectRun.current) {
+            loadCollections();
+        }
+
+        return () => {startEffectRun.current = true}
+    }, [])
+
+    return (
+        <div className="w-full h-full fixed top-0 left-0 z-[20] bg-white border bg-opacity-90 flex justify-center items-center">
+            <div className="flex flex-col border shadow-lg bg-white px-6 py-8 max-h-[80%] rounded-md max-w-[95%] sm:max-w-[80%]">
+                <div className="flex justify-center space-x-1 text-[17px] mb-2">
+                    <h3>Add <span className="font-semibold">{simObj.simtitle}</span> to collection</h3>
+                </div>
+
+                <div>Select collection:</div>
+                {loading ?
+                <div className="flex w-full justify-center">
+                    <div className="h-12 w-12">
+                        <LoadingSpinner />
+                    </div>
+                </div>
+                :
+                <>
+                <div className="flex flex-col max-h-full overflow-y-auto border rounded-sm px-2 py-1 mb-2">
+                    {colls.map((coll, idx) => (
+                        <div onClick={() => setSelected(coll)} className={`${idx%2 === 0 && " bg-gradient-to-r from-emerald-50 to-gray-100"} px-2 cursor-pointer`} key={coll.id}>
+                            {coll.name}
+                        </div>
+                    ))}
+                </div>
+                
+                {selected &&
+                    <div>Selected: <span className="font-semibold">{selected.name}</span></div>
+                }
+                </>
+                }
+
+                <div className="mt-4 px-3 flex max-w-[400px] space-x-3">
+                    <ButtonDark btnText="Confirm" onClickFn={sendUpdate} fullWidth={true} />
+                    <ButtonCancel btnText="Cancel" onClickFn={onCancel} fullWidth={true} />
+                </div>
+            </div>
+        </div>
+    )
 }
 
 const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teacherid:string}) => {
     
     const [confirmDeleteActive, setConfirmDeleteActive] = useState<boolean>(false);
+
+    const [addToCollectionActive, setAddToCollectionActive] = useState<boolean>(false);
    
     const deleteSimulation = async () => {
         const response = await fileService.deleteSimulation(simObj.id, teacherid);
@@ -34,11 +108,14 @@ const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teach
             <ConfirmCard message="Are you sure you want to delete simulation" itemName={simObj.simtitle} onConfirm={deleteSimulation} onCancel={() => setConfirmDeleteActive(false)} />
         }
 
+        {addToCollectionActive &&
+            <AddToCollectionCard simObj={simObj} teacherid={teacherid} onCancel={() => setAddToCollectionActive(false)} onSuccess={() => setAddToCollectionActive(false)} />
+        }
         <div className="absolute z-[2] border shadow-md translate-x-[-65px] px-3 py-2 bg-white rounded-sm">
             <div className="flex flex-col space-y-1">
                 <SmallButtonDarkLink btnText="View" url={`/view/${simObj.id}/`} fullWidth={true} />
                 <SmallButtonDarkLink btnText="Edit" url={`/view/${simObj.id}/${teacherid}`} fullWidth={true} />
-                <ButtonDarkSmall btnText="Add to collection" onClickFn={() => {}} fullWidth={true} />
+                <ButtonDarkSmall btnText="Add to collection" onClickFn={() => setAddToCollectionActive(true)} fullWidth={true} />
                 <ButtonDarkSmall btnText="Delete" onClickFn={() => setConfirmDeleteActive(true)} fullWidth={true} />
             </div>
         </div>
@@ -55,9 +132,9 @@ const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacher
     return(
         <tr key={simObj.id} className={`${idx%2 === 0 && " bg-gradient-to-r from-emerald-50 to-gray-100"}`}>
             <td className="py-1 px-1 font-medium min-w-[100px]">{simObj.simtitle}</td>
-            <td className="py-1 px-1">vtkjs</td>
+            <td className="py-1 px-1">{Ifiletype[simObj.filetype]}</td>
             <td className="py-1 px-1">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</td>
-            <td className="py-1 px-1">None</td>
+            <td className="py-1 px-1">{simObj.collection_name ? simObj.collection_name : "None"}</td>
             <td className="py-1 px-1 w-[0px]">
                 <div ref={ref} className="relative">
                     <svg className={`${isComponentVisible && "stroke-emerald-600"} cursor-pointer`} onClick={() => setIsComponentVisible(!isComponentVisible)} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>

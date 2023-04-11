@@ -7,12 +7,14 @@ import useMyStore from "../store/store";
 
 const postFile = async (file:File, fileType:string, simName:string, teacherId:string) => {
 
+    const filetypeNr = (fileType === ".vtp" ? 1 : fileType === ".vti" ? 2 : 3);
+
     const postDate = new Date();
 
     const formData = new FormData();
     formData.append("file", file);
     formData.append("simName", simName);
-    formData.append("fileType", fileType);
+    formData.append("fileType", filetypeNr.toString());
     formData.append("teacherId", teacherId);
     formData.append("date", postDate.toISOString());
 
@@ -55,6 +57,29 @@ const deleteSimulation = async (simId:string, teacherId:string) => {
             useMyStore.getState().authFailed();
         }
     }
+}
+
+const updateSimulation = async (simId:string, teacherId:string, newValue:number) => {
+
+    try {
+        const response = await axiosinstance({
+            method:"put",
+            url:"/api/teacher/updatefilecollection",
+            data: { simId, teacherId, newValue},
+            headers: {
+                Authorization: `Bearer ${userService.getToken()}`
+            }
+        });
+
+        return true;
+
+    } catch (e) {
+        const err = e as AxiosError;
+        if (err.response?.status === 401) {
+            useMyStore.getState().authFailed();
+        }
+    }
+
 }
 
 const getSimulationsByTeacher = async (teacherId:string) => {
@@ -138,4 +163,13 @@ const getAllSims = async () => {
     return response.data;
 }
 
-export const fileService = { postFile, deleteSimulation, getSimulationsByTeacher, getFile, updateContent, getContent, getAllSims };
+export const fileService = { 
+    postFile, 
+    deleteSimulation,
+    updateSimulation,
+    getSimulationsByTeacher,
+    getFile,
+    updateContent,
+    getContent,
+    getAllSims
+};

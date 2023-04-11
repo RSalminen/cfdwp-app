@@ -34,7 +34,7 @@ const CollectionsRow = ({collObj, teacherid, idx}:{collObj:ITeacherCollObj, teac
 
     return(
         <tr key={collObj.name + collObj.date_added} className={`${idx%2 === 0 && " bg-gradient-to-r from-emerald-50 to-gray-100"}`}>
-            <td className="py-1 px-1 font-medium min-w-[100px]">{collObj.name}</td>
+            <td className="py-1 px-1 font-medium min-w-[100px] max-w-[150px]">{collObj.name}</td>
             <td className="py-1 px-1">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</td>
             <td className="py-1 px-1 w-[0px]">
                 <div ref={ref} className="">

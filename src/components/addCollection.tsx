@@ -28,9 +28,9 @@ const AddCollection = ({onReturn} : {onReturn:Function}) => {
                     
                     <CustomInput currentValue={collectionTitle} labelText="Name" onChange={(e:any) => setCollectionTitle(e.target.value)} />
 
-                    <div className="flex w-[90%] space-x-2">
+                    <div className="flex w-[90%] space-x-2 items-center">
                         <ButtonDark btnText="Submit" onClickFn={submitCollection} fullWidth={true} />
-                        <ButtonCancel btnText="Cancel" onClickFn={() => onReturn()} />
+                        <ButtonCancel btnText="Cancel" onClickFn={() => onReturn()} fullWidth={true} />
                     </div>
 
                 </div>
