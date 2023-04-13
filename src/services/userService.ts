@@ -37,10 +37,11 @@ const validateTeacherSim = async (simId:string) => {
             params: {simId}
         });
     
-        return response.status === 200;
+        return true;
     } catch (e) {
         const err = e as AxiosError;
         if (err.response?.status === 401) useMyStore.getState().authFailed();
+        return false;
     }
 }
 

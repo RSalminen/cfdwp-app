@@ -14,18 +14,45 @@ import vtkLookupTable from '@kitware/vtk.js/Common/Core/LookupTable';
 import { Link } from 'react-router-dom';
 import { applyStep } from '../pages/test';
 
-
-
-
 import { ICustomOptions, IVTKContext, IWidget } from '../types';
-import WidgetCard from '../components/widgetCard';
 import Draggable from 'react-draggable';
 import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera';
 import SelectionSmaller from '../components/selectionSmaller';
 import { UIContext } from '../pages/studentView';
+import ButtonDarkMid from './buttonDarkMid';
 
 
-//import vtkFPSMonitor from '@kitware/vtk.js/Interaction/UI/FPSMonitor';
+const WidgetCard = ({widgets, currentWidgetNr, nextWidgetFn, setWidgetOpen} : {widgets:IWidget[], currentWidgetNr:number, nextWidgetFn:Function, setWidgetOpen:React.Dispatch<React.SetStateAction<boolean>>}) => {
+
+  const widget = widgets[currentWidgetNr];
+  return (
+      <div className="h-full w-full">
+          <div className="absolute z-[9] top-1 right-2 flex items-center">
+              <svg className="widgetHandle h-5 w-5 cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M20 9H4v2h16V9zM4 15h16v-2H4v2z"></path></svg>
+              <svg onClick={() => setWidgetOpen(false)} className="h-4 w-4 cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
+          </div>
+          <div className="flex flex-col justify-between h-full pt-1 pb-2">   
+              <div className="flex flex-col px-2">
+                  {widget.title.length > 0 && <h5 className="text-[17px] pr-4 font-semibold">{widget.title}</h5>}
+                  <p className="pl-1 text-[14px]">{widget.description}</p>
+              </div>
+
+              <div className="flex space-x-2 px-2 justify-between">
+                  {currentWidgetNr===0
+                  ? <ButtonDarkMid btnText="To beginning" fullWidth={false} onClickFn={() => {}} deactive={true} />
+                  : <ButtonDarkMid btnText="To beginning" fullWidth={false} onClickFn={() => {}} />
+                  }
+                  <div className="text-[17px] font-semibold">{currentWidgetNr+1}/{widgets.length}</div>
+                  
+                  {currentWidgetNr===widgets.length-1
+                  ? <ButtonDarkMid btnText="Next note" fullWidth={false} onClickFn={() => {}} deactive={true} />
+                  : <ButtonDarkMid btnText="Next note" fullWidth={false} onClickFn={nextWidgetFn} />
+                  }
+              </div>
+          </div>
+      </div>
+  )
+}
 
 const representationEnum : {[key:string] : number} = {
   "Points": 0,
@@ -44,7 +71,7 @@ const colorSchemes : {[key:string] : string} = {
 
 const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.MutableRefObject<IVTKContext | null>, customOptionsContext : React.MutableRefObject<ICustomOptions | null>}) => {
 
-    const { notes, setNotes, visibleFields } = useContext(UIContext);
+    const { notes, visibleFields } = useContext(UIContext);
 
     const nodeRef = useRef<any>(null);
 
@@ -91,176 +118,191 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
     }, []);
 
 
+    //A small black line may appear when hiding the note bar. This useEffect fixes it.
+    useEffect(() => {
+      if (!vtkContext.current) return;
+
+      if (vtkContext.current.renderWindow) {
+        vtkContext.current.renderWindow.render();
+      }
+
+    }, [noteMenuVisible])
+
+
     const changeField = async (str:string) => {
 
-        if (!vtkContext.current) return;
-    
-        const { mapper, renderWindow, allData, sceneImporter, lookupTable } : IVTKContext = vtkContext.current;
+      if (!vtkContext.current) return;
+  
+      const { mapper, renderWindow, allData, sceneImporter, lookupTable } : IVTKContext = vtkContext.current;
 
-        /* const fpsMonitor = vtkFPSMonitor.newInstance();
-        fpsMonitor.setRenderWindow(renderWindow);
-        fpsMonitor.setContainer(fpsContainerRef.current); */
 
-        if (str === "Solid color") {
+      if (str === "Solid color") {
         setActiveField(str)
         mapper?.set({
-            scalarVisibility: false,
+        scalarVisibility: false,
         });
 
         renderWindow?.render();
         return;
-        }
+      }
 
-        let source;
-        if (sceneImporter) source = sceneImporter.getScene()[0].source.getOutputData();
-        else source = allData[activeTimeStep];
+      let source;
+      if (sceneImporter) source = sceneImporter.getScene()[0].source.getOutputData();
+      else source = allData[activeTimeStep];
 
-        //const scalarsArray : vtkDataArray[] = source.getPointData().getArrays();
-    
-        const newField = str.slice(4);
-        const dataArray : vtkDataArray = source.getPointData().getArrayByName(newField);
-        
-        
-        const dataRange = dataArray.getRange();
+      //const scalarsArray : vtkDataArray[] = source.getPointData().getArrays();
+  
+      const newField = str.slice(4);
+      const dataArray : vtkDataArray = source.getPointData().getArrayByName(newField);
+      
+      
+      const dataRange = dataArray.getRange();
 
-        let scalarMode = str.startsWith("(p) ") ? ScalarMode.USE_POINT_FIELD_DATA : str.startsWith("(c) ") && ScalarMode.USE_CELL_FIELD_DATA;
-        let colorMode = ColorMode.MAP_SCALARS;
-        
-        const preset = vtkColorMaps.getPresetByName(colorSchemes[activecolorScheme!]);
-        
-        lookupTable.applyColorMap(preset);
-        lookupTable.setMappingRange(dataRange[0], dataRange[1]);
-        lookupTable.updateRange();
+      let scalarMode = str.startsWith("(p) ") ? ScalarMode.USE_POINT_FIELD_DATA : str.startsWith("(c) ") && ScalarMode.USE_CELL_FIELD_DATA;
+      let colorMode = ColorMode.MAP_SCALARS;
+      
+      const preset = vtkColorMaps.getPresetByName(colorSchemes[activecolorScheme!]);
+      
+      lookupTable.applyColorMap(preset);
+      lookupTable.setMappingRange(dataRange[0], dataRange[1]);
+      lookupTable.updateRange();
 
 
-        mapper?.set({
+      mapper?.set({
         colorByArrayName: newField,
         interpolateScalarsBeforeMapping: false,
         colorMode,
         scalarMode,
         scalarVisibility: true,
-        });
+      });
 
-        const lut : vtkLookupTable = mapper?.getLookupTable();
-        lut.setVectorModeToMagnitude();
+      const lut : vtkLookupTable = mapper?.getLookupTable();
+      lut.setVectorModeToMagnitude();
 
-    /*     scalarBarActor.setAxisLabel(activeField!);
-        scalarBarActor.setScalarsToColors(mapper!.getLookupTable());
-        */
-        renderWindow?.render();
-        
-        setColorNodes(mapper?.getLookupTable().get().nodes);
-        setRange(dataRange);
+      renderWindow?.render();
+      
+      setColorNodes(mapper?.getLookupTable().get().nodes);
+      setRange(dataRange);
 
-        setActiveField(str);
+      setActiveField(str);
 
     }
 
     const changeRepresentation = (str:string) => {
-        if (!vtkContext.current) return;
+      if (!vtkContext.current) return;
 
-        const { actor, renderWindow } = vtkContext.current!;
+      const { actor, renderWindow } = vtkContext.current!;
 
-        console.log(representationEnum[str]);
-        
+      console.log(representationEnum[str]);
+      
 
-        actor!.getProperty().setRepresentation(representationEnum[str]);
-        
-        
-        if (str === "Surface with edge") actor!.getProperty().setEdgeVisibility(true);
-        else actor!.getProperty().setEdgeVisibility(false);
+      actor!.getProperty().setRepresentation(representationEnum[str]);
+      
+      
+      if (str === "Surface with edge") actor!.getProperty().setEdgeVisibility(true);
+      else actor!.getProperty().setEdgeVisibility(false);
 
-        renderWindow?.render();
-        setActiveRepresentation(str);
+      renderWindow?.render();
+      setActiveRepresentation(str);
     }
 
     const changeColorScheme = (str:string) => {
 
-        if (!vtkContext.current) return;
+      if (!vtkContext.current) return;
 
-        const { mapper, renderWindow } = vtkContext.current!;
+      const { mapper, renderWindow } = vtkContext.current!;
 
-        const preset = vtkColorMaps.getPresetByName(colorSchemes[str]);
+      const preset = vtkColorMaps.getPresetByName(colorSchemes[str]);
 
-        const lut = mapper?.getLookupTable();
-        lut.applyColorMap(preset);
-        lut.setMappingRange(range![0], range![1]);
-        lut.updateRange();
+      const lut = mapper?.getLookupTable();
+      lut.applyColorMap(preset);
+      lut.setMappingRange(range![0], range![1]);
+      lut.updateRange();
 
-        renderWindow?.render();
+      renderWindow?.render();
 
-        setColorNodes(mapper?.getLookupTable().get().nodes);
-        setActiveColorScheme(str);
+      setColorNodes(mapper?.getLookupTable().get().nodes);
+      setActiveColorScheme(str);
 
     }
 
+
+    //Time step handling
     const getTimeStepCount = () => {
 
-        if (!vtkContext.current) return;
+      if (!vtkContext.current) return;
 
-        const { sceneImporter, allData } = vtkContext.current!;
+      const { sceneImporter, allData } = vtkContext.current!;
 
-        if (sceneImporter) return sceneImporter.getAnimationHandler().getTimeSteps().length;
+      if (sceneImporter) return sceneImporter.getAnimationHandler().getTimeSteps().length;
 
-        else return allData.length;
+      else return allData.length;
     }
-
+    
     const advanceTime = () => {
-        const { mapper, renderWindow, allData, sceneImporter } : IVTKContext = vtkContext.current!;
+      const { mapper, renderWindow, allData, sceneImporter } : IVTKContext = vtkContext.current!;
 
-        let source;
+      let source;
 
-        //handle for vtkjs
-        if (sceneImporter) {
+      //handle for vtkjs
+      if (sceneImporter) {
         
         if (activeTimeStep < sceneImporter.getAnimationHandler().getTimeSteps().length-1) setActiveTimeStep(activeTimeStep + 1);
         else if (looping) setActiveTimeStep(0);
 
         source = applyStep(activeTimeStep, sceneImporter);
-        }
+      }
 
-        else {
+      else {
         //for vtp
         if (activeTimeStep < allData.length-1) setActiveTimeStep(activeTimeStep + 1);
         else if (looping) setActiveTimeStep(0);
 
         source = allData[activeTimeStep];
     
-        }
+      }
 
         mapper?.setInputData(source);  
         renderWindow?.render();
     }
-
     const playClicked = () => {
-        timerContext.current = setInterval(advanceTime, 100);
-        setPlaying(true);
+      timerContext.current = setInterval(advanceTime, 100);
+      setPlaying(true);
     }
-
     const stopClicked = () => {
-        clearInterval(timerContext.current!);
-        timerContext.current = null;
-        setPlaying(false);
+      clearInterval(timerContext.current!);
+      timerContext.current = null;
+      setPlaying(false);
     }
 
-    const openNote = (widget:IWidget) => {
-        const { renderer, renderWindow } : IVTKContext = vtkContext.current!;
-        
-        setWidgetOpen(true);
+
+    //Note handling
+    const openNote = (widgetNr:number) => {
+      const { renderer, renderWindow } : IVTKContext = vtkContext.current!;
+      
+      const widget : IWidget = notes[widgetNr];
+
+      if (!widgetOpen) setWidgetOpen(true);
+      
+      //Check if a custom camera position is set for the note
+      if (widget.camera) {
         const newCamera :vtkCamera = vtkCamera.newInstance(widget.camera!);
         renderer!.setActiveCamera(newCamera);
-
         renderWindow?.render();
+      }
+
+      setCurrentWidget(widgetNr);
         
     }
 
+    //Number formatting
     const getRangeInFormat = (nr:number) => {
 
-        if (nr < 1000 && nr > 0.01) return nr.toFixed(2);
+      if (nr < 1000 && nr > 0.01) return nr.toFixed(2);
 
-        if (nr === 0) return nr;
+      if (nr === 0) return nr;
 
-        else return nr.toExponential(2);
+      else return nr.toExponential(2);
     }
 
 
@@ -271,7 +313,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
       <div className="h-full w-full absolute z-[8] overflow-hidden pointer-events-none flex justify-end items-end p-4">
         <Draggable handle=".widgetHandle" bounds="body" nodeRef={nodeRef}>
           <div ref={nodeRef} className=" w-[350px] h-[200px] bg-white bg-opacity-95 border-2 border-emerald-900 shadow-lg shadow-black rounded-md pointer-events-auto">
-            <WidgetCard widgets={notes} currentWidgetNr={currentWidget} setCurrentWidget={setCurrentWidget} setWidgetOpen={setWidgetOpen} />
+            <WidgetCard widgets={notes} currentWidgetNr={currentWidget} nextWidgetFn={() => openNote(currentWidget + 1)} setWidgetOpen={setWidgetOpen} />
           </div>
         </Draggable>
       </div>
@@ -420,8 +462,8 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
 
       {/* Note list */}
       {(noteMenuVisible && notes.length > 0) && 
-      <div className="absolute z-[2] top-0 right-0 h-full w-full flex justify-end">
-        <div className="bg-white bg-opacity-95 px-3 py-2 min-w-[250px] fade-in-card-fast">
+      <div className="absolute z-[2] top-0 right-0 h-full w-full flex justify-end pointer-events-none">
+        <div className="bg-white bg-opacity-95 px-3 py-2 min-w-[250px] fade-in-card-fast pointer-events-auto">
           <div className="w-full">
             <div className= "border-b-2 w-full">Notes</div>
           </div>
@@ -429,10 +471,10 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
           <div className="flex flex-col justify-between flex-1 h-0 pb-1">
             
             <div className="flex flex-col">
-                {notes.map((note) => (
-                  <div className="flex flex-col space-y-2 border-2 p-2 bg-emerald-100 cursor-pointer rounded-md" onClick={() => openNote(note)}>
-                    <h5 className="text-[15px] font-semibold">{note.title}</h5>
-                    <p className="text-[13px]">{note.description}</p>
+                {notes.map((note:IWidget, idx:number) => (
+                  <div key={note.title + idx} className="flex flex-col justify-center space-y-2 border-2 p-2 bg-emerald-100 cursor-pointer rounded-md" onClick={() => openNote(idx)}>
+                    {note.title && <h5 className="text-[15px] font-semibold">{note.title}</h5>}
+                    {note.description && <p className="text-[13px]">{note.description}</p>}
                   </div>
                 ))}
             </div>

@@ -1,13 +1,20 @@
-import { createContext, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import Viewer from "../components/viewer";
 import ViewerUI from "../components/viewerUI";
 import { ICustomOptions, IUIContext, IVTKContext, IWidget } from "../types";
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import TeacherViewerUI from "../components/teacherViewerUI";
 import { UIContext } from "./studentView";
+import useMyStore from "../store/store";
+import LoginFallback from "../components/loginFallback";
+import { userService } from "../services/userService";
+import { validateHelper } from "../helpers/validateHelper";
+import { useParams } from "react-router-dom";
 
 const TeacherView = () => {
   
+  const { simid } = useParams();
+
   const vtkContext = useRef<IVTKContext>(null);
   const customOptionsContext = useRef<ICustomOptions | null>(null);
 
@@ -15,6 +22,29 @@ const TeacherView = () => {
   const [visibleFields, setVisibleFields] = useState<string[] | null>([]);
 
   const [simLoaded, setSimLoaded] = useState<boolean>(false);
+
+  const { authHasFailed, reLoginSuccess } = useMyStore();
+
+  const startEffectRun = useRef<boolean>(false);
+
+  const [validationComplete, setValidationComplete] = useState<boolean>(false);
+
+  const validateTeacher = async () => {
+    const isValid = await userService.validateTeacherSim(simid!);
+    if (isValid) setValidationComplete(true);
+
+    return isValid;
+  }
+
+  useEffect(() => {
+    if (!startEffectRun.current) {
+      startEffectRun.current = true;
+      
+      validateHelper.checkToken();
+      validateTeacher();
+
+    }
+  }, [])
   
 
   const onLoadSuccess = () => {
@@ -32,9 +62,19 @@ const TeacherView = () => {
 
   }
 
+  const onLoginSuccess = async() => {
 
-  return (
-    
+    if (await validateTeacher()) {
+      reLoginSuccess()
+    }
+  }
+
+  if (!validationComplete) return (
+    <LoginFallback onLoginSuccess={() => onLoginSuccess()} />
+  )
+
+
+  else return (
     <>
       <div className="h-full w-full absolute flex flex-col">
 

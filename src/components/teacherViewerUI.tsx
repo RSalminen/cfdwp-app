@@ -5,7 +5,6 @@ import { UIContext } from "../pages/studentView";
 import CustomInput from "./customInput";
 import CustomTextArea from "./customTextArea";
 import ButtonDarkMid from "./buttonDarkMid";
-import { userService } from "../services/userService";
 import { useParams } from "react-router-dom";
 
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
@@ -13,9 +12,6 @@ import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera'
 
 import { fileService } from "../services/fileService";
 import ButtonDark from "./buttonDark";
-import useMyStore from "../store/store";
-import LoginFallback from "./loginFallback";
-import { validateHelper } from "../helpers/validateHelper";
 
 
 const ListedWidget = ({widget, widgets, setWidgets} : {widget:IWidget, widgets:IWidget[], setWidgets:React.Dispatch<React.SetStateAction<IWidget[]>>}) => {
@@ -51,14 +47,10 @@ const TeacherViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.
     const [descriptionArea, setDescriptionArea] = useState<string>("");
     const [cam, setCam] = useState<object | null>(null);
 
-    const { authHasFailed, reLoginSuccess } = useMyStore();
-
 
     useEffect(() => {
         if (simLoaded) {
             
-            validateHelper.checkToken();
-            userService.validateTeacherSim(simid!);
             const defaultSource = vtkContext.current?.allData[0];
         
             const allPointFields = defaultSource.getPointData().getArrays().map((ar:vtkDataArray)=> "(p) " + ar.getName());
@@ -124,14 +116,7 @@ const TeacherViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.
 
     return (
         
-        <> 
-
-        {/* Handle login fail */}
-        {authHasFailed &&
-            <LoginFallback onLoginSuccess={() => reLoginSuccess()} />
-        }
-
-
+        <>
         {(!menuVisible) &&
         <div className="w-full h-full flex justify-end pointer-events-none">
             <div className="w-[300px] h-full bg-white opacity-95 pointer-events-auto px-4 py-2 flex flex-col">
