@@ -22,8 +22,8 @@ const MultiSelection = ({selectedItems, setSelectedItems, allItems}: {selectedIt
                     {selectedItems.length === 0 ?
                     <div className="text-gray-600">Select Fields...</div>
                     :
-                    <div className='w-full flex flex-wrap'>{selectedItems.map((item:string) => 
-                        <div className="flex items-center text-[11px] text-black mx-0.5 pl-1 pr-[2px] bg-gray-300 rounded-[2px]">
+                    <div className='w-full flex flex-wrap'>{selectedItems.map((item:string, idx:number) => 
+                        <div key={item + idx} className="flex items-center text-[11px] text-black mx-0.5 my-0.5 pl-1 pr-[2px] bg-gray-300 rounded-[2px]">
                             <p className="pb-[1px]">{item}</p>
                             <svg onClick={(e) => {
                                 e.stopPropagation();
@@ -39,10 +39,10 @@ const MultiSelection = ({selectedItems, setSelectedItems, allItems}: {selectedIt
                         
                         <div className="relative">
                             <div className="min-h-fit max-h-[300px] overflow-y-auto pb-[1px]">
-                                <div onClick={() => selectedItems.length === allItems.length ? setSelectedItems([]) : setSelectedItems(allItems)} className={`block text-[13px] px-2.5 py-1 w-full lg:hover:bg-gray-400 lg:cursor-pointer ${selectedItems.length === allItems.length ? "bg-blue-100" : "bg-white"}`}>All fields</div>
+                                <div onClick={() => selectedItems.length === allItems.length ? setSelectedItems([]) : setSelectedItems(allItems)} className={`font-semibold block text-[13px] px-2.5 py-1 w-full lg:cursor-pointer ${selectedItems.length === allItems.length ? "bg-blue-100 hover:bg-blue-50" : "bg-white lg:hover:bg-gray-400"}`}>All fields</div>
                                 
                                 {allItems.map((item:string) => 
-                                    <div key={item} onClick={() => addItem(item)} className={`my-[-1px] text-[13px] h-[30px] px-2.5 py-1 w-full ${!selectedItems.includes(item) && "lg:hover:bg-gray-400"} lg:cursor-pointer ${selectedItems.includes(item) ? "bg-blue-100" : "bg-white"}`}>{item}</div>
+                                    <div key={item} onClick={() => addItem(item)} className={`my-[-1px] text-[13px] h-[30px] px-2.5 py-1 w-full ${!selectedItems.includes(item) && "lg:hover:bg-gray-400"} lg:cursor-pointer ${selectedItems.includes(item) ? "bg-blue-100 hover:bg-blue-50" : "bg-white"}`}>{item}</div>
                                 )}
                             </div>
                         </div>

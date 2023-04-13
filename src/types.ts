@@ -59,3 +59,10 @@ export interface IFileObject {
     notes: IWidget[];
     teacher_options: ITeacherOptions;
 }
+
+export interface IUIContext {
+    notes: IWidget[];
+    setNotes: React.Dispatch<React.SetStateAction<IWidget[]>>;
+    visibleFields: string[] | null;
+    simLoaded: boolean;
+}

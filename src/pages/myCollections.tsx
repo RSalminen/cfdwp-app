@@ -5,7 +5,7 @@ import ButtonDark from '../components/buttonDark';
 import SmallButtonDarkLink from '../components/smallButtonDarkLink';
 import TeacherTopBar from '../components/teacherTopBar';
 import TeacherNav from '../components/teacherNav';
-import { validateHelper } from '../helpers/validate';
+import { validateHelper } from '../helpers/validateHelper';
 import LoginFallback from '../components/loginFallback';
 import LoadingSpinner from '../components/loadingSpinner';
 import useComponentVisible from '../hooks/useComponentIsVisible';
