@@ -25,7 +25,7 @@ const SingleCard = ({title, type}:{title:string, type:number}) => {
           }    
       </div>
       <div className="flex justify-center items-center px-2 h-[40%] border-x border-b rounded-b-md w-full overflow-hidden text-center">
-        <p className='text-[14px] inline-block break-words w-full font-medium'>{title}</p>
+        <p className='text-[14px] inline-block w-full two-lines font-medium'>{title}</p>
       </div>
     </div>
   )
@@ -109,7 +109,7 @@ const Home = () => {
   useEffect(() => {
     if (bgLoaded) {
       const {width} = simCardRef.current.getBoundingClientRect();
-      const totalwidth = width - 53;
+      const totalwidth = width - 40;
       let fitCount = Math.floor(totalwidth / 224);
       console.log(fitCount);
       

@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
 import useComponentVisible from "../hooks/useComponentIsVisible";
 
-const MultiSelection = ({selectedItems, setSelectedItems, thisItem, allItems}: {thisItem:string, selectedItems:string[], setSelectedItems:Dispatch<SetStateAction<string[] | null>>, allItems:string[]}) => {
+const MultiSelection = ({selectedItems, setSelectedItems, allItems}: {selectedItems:string[], setSelectedItems:Dispatch<SetStateAction<string[] | null>>, allItems:string[]}) => {
     
     const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
 

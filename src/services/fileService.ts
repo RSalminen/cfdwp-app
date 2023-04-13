@@ -111,7 +111,9 @@ const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetSt
        params: {simId: simId},
     });
 
-    const signedUrl = response.data.url;
+    const { url, filetype, notes, teacher_options } = response.data;
+
+    const signedUrl = url;
 
     const fileResponse = await axiosinstance({
         method: "get",
@@ -123,8 +125,7 @@ const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetSt
         },
     });
     
-
-    return {file: fileResponse.data, fileType: response.headers['content-type']};
+    return {file: fileResponse.data, filetype, notes, teacher_options};
 }
 
 const updateContent = async (widgets:IWidget[], teacherOptions:ITeacherOptions, simId:string) => {

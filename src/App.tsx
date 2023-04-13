@@ -1,12 +1,12 @@
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 
-import BaseView from "./pages/baseView";
 import Home from "./pages/home";
 import TeacherView from "./pages/teacherView";
 import Login from "./pages/login";
 import { ErrorBoundary } from "react-error-boundary";
 import MyCollections from "./pages/myCollections";
 import MySimulations from "./pages/mySimulations";
+import StudentView from "./pages/studentView";
 
 const Fallback = ({error} : {error:any}) => {
   return (
@@ -31,7 +31,7 @@ function App() {
         },
         {
           path: "view/:simid",
-          element: <BaseView />,
+          element: <StudentView />,
         },
         {
           path: "teacher/:teacherid",

@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-import '@kitware/vtk.js/favicon';
-
 // Load the rendering pieces we want to use (for both WebGL and WebGPU)
 import '@kitware/vtk.js/Rendering/Profiles/Geometry';
 import '@kitware/vtk.js/Rendering/Profiles/Glyph';
@@ -43,7 +41,7 @@ import vtkCubeSource from '@kitware/vtk.js/Filters/Sources/CubeSource';
 import CustomInput from '../components/customInput';
 import ButtonDarkMid from '../components/buttonDarkMid';
 import CustomTextArea from '../components/customTextArea';
-import { ITeacherOptions, IWidget } from '../types';
+import { ICustomOptions, ITeacherOptions, IVTKContext, IWidget } from '../types';
 import ListedWidget from '../components/listedWidget';
 
 import vtkCalculator from '@kitware/vtk.js/Filters/General/Calculator';
@@ -51,21 +49,7 @@ import vtkCalculator from '@kitware/vtk.js/Filters/General/Calculator';
 import { vec3 } from 'gl-matrix';
 import { FieldDataTypes } from '@kitware/vtk.js/Common/DataModel/DataSet/Constants';
 import { userService } from '../services/userService';
-
-interface IVTKContext {
-  openGLRenderer?: vtkOpenGLRenderWindow;
-  renderWindow?: vtkRenderWindow;
-  renderer?: vtkRenderer;
-  actor?: vtkActor;
-  mapper?: vtkMapper;
-  RenderWindowInteractor?: vtkRenderWindowInteractor;
-  currentTimeStep?:number,
-  allData: any;
-  sceneImporter: any;
-  widgetManager:vtkWidgetManager;
-  scalarBarActor:vtkScalarBarActor;
-  lookupTable:any;
-}
+import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 
 const TeacherView = () => {
 
@@ -102,6 +86,8 @@ const TeacherView = () => {
 
   const teacherOptions = useRef<ITeacherOptions>();
 
+  const customOptionsContext = useRef<ICustomOptions>
+
   const loadContent = async () => {
     const content = await fileService.getContent(simid!);
     setWidgets(content.widgets);
@@ -121,6 +107,7 @@ const TeacherView = () => {
     
     if (!teacherValid) {
       navigate('/login');
+      return;
     }
 
     await loadContent();
@@ -142,9 +129,13 @@ const TeacherView = () => {
 
   const createViewer = async () => {
 
-    const renderWindow = vtkRenderWindow.newInstance();
-    const renderer = vtkRenderer.newInstance({ background: [0.10196, 0.10196, 0.10196] });
-    renderWindow.addRenderer(renderer);
+    const fullScreenRenderWindow = (vtkFullScreenRenderWindow as any).newInstance({
+      background: [0.10196, 0.10196, 0.10196],
+      rootContainer: vtkContainerRef.current,
+    });
+
+    const renderer = fullScreenRenderWindow.getRenderer();
+    const renderWindow = fullScreenRenderWindow.getRenderWindow();
 
     const lookupTable = vtkColorTransferFunction.newInstance();
     const mapper = (vtkMapper as any).newInstance({
@@ -160,28 +151,13 @@ const TeacherView = () => {
     // Use OpenGL as the backend to view all this
     // ----------------------------------------------------------------------------
 
-    const openglRenderWindow = vtkOpenGLRenderWindow.newInstance();
-    renderWindow.addView(openglRenderWindow);
 
-    openglRenderWindow.setContainer(vtkContainerRef.current);
-
-    // ----------------------------------------------------------------------------
-    // Capture size of the container and set it to the renderWindow
-    // ----------------------------------------------------------------------------
-    
-    const { width, height } = vtkContainerRef.current.getBoundingClientRect();
-    
-    openglRenderWindow.setSize(width, height);
 
     // ----------------------------------------------------------------------------
     // Setup an interactor to handle mouse events
     // ----------------------------------------------------------------------------
 
-    const interactor = vtkRenderWindowInteractor.newInstance();
-    interactor.setView(openglRenderWindow);
-
-    interactor.initialize();
-    interactor.bindEvents(vtkContainerRef.current);
+    const interactor = renderWindow.getInteractor();
 
     // ----------------------------------------------------------------------------
     // Setup interactor style to use
@@ -203,7 +179,7 @@ const TeacherView = () => {
     let timeSeriesData = null;
     let readRes = null;
     
-    if (fileObject.fileType?.includes("application/zip"))
+    if (fileObject.filetype === 1)
     {
       const jszip = new JSZip();
 
@@ -234,7 +210,7 @@ const TeacherView = () => {
       
     }
 
-    if (fileObject.fileType?.includes("application/vtkjs"))
+    if (fileObject.filetype === 3)
     {
       readRes = await aTest(zipArrayBuffer, renderer, renderWindow);
       defaultSource = readRes.source;
@@ -284,7 +260,6 @@ const TeacherView = () => {
         sceneImporter:readRes?.sceneImporter,
         scalarBarActor,
         lookupTable
-        //widgetManager
     };
     
   }
@@ -299,7 +274,7 @@ const TeacherView = () => {
     
     if (!context.current) return;
   
-    const { actor, mapper, renderer, renderWindow, allData, sceneImporter, currentTimeStep, scalarBarActor, lookupTable } : IVTKContext = context.current;
+    const { mapper, renderer, renderWindow, allData, sceneImporter, currentTimeStep, lookupTable } : IVTKContext = context.current;
 
     let source;
     if (sceneImporter) source = sceneImporter.getScene()[0].source.getOutputData();
@@ -333,8 +308,8 @@ const TeacherView = () => {
     const lut : vtkLookupTable = mapper?.getLookupTable();
     lut.setVectorModeToMagnitude();
 
-    scalarBarActor.setAxisLabel(activeField!);
-    scalarBarActor.setScalarsToColors(mapper!.getLookupTable());
+   /*  scalarBarActor.setAxisLabel(activeField!);
+    scalarBarActor.setScalarsToColors(mapper!.getLookupTable()); */
     
     //actor?.getProperty().setPointSize(2);
     
@@ -466,7 +441,12 @@ const TeacherView = () => {
   }
 
   return (
-    <div className="h-full w-full">
+    <>
+    <div className='w-full h-full' ref={vtkContainerRef}>
+    </div>
+
+    <div className="h-full w-full top-0 left-0 absolute z-[2] pointer-events-none">
+
       <div className='overflow-hidden h-full flex flex-col'>
 
         {(!simLoaded) && 
@@ -475,7 +455,7 @@ const TeacherView = () => {
           <p>{loadProgress}%</p>
         </div>}
 
-        <div className="flex flex-col">
+        <div className="flex flex-col pointer-events-auto">
           <div className="h-[60px] flex items-center bg-gradient-to-b from-emerald-900 to-emerald-800 text-white">
             <div className="flex justify-between w-[80%] m-auto">
             
@@ -512,12 +492,10 @@ const TeacherView = () => {
           </div>
         </div>
 
-        <div ref={vtkContainerRef} className="h-[calc(100%-120px)]">
-        </div>
       </div>
 
       {(menuVisible) &&
-      <div className="h-[calc(100%-120px)] overflow-y-hidden flex flex-col min-w-[300px] w-[20vw] right-0 top-[120px] bg-white absolute z-[2] bg-opacity-95 px-4 py-2">
+      <div className="h-[calc(100%-120px)] pointer-events-auto overflow-y-hidden flex flex-col min-w-[300px] w-[20vw] right-0 top-[120px] bg-white absolute z-[2] bg-opacity-95 px-4 py-2">
         
         <div className="flex space-x-4 pb-2 mb-2 border-b border-emerald-600">
           <div className={`${menuTab === "General" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("General")}>General</div>
@@ -533,7 +511,7 @@ const TeacherView = () => {
               <div className="flex flex-col w-full space-y-2">
                   <div className="border-b border-emerald-600 flex-col">
                       <h4 className="font-semibold">Select fields:</h4>
-                      <MultiSelection selectedItems={selectedFields!} setSelectedItems={setSelectedFields} thisItem={'aasd'} allItems={fields} />
+                      <MultiSelection selectedItems={selectedFields!} setSelectedItems={setSelectedFields} allItems={fields} />
                   </div>
               </div>
           </div>
@@ -587,6 +565,7 @@ const TeacherView = () => {
       </div>
       }
     </div>
+    </>
   );
 }
 

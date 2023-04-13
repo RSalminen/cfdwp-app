@@ -10,46 +10,26 @@ export const aTest = async(fileBuffer, renderer, renderWindow) => {
             zipContent:fileBuffer,
             callback: (zipa) => {
             
-            const sceneImporter = vtkHttpSceneLoader.newInstance({
-                dataAccessHelper,
-                renderer,
-            });
+                const sceneImporter = vtkHttpSceneLoader.newInstance({
+                    dataAccessHelper,
+                    renderer,
+                });
 
-            //global.sceneImporter = sceneImporter;
+                //global.sceneImporter = sceneImporter;
 
-            sceneImporter.setUrl("index.json");
-            sceneImporter.onReady(() => {
-                const animationHandler = sceneImporter.getAnimationHandler();
-                //global.animationHandler = animationHandler;
+                sceneImporter.setUrl("index.json");
+                sceneImporter.onReady(() => {
 
-                let scene = sceneImporter.getScene();
-    
-                let source = scene[0].source.getOutputData();
+                    let scene = sceneImporter.getScene();
+                    let source = scene[0].source.getOutputData();
 
-                const result = {
-                    source,
-                    sceneImporter
-                }
-
-                resolve(result);
-
-                if (animationHandler && animationHandler.getTimeSteps().length > 1) {
-                const steps = animationHandler.getTimeSteps();
-                console.log(steps);
-                const applyStep = (stepIdx) => {
-                    const step = steps[stepIdx];
-                    if (
-                    step >= animationHandler.getTimeRange()[0] &&
-                    step <= animationHandler.getTimeRange()[1]
-                    ) {
-                    animationHandler.setCurrentTimeStep(step);
-                    renderer.resetCameraClippingRange();
-                    renderWindow.render();
+                    const result = {
+                        source,
+                        sceneImporter
                     }
-                };
-                }
-                renderWindow.render();
-            });
+
+                    resolve(result);
+                });
             },
         });
     });
