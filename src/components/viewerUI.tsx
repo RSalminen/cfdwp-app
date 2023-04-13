@@ -20,9 +20,10 @@ import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera';
 import SelectionSmaller from '../components/selectionSmaller';
 import { UIContext } from '../pages/studentView';
 import ButtonDarkMid from './buttonDarkMid';
+import useInterval from '../hooks/useInterval';
 
 
-const WidgetCard = ({widgets, currentWidgetNr, nextWidgetFn, setWidgetOpen} : {widgets:IWidget[], currentWidgetNr:number, nextWidgetFn:Function, setWidgetOpen:React.Dispatch<React.SetStateAction<boolean>>}) => {
+const WidgetCard = ({widgets, currentWidgetNr, changeWidgetFn, setWidgetOpen} : {widgets:IWidget[], currentWidgetNr:number, changeWidgetFn:Function, setWidgetOpen:React.Dispatch<React.SetStateAction<boolean>>}) => {
 
   const widget = widgets[currentWidgetNr];
   return (
@@ -40,13 +41,13 @@ const WidgetCard = ({widgets, currentWidgetNr, nextWidgetFn, setWidgetOpen} : {w
               <div className="flex space-x-2 px-2 justify-between">
                   {currentWidgetNr===0
                   ? <ButtonDarkMid btnText="To beginning" fullWidth={false} onClickFn={() => {}} deactive={true} />
-                  : <ButtonDarkMid btnText="To beginning" fullWidth={false} onClickFn={() => {}} />
+                  : <ButtonDarkMid btnText="To beginning" fullWidth={false} onClickFn={() => changeWidgetFn(0)} />
                   }
                   <div className="text-[17px] font-semibold">{currentWidgetNr+1}/{widgets.length}</div>
                   
                   {currentWidgetNr===widgets.length-1
                   ? <ButtonDarkMid btnText="Next note" fullWidth={false} onClickFn={() => {}} deactive={true} />
-                  : <ButtonDarkMid btnText="Next note" fullWidth={false} onClickFn={nextWidgetFn} />
+                  : <ButtonDarkMid btnText="Next note" fullWidth={false} onClickFn={() => changeWidgetFn(currentWidgetNr + 1)} />
                   }
               </div>
           </div>
@@ -89,7 +90,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
 
     const [activecolorScheme, setActiveColorScheme] = useState<string | null>("Jet")
 
-    const timerContext = useRef<NodeJS.Timer | null>(null);
+    const timerContext = useRef<any>(null);
     const [playing, setPlaying] = useState<boolean>(false);
     const [looping, setLooping] = useState<boolean>(false);
 
@@ -153,7 +154,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
       //const scalarsArray : vtkDataArray[] = source.getPointData().getArrays();
   
       const newField = str.slice(4);
-      const dataArray : vtkDataArray = source.getPointData().getArrayByName(newField);
+      const dataArray : vtkDataArray = str.startsWith("(p) ") ? source.getPointData().getArrayByName(newField) : str.startsWith("(c) ") && source.getCellData().getArrayByName(newField);
       
       
       const dataRange = dataArray.getRange();
@@ -238,42 +239,70 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
 
       else return allData.length;
     }
-    
-    const advanceTime = () => {
+
+    const changeTimeStep = (newTimestep:number) => {
       const { mapper, renderWindow, allData, sceneImporter } : IVTKContext = vtkContext.current!;
 
       let source;
 
       //handle for vtkjs
       if (sceneImporter) {
-        
-        if (activeTimeStep < sceneImporter.getAnimationHandler().getTimeSteps().length-1) setActiveTimeStep(activeTimeStep + 1);
-        else if (looping) setActiveTimeStep(0);
-
-        source = applyStep(activeTimeStep, sceneImporter);
+        source = applyStep(newTimestep, sceneImporter);
       }
 
       else {
         //for vtp
-        if (activeTimeStep < allData.length-1) setActiveTimeStep(activeTimeStep + 1);
-        else if (looping) setActiveTimeStep(0);
-
-        source = allData[activeTimeStep];
-    
+        source = allData[newTimestep];
       }
 
-        mapper?.setInputData(source);  
-        renderWindow?.render();
+      const dataArray : vtkDataArray = activeField!.startsWith("(p) ") ? source.getPointData().getArrayByName(activeField?.slice(4)) : activeField!.startsWith("(c) ") && source.getCellData().getArrayByName(activeField?.slice(4));
+      const dataRange = dataArray.getRange();
+
+      const lut = mapper?.getLookupTable();
+      lut.setMappingRange(dataRange![0], dataRange![1]);
+      lut.updateRange();
+
+      setRange(dataRange);
+
+      setActiveTimeStep(newTimestep);
+      mapper?.setInputData(source);  
+      renderWindow?.render();
     }
+    
+    const advanceTime = () => {
+      
+      let newTimestep = 0;
+      const timestepCount = getTimeStepCount();
+
+
+      if (activeTimeStep < timestepCount-1) newTimestep = activeTimeStep + 1;
+
+      if (looping && activeTimeStep >= timestepCount-1) newTimestep = 0;
+      
+      if (!looping && activeTimeStep >= timestepCount-1) {
+        setPlaying(false);
+        return;
+      }
+
+      changeTimeStep(newTimestep);
+    }
+
     const playClicked = () => {
-      timerContext.current = setInterval(advanceTime, 100);
+      if (activeTimeStep >= getTimeStepCount()-1) {
+        changeTimeStep(0);
+      }
+      
       setPlaying(true);
     }
+
     const stopClicked = () => {
-      clearInterval(timerContext.current!);
-      timerContext.current = null;
       setPlaying(false);
+      window.clearInterval(intervalRef.current);
     }
+
+    //time interval handler hook
+    const intervalRef = useInterval(advanceTime, playing ? 100 : null);
+
 
 
     //Note handling
@@ -295,6 +324,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
         
     }
 
+
     //Number formatting
     const getRangeInFormat = (nr:number) => {
 
@@ -306,6 +336,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
     }
 
 
+
     return (
     <>
       {/* Displaying the note */}
@@ -313,7 +344,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
       <div className="h-full w-full absolute z-[8] overflow-hidden pointer-events-none flex justify-end items-end p-4">
         <Draggable handle=".widgetHandle" bounds="body" nodeRef={nodeRef}>
           <div ref={nodeRef} className=" w-[350px] h-[200px] bg-white bg-opacity-95 border-2 border-emerald-900 shadow-lg shadow-black rounded-md pointer-events-auto">
-            <WidgetCard widgets={notes} currentWidgetNr={currentWidget} nextWidgetFn={() => openNote(currentWidget + 1)} setWidgetOpen={setWidgetOpen} />
+            <WidgetCard widgets={notes} currentWidgetNr={currentWidget} changeWidgetFn={openNote} setWidgetOpen={setWidgetOpen} />
           </div>
         </Draggable>
       </div>
@@ -356,15 +387,15 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
                 <div className="flex justify-evenly items-center">
                   <div className="text-[13px]">{activeTimeStep + 1}/{getTimeStepCount()}</div>
                   {!playing ?
-                    <svg onClick={playClicked} className="h-[20px] w-[20px] fill-white cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.804 8L5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 010 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z" clipRule="evenodd"></path></svg>
+                    <svg onClick={playClicked} className="h-[20px] w-[20px] fill-white cursor-pointer active:fill-emerald-500" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10.804 8L5 4.633v6.734L10.804 8zm.792-.696a.802.802 0 010 1.392l-6.363 3.692C4.713 12.69 4 12.345 4 11.692V4.308c0-.653.713-.998 1.233-.696l6.363 3.692z" clipRule="evenodd"></path></svg>
                     :
-                    <svg onClick={stopClicked} className="h-[18px] w-[20px] fill-emerald-500 cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M304 176h80v672h-80zm408 0h-64c-4.4 0-8 3.6-8 8v656c0 4.4 3.6 8 8 8h64c4.4 0 8-3.6 8-8V184c0-4.4-3.6-8-8-8z"></path></svg>
+                    <svg onClick={stopClicked} className="h-[18px] w-[20px] fill-emerald-500 cursor-pointer active:fill-emerald-500" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M304 176h80v672h-80zm408 0h-64c-4.4 0-8 3.6-8 8v656c0 4.4 3.6 8 8 8h64c4.4 0 8-3.6 8-8V184c0-4.4-3.6-8-8-8z"></path></svg>
                   }
                   
                   
-                  <svg className="h-[20px] w-[20px] cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.5 3.5A.5.5 0 004 4v8a.5.5 0 001 0V4a.5.5 0 00-.5-.5z" clipRule="evenodd"></path><path fillRule="evenodd" d="M5.696 8L11.5 4.633v6.734L5.696 8zm-.792-.696a.802.802 0 000 1.392l6.363 3.692c.52.302 1.233-.043 1.233-.696V4.308c0-.653-.713-.998-1.233-.696L4.904 7.304z" clipRule="evenodd"></path></svg>
+                  <svg onClick={() => changeTimeStep(0)} className="active:fill-emerald-500 h-[20px] w-[20px] cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M4.5 3.5A.5.5 0 004 4v8a.5.5 0 001 0V4a.5.5 0 00-.5-.5z" clipRule="evenodd"></path><path fillRule="evenodd" d="M5.696 8L11.5 4.633v6.734L5.696 8zm-.792-.696a.802.802 0 000 1.392l6.363 3.692c.52.302 1.233-.043 1.233-.696V4.308c0-.653-.713-.998-1.233-.696L4.904 7.304z" clipRule="evenodd"></path></svg>
                 
-                  <svg onClick={() => setLooping(!looping)} className={`${looping && "fill-emerald-500"} h-[12px] w-[12px] cursor-pointer`} stroke="currentColor" fill="currentColor" strokeWidth="0" version="1.1" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M13.901 2.599c-1.463-1.597-3.565-2.599-5.901-2.599-4.418 0-8 3.582-8 8h1.5c0-3.59 2.91-6.5 6.5-6.5 1.922 0 3.649 0.835 4.839 2.161l-2.339 2.339h5.5v-5.5l-2.099 2.099z"></path><path d="M14.5 8c0 3.59-2.91 6.5-6.5 6.5-1.922 0-3.649-0.835-4.839-2.161l2.339-2.339h-5.5v5.5l2.099-2.099c1.463 1.597 3.565 2.599 5.901 2.599 4.418 0 8-3.582 8-8h-1.5z"></path></svg>
+                  <svg onClick={() => setLooping(!looping)} className={`${looping && "fill-emerald-500"} h-[12px] w-[12px] cursor-pointer active:fill-emerald-500`} stroke="currentColor" fill="currentColor" strokeWidth="0" version="1.1" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M13.901 2.599c-1.463-1.597-3.565-2.599-5.901-2.599-4.418 0-8 3.582-8 8h1.5c0-3.59 2.91-6.5 6.5-6.5 1.922 0 3.649 0.835 4.839 2.161l-2.339 2.339h5.5v-5.5l-2.099 2.099z"></path><path d="M14.5 8c0 3.59-2.91 6.5-6.5 6.5-1.922 0-3.649-0.835-4.839-2.161l2.339-2.339h-5.5v5.5l2.099-2.099c1.463 1.597 3.565 2.599 5.901 2.599 4.418 0 8-3.582 8-8h-1.5z"></path></svg>
 
                 </div>
               </div>

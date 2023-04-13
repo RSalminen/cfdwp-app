@@ -76,7 +76,17 @@ const createViewer = async (vtkContext:React.MutableRefObject<IVTKContext | null
         fileNameArray.push(__filename);
       }
 
+      if (fileNameArray.length > 1) {
+
+        fileNameArray.sort((a,b) => {
+          const firstInt = ((a.slice(0,-4)).match(/\d+$/) || []).pop();
+          const secondInt = ((b.slice(0,-4)).match(/\d+$/) || []).pop();
+          return (parseInt(firstInt!) - parseInt(secondInt!));
+        })
+      }
+
       console.log(fileNameArray);
+
 
       const fileDataArray = await Promise.all(fileNameArray.map(async (filename:string) => {
         const filedata = await zip.file(filename)?.async('arraybuffer');
@@ -94,7 +104,6 @@ const createViewer = async (vtkContext:React.MutableRefObject<IVTKContext | null
       } */
 
       defaultSource = timeSeriesData[0];
-      
     }
 
     else if (filetype === 3)

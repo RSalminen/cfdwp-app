@@ -7,6 +7,7 @@ import LoadingSpinner from '../components/loadingSpinner';
 
 interface ISimCard {
   simtitle: string;
+  filetype: number;
   id: string;
 }
 
@@ -89,7 +90,7 @@ const Home = () => {
     const scrambledColls = scrambleList(data.colls) as ICollCard[];
 
     setDataLoaded(true);
-
+    
     setSimulations(scrambledSims);
     setCollections(scrambledColls);
   }
@@ -111,7 +112,6 @@ const Home = () => {
       const {width} = simCardRef.current.getBoundingClientRect();
       const totalwidth = width - 40;
       let fitCount = Math.floor(totalwidth / 224);
-      console.log(fitCount);
       
       if (fitCount < 3) fitCount = 4;
 
@@ -178,9 +178,9 @@ const Home = () => {
               </h3>
               <div className="flex flex-wrap w-full justify-center">
                 {dataLoaded ? simulations.slice(0,simsToShow).map((simulation:ISimCard) => (
-                <Link to={`/view/${simulation.id}`} key={simulation.id}>
-                  <SingleCard title={simulation.simtitle} type={1} />
-                </Link>))
+                  <Link to={simulation.filetype === 2 ? "/viewvti/" : "/view/" + simulation.id} key={simulation.id}>
+                    <SingleCard title={simulation.simtitle} type={1} />
+                  </Link>))
                 : <div className="h-36 w-36 p-6">
                     <LoadingSpinner />
                   </div>}
