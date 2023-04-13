@@ -85,8 +85,6 @@ const createViewer = async (vtkContext:React.MutableRefObject<IVTKContext | null
         })
       }
 
-      console.log(fileNameArray);
-
 
       const fileDataArray = await Promise.all(fileNameArray.map(async (filename:string) => {
         const filedata = await zip.file(filename)?.async('arraybuffer');
