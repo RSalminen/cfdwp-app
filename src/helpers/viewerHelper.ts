@@ -135,16 +135,16 @@ const createViewer = async (vtkContext:React.MutableRefObject<IVTKContext | null
     renderWindow.render();
 
     vtkContext.current = {
-        renderWindow,
-        renderer,
-        mapper,
-        actor,
-        currentTimeStep:0,
-        allData:timeSeriesData,
-        sceneImporter:readRes?.sceneImporter,
-        lookupTable,
-        defaultCamera: renderer.getActiveCamera().toJSON(),
-        fullScreenRenderer:fullScreenRenderWindow
+      renderWindow,
+      renderer,
+      mapper,
+      actor,
+      currentTimeStep:0,
+      allData:timeSeriesData,
+      sceneImporter:readRes?.sceneImporter,
+      lookupTable,
+      defaultCamera: renderer.getActiveCamera().toJSON(),
+      fullScreenRenderer:fullScreenRenderWindow
     };
     
   }

@@ -21,7 +21,9 @@ const ViewerLoadingScreen = ({loadProgress} : { loadProgress:number}) => {
 
 const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext:React.MutableRefObject<IVTKContext | null>, customOptionsContext : React.MutableRefObject<ICustomOptions | null>, onLoadSuccess:Function}) => {
 
-  const { simLoaded } = useContext(UIContext)
+  const { simLoaded } = useContext(UIContext);
+
+  const hasEnded = useRef<boolean>(false);
 
   const vtkContainerRef = useRef<HTMLDivElement | null>(null);
   const startEffectRun = useRef<boolean>(false);
@@ -33,34 +35,50 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
   const load = async () => {
     const fileObject : IFileObject = await fileService.getFile(simid!, setLoadProgress);
     customOptionsContext.current = {notes:fileObject.notes, teacherOptions:fileObject.teacher_options}
+    
+    //I want to stop execution if the user goes back while loading the simulation
+    if (hasEnded) return;
     await viewerHelper.createViewer(vtkContext, customOptionsContext, vtkContainerRef, fileObject.file, fileObject.filetype);
+    
+    //Clean up if the user goes back after file is loaded and viewer is loading
+    if (hasEnded) {
+      cleanup();
+      return;
+    }
+
     onLoadSuccess();
   }
 
   useEffect(() => {
     if (!startEffectRun.current) {
+      startEffectRun.current = true
       load();
     }
 
-    return () => {startEffectRun.current = true}
+    return () => {hasEnded.current = true}
   },[])
 
   useEffect(() => {
 
       return () => {
-        if (vtkContext.current) {
-          const { fullScreenRenderer, actor, mapper } = vtkContext.current;
-
-          actor!.delete();
-          mapper!.delete();
-          fullScreenRenderer.delete();
-          vtkContainerRef.current = null;
-
-          vtkContext.current = null;
-        }
+        cleanup();
       };
     }, [vtkContainerRef]);
   
+
+    const cleanup = () => {
+      if (!vtkContext.current) return;
+
+      const { fullScreenRenderer, actor, mapper } = vtkContext.current;
+
+      actor!.delete();
+      mapper!.delete();
+      fullScreenRenderer.delete();
+      vtkContainerRef.current = null;
+
+      vtkContext.current = null;
+      
+    }
   return (
     <>
       {(!simLoaded) &&
