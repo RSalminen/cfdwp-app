@@ -38,11 +38,12 @@ const StudentView = () => {
   return (
     
     <>
-     
-      <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded}} >
-        <ViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
-        <Viewer vtkContext={vtkContext} customOptionsContext={customOptionsContext} onLoadSuccess={onLoadSuccess} />
-      </UIContext.Provider>
+      <div className="fixed w-full h-full top-0 left-0">
+        <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded}} >
+          <ViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
+          <Viewer vtkContext={vtkContext} customOptionsContext={customOptionsContext} onLoadSuccess={onLoadSuccess} />
+        </UIContext.Provider>
+      </div>
     </>
   );
 }
