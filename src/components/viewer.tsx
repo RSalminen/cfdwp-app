@@ -37,11 +37,11 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
     customOptionsContext.current = {notes:fileObject.notes, teacherOptions:fileObject.teacher_options}
     
     //I want to stop execution if the user goes back while loading the simulation
-    if (hasEnded) return;
+    if (hasEnded.current) return;
     await viewerHelper.createViewer(vtkContext, customOptionsContext, vtkContainerRef, fileObject.file, fileObject.filetype);
     
     //Clean up if the user goes back after file is loaded and viewer is loading
-    if (hasEnded) {
+    if (hasEnded.current) {
       cleanup();
       return;
     }
@@ -51,12 +51,21 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
 
   useEffect(() => {
     if (!startEffectRun.current) {
-      startEffectRun.current = true
       load();
     }
 
-    return () => {hasEnded.current = true}
-  },[])
+    return () => {
+      if (!(process.env.NODE_ENV === "development")) {
+        hasEnded.current = true;
+      }
+
+      if (startEffectRun.current) {
+        hasEnded.current = true;
+      }
+
+      startEffectRun.current = true
+    }
+  },[]);
 
   useEffect(() => {
 
