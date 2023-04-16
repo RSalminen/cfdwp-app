@@ -113,7 +113,7 @@ const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teach
         }
         <div className="absolute z-[2] border shadow-md translate-x-[-65px] px-3 py-2 bg-white rounded-sm">
             <div className="flex flex-col space-y-1">
-                <SmallButtonDarkLink btnText="View" url={`/view/${simObj.id}/`} fullWidth={true} />
+                <SmallButtonDarkLink btnText="View" url={simObj.filetype !== 2  ? `/view/${simObj.id}/` : `/viewvti/${simObj.id}/`} fullWidth={true} />
                 <SmallButtonDarkLink btnText="Edit" url={`/view/${simObj.id}/${teacherid}`} fullWidth={true} />
                 <ButtonDarkSmall btnText="Add to collection" onClickFn={() => setAddToCollectionActive(true)} fullWidth={true} />
                 <ButtonDarkSmall btnText="Delete" onClickFn={() => setConfirmDeleteActive(true)} fullWidth={true} />

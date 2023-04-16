@@ -12,7 +12,6 @@ import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/C
 import vtkLookupTable from '@kitware/vtk.js/Common/Core/LookupTable';
 
 import { Link } from 'react-router-dom';
-import { applyStep } from '../pages/test';
 
 import { ICustomOptions, IVTKContext, IWidget } from '../types';
 import Draggable from 'react-draggable';
@@ -21,6 +20,7 @@ import SelectionSmaller from '../components/selectionSmaller';
 import { UIContext } from '../pages/studentView';
 import ButtonDarkMid from './buttonDarkMid';
 import useInterval from '../hooks/useInterval';
+import { vtkjsHelper } from '../helpers/vtkjsHelper';
 
 
 const WidgetCard = ({widgets, currentWidgetNr, changeWidgetFn, setWidgetOpen} : {widgets:IWidget[], currentWidgetNr:number, changeWidgetFn:Function, setWidgetOpen:React.Dispatch<React.SetStateAction<boolean>>}) => {
@@ -88,7 +88,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
 
     const [activeField, setActiveField] = useState<string | null>("Solid color");
 
-    const [activecolorScheme, setActiveColorScheme] = useState<string | null>("Jet")
+    const [activecolorScheme, setActiveColorScheme] = useState<string | null>("Jet");
 
     const timerContext = useRef<any>(null);
     const [playing, setPlaying] = useState<boolean>(false);
@@ -247,7 +247,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
 
       //handle for vtkjs
       if (sceneImporter) {
-        source = applyStep(newTimestep, sceneImporter);
+        source = vtkjsHelper.applyStep(newTimestep, sceneImporter);
       }
 
       else {

@@ -178,7 +178,7 @@ const Home = () => {
               </h3>
               <div className="flex flex-wrap w-full justify-center">
                 {dataLoaded ? simulations.slice(0,simsToShow).map((simulation:ISimCard) => (
-                  <Link to={simulation.filetype === 2 ? "/viewvti/" : "/view/" + simulation.id} key={simulation.id}>
+                  <Link to={(simulation.filetype === 2 ? "/viewvti/" : "/view/") + simulation.id} key={simulation.id}>
                     <SingleCard title={simulation.simtitle} type={1} />
                   </Link>))
                 : <div className="h-36 w-36 p-6">

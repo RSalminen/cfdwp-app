@@ -1,9 +1,8 @@
 import DataAccessHelper from '@kitware/vtk.js/IO/Core/DataAccessHelper';
 import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper';
-import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper';
 import vtkHttpSceneLoader from '@kitware/vtk.js/IO/Core/HttpSceneLoader';
 
-export const aTest = async(fileBuffer, renderer, renderWindow) => {
+export const readVTKJS = async(fileBuffer, renderer, renderWindow) => {
 
     const promise = new Promise((resolve, reject) => {
         const dataAccessHelper = DataAccessHelper.get("zip", {
@@ -52,3 +51,5 @@ export const applyStep = (stepIdx, sceneImporter) => {
     return scene[0].source.getOutputData();
     
 };
+
+export const vtkjsHelper = { readVTKJS, applyStep }

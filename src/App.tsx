@@ -7,6 +7,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import MyCollections from "./pages/myCollections";
 import MySimulations from "./pages/mySimulations";
 import StudentView from "./pages/studentView";
+import VtiStudentView from "./pages/vtiStudentView";
 
 const Fallback = ({error} : {error:any}) => {
   return (
@@ -49,6 +50,10 @@ function App() {
           path: "login",
           element: <Login />,
         },
+        {
+          path: "viewvti/:simid",
+          element: <VtiStudentView />
+        }
       ]
     }
   ])

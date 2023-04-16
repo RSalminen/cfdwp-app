@@ -66,3 +66,17 @@ export interface IUIContext {
     visibleFields: string[] | null;
     simLoaded: boolean;
 }
+
+export interface IVTIContext {
+    renderWindow?: vtkRenderWindow;
+    renderer?: vtkRenderer;
+    actor?: vtkActor;
+    mapper?: vtkMapper;
+    RenderWindowInteractor?: vtkRenderWindowInteractor;
+    currentTimeStep?:number,
+    allData?: any;
+    lookupTable?:any;
+    defaultCamera?:any;
+    fullScreenRenderer?:any;
+    controllerWidget:any;
+}
