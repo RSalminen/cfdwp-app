@@ -44,7 +44,7 @@ const TeacherView = () => {
       validateTeacher();
 
     }
-  }, [])
+  }, []);
   
 
   const onLoadSuccess = () => {

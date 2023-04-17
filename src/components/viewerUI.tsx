@@ -21,39 +21,8 @@ import { UIContext } from '../pages/studentView';
 import ButtonDarkMid from './buttonDarkMid';
 import useInterval from '../hooks/useInterval';
 import { vtkjsHelper } from '../helpers/vtkjsHelper';
+import WidgetCard from './widgetCard';
 
-
-const WidgetCard = ({widgets, currentWidgetNr, changeWidgetFn, setWidgetOpen} : {widgets:IWidget[], currentWidgetNr:number, changeWidgetFn:Function, setWidgetOpen:React.Dispatch<React.SetStateAction<boolean>>}) => {
-
-  const widget = widgets[currentWidgetNr];
-  return (
-      <div className="h-full w-full">
-          <div className="absolute z-[9] top-1 right-2 flex items-center">
-              <svg className="widgetHandle h-5 w-5 cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M20 9H4v2h16V9zM4 15h16v-2H4v2z"></path></svg>
-              <svg onClick={() => setWidgetOpen(false)} className="h-4 w-4 cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
-          </div>
-          <div className="flex flex-col justify-between h-full pt-1 pb-2">   
-              <div className="flex flex-col px-2">
-                  {widget.title.length > 0 && <h5 className="text-[17px] pr-4 font-semibold">{widget.title}</h5>}
-                  <p className="pl-1 text-[14px]">{widget.description}</p>
-              </div>
-
-              <div className="flex space-x-2 px-2 justify-between">
-                  {currentWidgetNr===0
-                  ? <ButtonDarkMid btnText="To beginning" fullWidth={false} onClickFn={() => {}} deactive={true} />
-                  : <ButtonDarkMid btnText="To beginning" fullWidth={false} onClickFn={() => changeWidgetFn(0)} />
-                  }
-                  <div className="text-[17px] font-semibold">{currentWidgetNr+1}/{widgets.length}</div>
-                  
-                  {currentWidgetNr===widgets.length-1
-                  ? <ButtonDarkMid btnText="Next note" fullWidth={false} onClickFn={() => {}} deactive={true} />
-                  : <ButtonDarkMid btnText="Next note" fullWidth={false} onClickFn={() => changeWidgetFn(currentWidgetNr + 1)} />
-                  }
-              </div>
-          </div>
-      </div>
-  )
-}
 
 const representationEnum : {[key:string] : number} = {
   "Points": 0,
@@ -355,11 +324,11 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
       <div className="absolute z-[3] h-full w-full pointer-events-none flex justify-between">
 
         {/* Left bar */}
-        <div className="flex items-center">
+        <div className="flex items-end sm:items-center h-full py-2">
           {optionsVisible &&
-          <div className="fade-in-card-fast bg-black bg-opacity-90 w-[230px] sm:w-[250px] ml-4 py-4 px-5 text-white flex flex-col pointer-events-auto rounded-md border border-emerald-900 shadow-lg shadow-black min-h-[60%] overflow-y-auto">
+          <div className="fade-in-card-fast max-h-full overflow-auto bg-black bg-opacity-90 w-[230px] sm:w-[250px] ml-1 sm:ml-4 py-2 sm:py-4 px-2 sm:px-5 text-white flex flex-col pointer-events-auto rounded-md border border-emerald-900 shadow-lg shadow-black overflow-y-auto">
             <div className="flex justify-between pb-1 border-b-2">
-              <h3 className="text-[17px]">Controller</h3>
+              <h3 className="text-[15px] sm:text-[17px]">Controller</h3>
               <svg onClick={() => setOptionsVisible(false)} className="w-2 cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M464 352H48c-26.5 0-48 21.5-48 48v32c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48v-32c0-26.5-21.5-48-48-48z"></path></svg>
             </div>
             
@@ -402,12 +371,10 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
               }
 
               {/* Color scale */}
-              {activeField !== "Solid color" &&
-              
-              <div className="flex flex-col space-y-1 pb-3 pt-1.5 border-b">
+              <div className={`flex flex-col space-y-1 pb-3 pt-1.5 border-b ${activeField === "Solid color" && "invisible"}`}>
                 <h5>Colors</h5>
 
-                <div className="flex flex-col items-center space-y-3">
+                <div className="flex flex-col items-center space-y-1 sm:space-y-3">
                   <SelectionSmaller selectedItem={activecolorScheme} onChangeFn={changeColorScheme} allItems={Object.keys(colorSchemes)} thisItem={null} fullWidth={true} />
 
                   <div className="flex flex-col space-y-0.5 w-full px-6">
@@ -431,14 +398,13 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
 
                 </div>
               </div>
-              }
             </div>
           </div>
           }
         </div>
 
         {/* Right toolbar */}
-        <div className="flex items-center pr-4">
+        <div className="flex items-end sm:items-center pb-4 pr-4">
 
           <div className="flex flex-col border border-emerald-900 bg-black bg-opacity-90 px-2 rounded-md pointer-events-auto shadow-lg shadow-black">
             
@@ -468,7 +434,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
             {notes && notes.length > 0 &&
             <>
             <div className="border-y border-white py-1 w-full flex justify-center">
-              <div onClick={() => setWidgetOpen(!widgetOpen)} className={`${widgetOpen && "bg-emerald-900 p-0.5 rounded-[3px]"} flex justify-center w-full`}>
+              <div onClick={() => widgetOpen ? setWidgetOpen(false) : openNote(currentWidget)} className={`${widgetOpen && "bg-emerald-900 p-0.5 rounded-[3px]"} flex justify-center w-full`}>
                 <svg onClick={() => {}} className="h-[22px] w-[22px] fill-white cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M928 161H699.2c-49.1 0-97.1 14.1-138.4 40.7L512 233l-48.8-31.3A255.2 255.2 0 0 0 324.8 161H96c-17.7 0-32 14.3-32 32v568c0 17.7 14.3 32 32 32h228.8c49.1 0 97.1 14.1 138.4 40.7l44.4 28.6c1.3.8 2.8 1.3 4.3 1.3s3-.4 4.3-1.3l44.4-28.6C602 807.1 650.1 793 699.2 793H928c17.7 0 32-14.3 32-32V193c0-17.7-14.3-32-32-32zM324.8 721H136V233h188.8c35.4 0 69.8 10.1 99.5 29.2l48.8 31.3 6.9 4.5v462c-47.6-25.6-100.8-39-155.2-39zm563.2 0H699.2c-54.4 0-107.6 13.4-155.2 39V298l6.9-4.5 48.8-31.3c29.7-19.1 64.1-29.2 99.5-29.2H888v488zM396.9 361H211.1c-3.9 0-7.1 3.4-7.1 7.5v45c0 4.1 3.2 7.5 7.1 7.5h185.7c3.9 0 7.1-3.4 7.1-7.5v-45c.1-4.1-3.1-7.5-7-7.5zm223.1 7.5v45c0 4.1 3.2 7.5 7.1 7.5h185.7c3.9 0 7.1-3.4 7.1-7.5v-45c0-4.1-3.2-7.5-7.1-7.5H627.1c-3.9 0-7.1 3.4-7.1 7.5zM396.9 501H211.1c-3.9 0-7.1 3.4-7.1 7.5v45c0 4.1 3.2 7.5 7.1 7.5h185.7c3.9 0 7.1-3.4 7.1-7.5v-45c.1-4.1-3.1-7.5-7-7.5zm416 0H627.1c-3.9 0-7.1 3.4-7.1 7.5v45c0 4.1 3.2 7.5 7.1 7.5h185.7c3.9 0 7.1-3.4 7.1-7.5v-45c.1-4.1-3.1-7.5-7-7.5z"></path></svg>
               </div>
             </div>

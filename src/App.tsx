@@ -8,6 +8,7 @@ import MyCollections from "./pages/myCollections";
 import MySimulations from "./pages/mySimulations";
 import StudentView from "./pages/studentView";
 import VtiStudentView from "./pages/vtiStudentView";
+import VtiTeacherView from "./pages/vtiTeacherView";
 
 const Fallback = ({error} : {error:any}) => {
   return (
@@ -53,6 +54,10 @@ function App() {
         {
           path: "viewvti/:simid",
           element: <VtiStudentView />
+        },
+        {
+          path: "viewvti/:simid/:teacherid",
+          element: <VtiTeacherView />
         }
       ]
     }

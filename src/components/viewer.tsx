@@ -62,20 +62,21 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
       };
     }, [vtkContainerRef]);
   
+    
+  const cleanup = () => {
+    if (!vtkContext.current) return;
 
-    const cleanup = () => {
-      if (!vtkContext.current) return;
+    const { fullScreenRenderer, actor, mapper } = vtkContext.current;
 
-      const { fullScreenRenderer, actor, mapper } = vtkContext.current;
+    actor!.delete();
+    mapper!.delete();
+    fullScreenRenderer.delete();
+    vtkContainerRef.current = null;
 
-      actor!.delete();
-      mapper!.delete();
-      fullScreenRenderer.delete();
-      vtkContainerRef.current = null;
+    vtkContext.current = null;
+    
+  }
 
-      vtkContext.current = null;
-      
-    }
   return (
     <>
       {(!simLoaded) &&

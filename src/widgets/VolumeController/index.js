@@ -30,6 +30,10 @@ const PRESETS_OPTIONS = vtkColorMaps.rgbPresetNames.map(
       numberOfBins: 256,
       size: model.size,
     });
+
+    publicAPI.updateShadow = (newValue) => {
+      updateUseShadow(newValue);
+    }
   
     function updateUseShadow(useShadow) {
       model.actor.getProperty().setShade(useShadow);
@@ -62,6 +66,10 @@ const PRESETS_OPTIONS = vtkColorMaps.rgbPresetNames.map(
       lookupTable.updateRange();
       model.renderWindow.render();
     }
+
+    publicAPI.updateSpacing = (value) => {
+      updateSpacing(value);
+    }
   
     function updateSpacing(value) {
       const sourceDS = model.actor.getMapper().getInputData();
@@ -77,6 +85,10 @@ const PRESETS_OPTIONS = vtkColorMaps.rgbPresetNames.map(
         .getMapper()
         .setSampleDistance(sampleDistance * 2 ** (value * 3.0 - 1.5));
       model.renderWindow.render();
+    }
+
+    publicAPI.updateEdgeGradient = (value) => {
+      updateEdgeGradient(value)
     }
   
     function updateEdgeGradient(value) {
@@ -111,8 +123,6 @@ const PRESETS_OPTIONS = vtkColorMaps.rgbPresetNames.map(
       renderWindow,
       actor,
       isBackgroundDark,
-      useShadow = '1',
-      presetName = 'erdc_rainbow_bright'
     ) => {
       publicAPI.setActor(actor);
       publicAPI.setRenderWindow(renderWindow);

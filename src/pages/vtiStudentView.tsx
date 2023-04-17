@@ -1,8 +1,10 @@
 import { useRef, createContext, useState } from 'react';
 import VtiViewer from '../components/vtiViewer';
-import { ICustomOptions, IVTIContext } from '../types';
+import { ICustomOptions, IVTIContext, IWidget } from '../types';
 
 export interface IVtiUIContext {
+    notes:IWidget[];
+    setNotes:React.Dispatch<React.SetStateAction<IWidget[]>>
     simLoaded:boolean;
 }
 
@@ -21,10 +23,11 @@ const VtiStudentView = () => {
         setSimLoaded(true);
     }
 
+    const [notes, setNotes] = useState<IWidget[]>([]);
 
     return (
         <>
-        <VtiUIContext.Provider value={{simLoaded}} >
+        <VtiUIContext.Provider value={{notes, setNotes, simLoaded}} >
             <VtiViewer vtiContext={vtiContext} customOptionsContext={customOptionsContext} onLoadSuccess={loadSuccess} />
         </VtiUIContext.Provider>
         </>
