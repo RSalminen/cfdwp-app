@@ -3,6 +3,9 @@ import { useMediaQuery } from 'react-responsive'
 import { useEffect, useRef, useState } from 'react';
 import { fileService } from '../services/fileService';
 import LoadingSpinner from '../components/loadingSpinner';
+import SearchBar from '../components/searchBar';
+import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import { Carousel } from 'react-responsive-carousel';
 
 
 interface ISimCard {
@@ -18,14 +21,14 @@ interface ICollCard {
 
 const SingleCard = ({title, type}:{title:string, type:number}) => {
   return (
-    <div className="flex flex-col h-36 w-60 sm:h-32 sm:w-52 m-2 rounded-md md:cursor-pointer md:hover:-translate-y-2 transition-all">
+    <div className="flex flex-col h-32 w-52 sm:h-36 sm:w-60 m-2 rounded-md md:cursor-pointer md:hover:-translate-y-2 transition-all">
       <div className="h-[60%] w-full rounded-t-md bg-gray-200 flex justify-center items-center">
         {type===1 ?
           <svg className="h-8 w-8 fill-gray-600" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M113.5 281.2v85.3L256 448l142.5-81.5v-85.3L256 362.7l-142.5-81.5zM256 64L32 192l224 128 183.3-104.7v147.4H480V192L256 64z"></path></svg>
           : <svg className="h-6 w-6 fill-gray-600" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><rect width="16" height="10" rx="1.5" transform="matrix(1 0 0 -1 0 14.5)"></rect><path fillRule="evenodd" d="M2 3a.5.5 0 00.5.5h11a.5.5 0 000-1h-11A.5.5 0 002 3zm2-2a.5.5 0 00.5.5h7a.5.5 0 000-1h-7A.5.5 0 004 1z" clipRule="evenodd"></path></svg>
           }    
       </div>
-      <div className="flex justify-center items-center px-2 h-[40%] border-x border-b rounded-b-md w-full overflow-hidden text-center">
+      <div className="flex justify-center items-center bg-white px-2 h-[40%] border-x border-b rounded-b-md w-full overflow-hidden text-center">
         <p className='text-[14px] inline-block w-full two-lines font-medium'>{title}</p>
       </div>
     </div>
@@ -61,8 +64,10 @@ const Home = () => {
   const simCardRef = useRef<any>();
 
   const [bgLoaded, setBgLoaded] = useState<boolean>(false);
-  const [simulations, setSimulations] = useState<ISimCard[]>([]);
-  const [collections, setCollections] = useState<ICollCard[]>([]);
+  const fitCount = useRef<number>();
+
+  const simulations = useRef<ISimCard[]>([]);
+  const collections = useRef<ICollCard[]>([]);
 
   const [simsToShow, setSimsToShow] = useState<number>();
   const [collsToShow, setCollsToShow] = useState<number>();
@@ -71,6 +76,9 @@ const Home = () => {
   const [collShowmoreVisible, setCollShowmoreVisible] = useState<boolean>(true);
 
   const [dataLoaded, setDataLoaded] = useState<boolean>(false);
+
+  const [searchedSimulations, setSearchedSimulations] = useState<ISimCard[] | null>(null);
+  const [searchedCollections, setSearchedCollections] = useState<ICollCard[] | null>(null);
 
   const scrambleList = (oldList:ISimCard[] | ICollCard[]) => {
     for (var i = oldList.length - 1; i > 0; i--) {
@@ -91,11 +99,9 @@ const Home = () => {
 
     setDataLoaded(true);
     
-    setSimulations(scrambledSims);
-    setCollections(scrambledColls);
+    simulations.current = scrambledSims;
+    collections.current = scrambledColls;
   }
-
-  //const height = use100vh();
 
   //Load the content at startup
   useEffect(() => {
@@ -108,17 +114,38 @@ const Home = () => {
 
   //Calculating at startup how many cards can fit in one row
   useEffect(() => {
+
     if (bgLoaded) {
+      const cardSize = isMobile ? 224 : 256;
       const {width} = simCardRef.current.getBoundingClientRect();
       const totalwidth = width - 40;
-      let fitCount = Math.floor(totalwidth / 224);
-      
-      if (fitCount < 3) fitCount = 4;
 
-      setSimsToShow(fitCount);
-      setCollsToShow(fitCount);
+      const calculatedCount = Math.floor(totalwidth / cardSize);
+
+      
+      if (calculatedCount < 3) fitCount.current = 4;
+      else fitCount.current = calculatedCount;
+
+      setSimsToShow(fitCount.current);
+      setCollsToShow(fitCount.current);
     }
   }, [bgLoaded]);
+
+  const getSearchFit = () => {
+
+    const cardSize = isMobile ? 224 : 256;
+    const arrowSize = isMobile ? 48 : 64;
+    const paddingSize = isMobile ? 30 : 80;
+
+    const { width } = simCardRef.current.getBoundingClientRect();
+    const totalwidth = width - paddingSize - arrowSize;
+
+    const calculatedCount = Math.floor(totalwidth / cardSize);
+
+    if (calculatedCount === 0) return 1;
+
+    return calculatedCount;
+  }
 
   const showMoreSims = () => {
     setSimShowmoreVisible(false);
@@ -147,8 +174,24 @@ const Home = () => {
     </div>
   )
 
+  const searchSimulations = (str:string) => {
+    setSearchedSimulations(simulations.current.filter((item:ISimCard) => item.simtitle.toLowerCase().startsWith(str.toLowerCase())));
+    //setSearchedSimulations(simulations.current.filter((item:ISimCard) => 1===1));
+  }
+
+  const searchCollections = (str:string) => {
+    setSearchedCollections(collections.current.filter((item:ICollCard) => item.name.toLowerCase().startsWith(str.toLowerCase())));
+  }
+
+  const group = (items:any, n:number) => items.reduce((acc:any, x:any, i:any) => {
+    const idx = Math.floor(i / n);
+    acc[idx] = [...(acc[idx] || []), x];
+    return acc;
+  }, []);
+
   return (
     <div className="h-full w-full">
+
       <div className="flex justify-center h-full w-full py-2">
         
         {/* background */}
@@ -172,12 +215,66 @@ const Home = () => {
           {/* Simulations card */}
           <div className="flex-grow flex flex-col space-y-6 items-center">
             
-            <div ref={simCardRef} className="fade-in-card w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 py-4 flex flex-col space-y-4 items-center sm:items-start">
-              <h3 className="text-[18px] md:text-[22px] font-semibold">
-                Simulations
-              </h3>
+            <div ref={simCardRef} className="fade-in-card overflow-x-auto w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 py-4 flex flex-col space-y-6 items-center sm:items-start">
+              
+              <div className="flex items-center justify-center md:justify-between w-full flex-wrap">
+                <h3 className="text-[18px] md:text-[22px] font-semibold mx-5">Simulations</h3>
+                <div className="mx-5"><SearchBar placeholder="Search simulations..." onSearch={searchSimulations} /></div>
+              </div>
+
+              {(searchedSimulations !== null && dataLoaded) &&
+              <div className="my-3 border-b w-full flex flex-col bg-gray-50 border pt-2 pb-4 px-1 sm:px-4 rounded-md">
+                
+                <div className="flex justify-between items-center">
+                  <h5 className="font-semibold text-[15px] sm:text-[17px] text-center sm:text-left">Search Results</h5>
+                  <svg className="h-5 w-5 cursor-pointer text-gray-800" onClick={() => setSearchedSimulations(null)} stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M354 671h58.9c4.7 0 9.2-2.1 12.3-5.7L512 561.8l86.8 103.5c3 3.6 7.5 5.7 12.3 5.7H670c6.8 0 10.5-7.9 6.1-13.1L553.8 512l122.4-145.9c4.4-5.2.7-13.1-6.1-13.1h-58.9c-4.7 0-9.2 2.1-12.3 5.7L512 462.2l-86.8-103.5c-3-3.6-7.5-5.7-12.3-5.7H354c-6.8 0-10.5 7.9-6.1 13.1L470.2 512 347.9 657.9A7.95 7.95 0 0 0 354 671z"></path><path d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32zm-40 728H184V184h656v656z"></path></svg>
+                </div>
+
+                <div className="flex items-center">
+
+                  {searchedSimulations!.length > 0 ?
+                  <div className="w-full relative">
+
+                    <Carousel showThumbs={false} showIndicators={false} showStatus={false} 
+                      renderArrowNext={(onClickHandler, hasNext) => (
+                        hasNext && 
+                        <div className="absolute z-[3] top-0 right-0 h-full pointer-events-none flex items-center">
+                          <svg onClick={onClickHandler} className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 text-gray-700 hover:text-gray-500 cursor-pointer" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M210.7 147.6c7.5-7.5 19.8-7.5 27.3 0l95.4 95.7c7.3 7.3 7.5 19.1.6 26.6l-94 94.3c-3.8 3.8-8.7 5.7-13.7 5.7-4.9 0-9.9-1.9-13.6-5.6-7.5-7.5-7.6-19.7 0-27.3l79.9-81.1-81.9-81.1c-7.6-7.4-7.6-19.6 0-27.2z"></path><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm32 0c0-47 18.3-91.2 51.6-124.4C164.8 98.3 209 80 256 80s91.2 18.3 124.4 51.6C413.7 164.8 432 209 432 256s-18.3 91.2-51.6 124.4C347.2 413.7 303 432 256 432s-91.2-18.3-124.4-51.6C98.3 347.2 80 303 80 256z"></path></svg>
+                        </div>
+                      )}
+                      renderArrowPrev={(onClickHandler, hasPrev) => (
+                        hasPrev && 
+                        <div className="absolute z-[3] top-0 left-0 h-full pointer-events-none flex items-center">
+                          <svg onClick={onClickHandler} className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 text-gray-700 hover:text-gray-500 cursor-pointer rotate-180" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M210.7 147.6c7.5-7.5 19.8-7.5 27.3 0l95.4 95.7c7.3 7.3 7.5 19.1.6 26.6l-94 94.3c-3.8 3.8-8.7 5.7-13.7 5.7-4.9 0-9.9-1.9-13.6-5.6-7.5-7.5-7.6-19.7 0-27.3l79.9-81.1-81.9-81.1c-7.6-7.4-7.6-19.6 0-27.2z"></path><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm32 0c0-47 18.3-91.2 51.6-124.4C164.8 98.3 209 80 256 80s91.2 18.3 124.4 51.6C413.7 164.8 432 209 432 256s-18.3 91.2-51.6 124.4C347.2 413.7 303 432 256 432s-91.2-18.3-124.4-51.6C98.3 347.2 80 303 80 256z"></path></svg>
+                        </div>
+                      )}>
+                        
+                        {group(searchedSimulations, getSearchFit()).map((groupedSims:ISimCard[], idx:number) => (
+                          <div key={idx} className="w-full flex justify-center">
+
+                            {groupedSims.map((simulation) => (
+                            
+                            <Link to={(simulation.filetype === 2 ? "/viewvti/" : "/view/") + simulation.id} key={simulation.id}>
+                              <SingleCard title={simulation.simtitle} type={1} />
+                            </Link>
+                            ))}
+
+                          </div>
+                        
+                        ))}
+                    </Carousel>
+                  </div>
+                  :
+                  <div className="w-full flex justify-center font-semibold">
+                    No results
+                  </div>
+                  }
+                </div>
+              </div>
+              }
+
               <div className="flex flex-wrap w-full justify-center">
-                {dataLoaded ? simulations.slice(0,simsToShow).map((simulation:ISimCard) => (
+                {dataLoaded ? simulations.current.slice(0,simsToShow).map((simulation:ISimCard) => (
                   <Link to={(simulation.filetype === 2 ? "/viewvti/" : "/view/") + simulation.id} key={simulation.id}>
                     <SingleCard title={simulation.simtitle} type={1} />
                   </Link>))
@@ -191,12 +288,64 @@ const Home = () => {
 
             <div className="w-full pb-1.5">
               {/* Collections card */}
-              <div className="fade-in-card w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-4 items-center sm:items-start mb-5">
-                <h3 className="text-[18px] md:text-[22px] font-semibold">
-                  Collections
-                </h3>
+              <div className="fade-in-card w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 md:px-7 py-4 flex flex-col space-y-6 items-center sm:items-start mb-5">
+              
+                <div className="flex items-center justify-center md:justify-between w-full flex-wrap">
+                  <h3 className="text-[18px] md:text-[22px] font-semibold mx-5">Collections</h3>
+                  <div className="mx-5"><SearchBar placeholder="Search collections..." onSearch={searchCollections} /></div>
+                </div>
+
+                {(searchedCollections !== null && dataLoaded) &&
+                <div className="my-3 border-b w-full flex flex-col bg-gray-50 border pt-2 pb-4 px-1 sm:px-4 rounded-md">
+                  
+                  <div className="flex justify-between items-center">
+                    <h5 className="font-semibold text-[15px] sm:text-[17px] text-center sm:text-left">Search Results</h5>
+                    <svg className="h-5 w-5 cursor-pointer" onClick={() => setSearchedCollections(null)} stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M354 671h58.9c4.7 0 9.2-2.1 12.3-5.7L512 561.8l86.8 103.5c3 3.6 7.5 5.7 12.3 5.7H670c6.8 0 10.5-7.9 6.1-13.1L553.8 512l122.4-145.9c4.4-5.2.7-13.1-6.1-13.1h-58.9c-4.7 0-9.2 2.1-12.3 5.7L512 462.2l-86.8-103.5c-3-3.6-7.5-5.7-12.3-5.7H354c-6.8 0-10.5 7.9-6.1 13.1L470.2 512 347.9 657.9A7.95 7.95 0 0 0 354 671z"></path><path d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V144c0-17.7-14.3-32-32-32zm-40 728H184V184h656v656z"></path></svg>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    
+                    {searchedCollections!.length > 0 ?
+                    <div className="w-full relative">
+
+                      <Carousel showThumbs={false} showIndicators={false} showStatus={false} 
+                        renderArrowNext={(onClickHandler, hasNext) => (
+                          hasNext && 
+                          <div className="absolute z-[3] top-0 right-0 h-full pointer-events-none flex items-center">
+                            <svg onClick={onClickHandler} className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 text-gray-700 hover:text-gray-500 cursor-pointer" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M210.7 147.6c7.5-7.5 19.8-7.5 27.3 0l95.4 95.7c7.3 7.3 7.5 19.1.6 26.6l-94 94.3c-3.8 3.8-8.7 5.7-13.7 5.7-4.9 0-9.9-1.9-13.6-5.6-7.5-7.5-7.6-19.7 0-27.3l79.9-81.1-81.9-81.1c-7.6-7.4-7.6-19.6 0-27.2z"></path><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm32 0c0-47 18.3-91.2 51.6-124.4C164.8 98.3 209 80 256 80s91.2 18.3 124.4 51.6C413.7 164.8 432 209 432 256s-18.3 91.2-51.6 124.4C347.2 413.7 303 432 256 432s-91.2-18.3-124.4-51.6C98.3 347.2 80 303 80 256z"></path></svg>
+                          </div>
+                        )}
+                        renderArrowPrev={(onClickHandler, hasPrev) => (
+                          hasPrev && 
+                          <div className="absolute z-[3] top-0 left-0 h-full pointer-events-none flex items-center">
+                            <svg onClick={onClickHandler} className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 text-gray-700 hover:text-gray-500 cursor-pointer rotate-180" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M210.7 147.6c7.5-7.5 19.8-7.5 27.3 0l95.4 95.7c7.3 7.3 7.5 19.1.6 26.6l-94 94.3c-3.8 3.8-8.7 5.7-13.7 5.7-4.9 0-9.9-1.9-13.6-5.6-7.5-7.5-7.6-19.7 0-27.3l79.9-81.1-81.9-81.1c-7.6-7.4-7.6-19.6 0-27.2z"></path><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm32 0c0-47 18.3-91.2 51.6-124.4C164.8 98.3 209 80 256 80s91.2 18.3 124.4 51.6C413.7 164.8 432 209 432 256s-18.3 91.2-51.6 124.4C347.2 413.7 303 432 256 432s-91.2-18.3-124.4-51.6C98.3 347.2 80 303 80 256z"></path></svg>
+                          </div>
+                        )}>
+                          
+                          {group(searchedCollections, getSearchFit()).map((groupedColls:ICollCard[], idx:number) => (
+                            <div key={idx} className="w-full flex justify-center">
+
+                              {groupedColls.map((collection) => (
+                              
+                              <SingleCard key={collection.id} title={collection.name} type={2} />
+                              ))}
+
+                            </div>
+                          
+                          ))}
+                      </Carousel>
+                    </div>
+                    :
+                    <div className="w-full flex justify-center font-semibold">
+                      No results
+                    </div>
+                    }
+                  </div>
+                </div>
+                }
+
                 <div className="flex flex-wrap w-full justify-center">
-                  {dataLoaded ? collections.slice(0, collsToShow).map((collection:ICollCard) => (
+                  {dataLoaded ? collections.current.slice(0, collsToShow).map((collection:ICollCard) => (
                   <SingleCard key={collection.id} title={collection.name} type={2} />
                   ))
                   : <div className="h-36 w-36 p-6">

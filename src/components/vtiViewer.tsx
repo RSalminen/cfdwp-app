@@ -335,7 +335,7 @@ const VtiViewer = ({vtiContext, customOptionsContext, onLoadSuccess} : {vtiConte
         
         {/* Left bar */}
         <div className="flex items-center">
-          <div className={`${!optionsVisible && "hidden"} fade-in-card-fast bg-black bg-opacity-90 w-[90%] sm:w-[400px] ml-1 sm:ml-4 py-4 px-4 text-white flex flex-col pointer-events-auto rounded-md border border-emerald-900 shadow-lg shadow-black overflow-y-auto}`}>
+          <div className={`${!optionsVisible && "hidden"} fade-in-card-fast bg-black bg-opacity-90 ml-1 sm:ml-4 py-4 px-4 text-white flex flex-col pointer-events-auto rounded-md border border-emerald-900 shadow-lg shadow-black overflow-y-auto}`}>
             <div className="flex justify-between pb-1 border-b-2">
               <h3 className="text-[17px]">Controller</h3>
               <svg onClick={() => setOptionsVisible(false)} className="w-2 cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M464 352H48c-26.5 0-48 21.5-48 48v32c0 26.5 21.5 48 48 48h416c26.5 0 48-21.5 48-48v-32c0-26.5-21.5-48-48-48z"></path></svg>
@@ -352,11 +352,11 @@ const VtiViewer = ({vtiContext, customOptionsContext, onLoadSuccess} : {vtiConte
                     <ToggleSwitch isActive={shadowActive} onChangeFn={ShadowChanged} />
                   </div>
 
-                  <div className="flex w-full justify-center">
+                  <div className="flex w-full justify-center sm:px-2">
                     <div ref={widgetRef}></div>
                   </div>
 
-                  <div className="flex justify-between space-x-1 w-full">
+                  <div className="flex justify-between space-x-3 w-full">
                     <div className="flex-1"><Range value={spacing} onChangeFn={spacingChanged} text="Spacing" /></div>
                     <div className="flex-1"><Range value={edge} onChangeFn={edgeChanged} text="Edge gradient" /></div>
                   </div>
