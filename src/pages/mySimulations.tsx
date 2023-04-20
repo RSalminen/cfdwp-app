@@ -32,7 +32,7 @@ const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:
     const [selected, setSelected] = useState<ITeacherCollObj | null>(null);
 
     const sendUpdate = async () => {
-        const response = await fileService.updateSimulation(simObj.id, teacherid, selected!.id);
+        const response = await fileService.setToCollection(simObj.id, teacherid, selected!.id);
         if (response) onSuccess();
     }
 
@@ -134,7 +134,7 @@ const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacher
             <td className="py-1 px-1 font-medium min-w-[100px]">{simObj.simtitle}</td>
             <td className="py-1 px-1">{Ifiletype[simObj.filetype]}</td>
             <td className="py-1 px-1">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</td>
-            <td className="py-1 px-1">{simObj.collection_name ? simObj.collection_name : "None"}</td>
+            <td className="py-1 px-1">{"None"}</td>
             <td className="py-1 px-1 w-[0px]">
                 <div ref={ref} className="relative">
                     <svg className={`${isComponentVisible && "stroke-emerald-600"} cursor-pointer`} onClick={() => setIsComponentVisible(!isComponentVisible)} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>

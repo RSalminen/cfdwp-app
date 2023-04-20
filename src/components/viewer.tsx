@@ -26,6 +26,7 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
     
     //I want to stop execution if the user goes back while loading the simulation
     if (hasEnded.current) return;
+
     await viewerHelper.createViewer(vtkContext, customOptionsContext, vtkContainerRef, fileObject.file, fileObject.filetype);
     
     //Clean up if the user goes back after file is loaded and viewer is loading
@@ -43,6 +44,8 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
     }
 
     return () => {
+      
+      //Due to strict mode in React 18, the component get unmounted once at startup in developer mode. Logic below handles this
       if (!(process.env.NODE_ENV === "development")) {
         hasEnded.current = true;
       }

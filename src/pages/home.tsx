@@ -6,6 +6,7 @@ import LoadingSpinner from '../components/loadingSpinner';
 import SearchBar from '../components/searchBar';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
+import WhiteOverlay from '../components/whiteOverlay';
 
 
 interface ISimCard {
@@ -17,6 +18,7 @@ interface ISimCard {
 interface ICollCard {
   name: string;
   id: string;
+  file_ids: number[];
 }
 
 const SingleCard = ({title, type}:{title:string, type:number}) => {
@@ -79,6 +81,8 @@ const Home = () => {
 
   const [searchedSimulations, setSearchedSimulations] = useState<ISimCard[] | null>(null);
   const [searchedCollections, setSearchedCollections] = useState<ICollCard[] | null>(null);
+
+  const [openCollection, setOpenCollection] = useState<ICollCard | null>(null);
 
   const scrambleList = (oldList:ISimCard[] | ICollCard[]) => {
     for (var i = oldList.length - 1; i > 0; i--) {
@@ -190,7 +194,8 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="h-full w-full">
+    <>
+    <div className={`h-full w-full ${openCollection && "overflow-hidden"}`}>
 
       <div className="flex justify-center h-full w-full py-2">
         
@@ -327,7 +332,9 @@ const Home = () => {
 
                               {groupedColls.map((collection) => (
                               
-                              <SingleCard key={collection.id} title={collection.name} type={2} />
+                              <div onClick={() => setOpenCollection(collection)}>
+                                <SingleCard key={collection.id} title={collection.name} type={2} />
+                              </div>
                               ))}
 
                             </div>
@@ -346,7 +353,9 @@ const Home = () => {
 
                 <div className="flex flex-wrap w-full justify-center">
                   {dataLoaded ? collections.current.slice(0, collsToShow).map((collection:ICollCard) => (
-                  <SingleCard key={collection.id} title={collection.name} type={2} />
+                  <div onClick={() => setOpenCollection(collection)}>
+                    <SingleCard key={collection.id} title={collection.name} type={2} />
+                  </div>
                   ))
                   : <div className="h-36 w-36 p-6">
                       <LoadingSpinner />
@@ -360,6 +369,35 @@ const Home = () => {
         </div>
       </div>
     </div>
+
+    {/* Collection simulations list */}
+    {(openCollection && openCollection.file_ids && openCollection.file_ids.length > 0) &&
+      <WhiteOverlay>
+        <div className="bg-white py-3 m-2 px-4 sm:px-10 border rounded-md max-w-[600px] max-h-[80%] overflow-y-auto overflow-x-hidden relative">
+        <svg onClick={() => setOpenCollection(null)} className="absolute top-2 right-1 sm:right-2 h-3 w-3 cursor-pointer" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
+          <div className="flex flex-col space-y-3 items-center">
+            <h3 className="font-semibold">{openCollection.name}</h3>
+            
+            <div className="flex flex-col w-full items-center">
+              {openCollection.file_ids.map((fileId:number) => {
+                const sim : ISimCard | undefined = simulations.current.find((sim) => (parseInt(sim.id) === fileId))
+                
+                if (!sim) return null;
+
+                return (
+                    <div className="w-fit max-w-full px-2 py-1 text-[13px] font-medium">
+                      <Link to={(sim.filetype === 2 ? "/viewvti/" : "/view/") + sim.id} key={sim.id}>
+                        <p className="max-w-full break-words two-lines text-center hover:text-emerald-800">{sim.simtitle}</p>
+                      </Link>
+                    </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </WhiteOverlay>
+    }
+    </>
   );
 }
 

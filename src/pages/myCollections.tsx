@@ -116,7 +116,7 @@ const MyCollections = () => {
             }
             <div className="flex flex-col w-full h-full">
                 <TeacherTopBar teacherid={teacherid!} />
-                <TeacherNav currentPage={3} teacherid={teacherid!} />
+                <TeacherNav currentPage={1} teacherid={teacherid!} />
 
                 <div className="flex-grow flex justify-center items-center">
                     <div className="w-12 h-12">

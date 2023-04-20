@@ -59,13 +59,13 @@ const deleteSimulation = async (simId:string, teacherId:string) => {
     }
 }
 
-const updateSimulation = async (simId:string, teacherId:string, newValue:number) => {
+const setToCollection = async (simId:string, teacherId:string, newValue:number) => {
 
     try {
         const response = await axiosinstance({
             method:"put",
-            url:"/api/teacher/updatefilecollection",
-            data: { simId, teacherId, newValue},
+            url:"/api/teacher/setToCollection",
+            data: { simId, teacherId, collectionId:newValue},
             headers: {
                 Authorization: `Bearer ${userService.getToken()}`
             }
@@ -111,7 +111,7 @@ const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetSt
        params: {simId: simId},
     });
 
-    const { url, filetype, notes, teacher_options } = response.data;
+    const { url, simName, filetype, notes, teacher_options } = response.data;
 
     const signedUrl = url;
 
@@ -125,7 +125,7 @@ const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetSt
         },
     });
     
-    return {file: fileResponse.data, filetype, notes, teacher_options};
+    return {simName, file: fileResponse.data, filetype, notes, teacher_options};
 }
 
 const updateContent = async (widgets:IWidget[], teacherOptions:ITeacherOptions, simId:string) => {
@@ -167,7 +167,7 @@ const getAllSims = async () => {
 export const fileService = { 
     postFile, 
     deleteSimulation,
-    updateSimulation,
+    setToCollection,
     getSimulationsByTeacher,
     getFile,
     updateContent,

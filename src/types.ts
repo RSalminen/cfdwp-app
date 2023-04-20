@@ -1,11 +1,8 @@
 import vtkActor from '@kitware/vtk.js/Rendering/Core/Actor';
 import vtkMapper from '@kitware/vtk.js/Rendering/Core/Mapper';
-import vtkOpenGLRenderWindow from '@kitware/vtk.js/Rendering/OpenGL/RenderWindow';
 import vtkRenderWindow from '@kitware/vtk.js/Rendering/Core/RenderWindow';
 import vtkRenderWindowInteractor from '@kitware/vtk.js/Rendering/Core/RenderWindowInteractor';
 import vtkRenderer from '@kitware/vtk.js/Rendering/Core/Renderer';
-import vtkScalarBarActor from '@kitware/vtk.js/Rendering/Core/ScalarBarActor';
-
 
 
 
@@ -31,7 +28,6 @@ export interface ITeacherSimObj {
     simtitle: string,
     added_date: string,
     filetype: number,
-    collection_name: number
 }
 
 export interface IVTKContext {
@@ -54,6 +50,7 @@ export interface ICustomOptions {
 }
 
 export interface IFileObject {
+    simName: string;
     file: File;
     filetype: number;
     notes: IWidget[];
@@ -79,4 +76,9 @@ export interface IVTIContext {
     defaultCamera?:any;
     fullScreenRenderer?:any;
     controllerWidget:any;
+}
+
+export interface IMessage {
+    message:string;
+    status:number;
 }

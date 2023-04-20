@@ -204,12 +204,15 @@ const VtiViewer = ({vtiContext, customOptionsContext, onLoadSuccess} : {vtiConte
 
   const isMobile = useMediaQuery({ query: `(max-width: 640px)` });
 
+  const [simName, setSimName] = useState<string>();
+
 
   const load = async () => {
 
       const fileObject : IFileObject = await fileService.getFile(simid!, setLoadProgress);
       customOptionsContext.current = {notes:fileObject.notes, teacherOptions:fileObject.teacher_options}
       setNotes(fileObject.notes);
+      setSimName(fileObject.simName);
 
       //I want to stop execution if the user goes back while loading the simulation
       if (hasEnded.current) return;
@@ -419,7 +422,7 @@ const VtiViewer = ({vtiContext, customOptionsContext, onLoadSuccess} : {vtiConte
 
       {/* Simulation title */}
       <div className="absolute z-[2] w-full pointer-events-none flex justify-center">
-        <h2 className="text-white text-[20px] ml-5 mt-3 no_selection">A simulation test</h2>
+        <h2 className="text-white text-[20px] ml-5 mt-3 no_selection">{simName}</h2>
       </div>
 
 
