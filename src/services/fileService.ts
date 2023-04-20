@@ -78,6 +78,8 @@ const setToCollection = async (simId:string, teacherId:string, newValue:number) 
         if (err.response?.status === 401) {
             useMyStore.getState().authFailed();
         }
+
+        return false;
     }
 
 }

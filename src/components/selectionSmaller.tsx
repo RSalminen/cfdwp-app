@@ -54,7 +54,7 @@ const SelectionSmaller = ({selectedItem, onChangeFn, thisItem, allItems, light, 
                     </div>
                 </div>
                 
-                <div className={`absolute z-[2] w-full border-b border-x border-emerald-100 shadow-md shadow-gray-800 bg-black ${isComponentVisible ? "visible" : "invisible"}`}>
+                <div className={`absolute z-[2] w-full border-b border-x border-emerald-100 shadow-md shadow-gray-800 bg-black ${isComponentVisible ? "visible" : "hidden"}`}>
                     
                     <div className="relative">
                         <div className="min-h-fit max-h-[300px] overflow-y-auto pb-[1px]">                                

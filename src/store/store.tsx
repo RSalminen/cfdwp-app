@@ -6,6 +6,7 @@ type MyStore = {
     authFailed: () => void;
     reLoginSuccess: () => void;
     message:IMessage;
+    updateMessage: (input:IMessage) => void;
 };
 
 const useMyStore = create<MyStore>((set) => ({

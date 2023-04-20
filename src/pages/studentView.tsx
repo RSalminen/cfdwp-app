@@ -18,8 +18,10 @@ const StudentView = () => {
 
   const [simLoaded, setSimLoaded] = useState<boolean>(false);
 
+  const [simName, setSimName] = useState<string>("");
 
-  const onLoadSuccess = () => {
+
+  const onLoadSuccess = (name:string) => {
     const defaultSource = vtkContext.current?.allData[0];
     const teacherOptions = customOptionsContext.current?.teacherOptions!;
 
@@ -31,6 +33,8 @@ const StudentView = () => {
     if (customOptionsContext.current?.notes) setNotes(customOptionsContext.current?.notes!)
 
     setSimLoaded(true);
+
+    setSimName(name);
     
   }
 
@@ -39,7 +43,7 @@ const StudentView = () => {
     
     <>
       <div className="fixed w-full h-full top-0 left-0">
-        <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded}} >
+        <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName}} >
           <ViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
           <Viewer vtkContext={vtkContext} customOptionsContext={customOptionsContext} onLoadSuccess={onLoadSuccess} />
         </UIContext.Provider>

@@ -55,7 +55,7 @@ const validateToken = async (teacherid:string) => {
             params: {teacherid}
         });
     
-        return response.status;
+        return true;
     } catch (e) {
         const err = e as AxiosError;
         if (err.response?.status === 401) useMyStore.getState().authFailed();

@@ -62,6 +62,7 @@ export interface IUIContext {
     setNotes: React.Dispatch<React.SetStateAction<IWidget[]>>;
     visibleFields: string[] | null;
     simLoaded: boolean;
+    simName: string;
 }
 
 export interface IVTIContext {

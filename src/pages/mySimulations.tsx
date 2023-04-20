@@ -15,6 +15,7 @@ import ConfirmCard from '../components/confirmCard';
 import { ITeacherCollObj, ITeacherSimObj } from '../types';
 import { collectionService } from '../services/collectionService';
 import ButtonCancel from '../components/buttonCancel';
+import MessageBox from '../components/messageBox';
 
 const Ifiletype : { [key:number] : string } = {
     1: "vtp",
@@ -30,10 +31,17 @@ const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:
     const [loading, setLoading] = useState<boolean>(true);
 
     const [selected, setSelected] = useState<ITeacherCollObj | null>(null);
+    const { updateMessage } = useMyStore();
 
     const sendUpdate = async () => {
+        updateMessage({ status:1, message: `Adding ${simObj.simtitle} to the collection ${selected!.name}`});
         const response = await fileService.setToCollection(simObj.id, teacherid, selected!.id);
-        if (response) onSuccess();
+
+        if (response) {
+            updateMessage({ status:3, message: `${simObj.simtitle} added to the collection ${selected!.name}`});
+            onSuccess();
+        }
+        else updateMessage({ status:3, message: `Adding ${simObj.simtitle} to the collection ${selected!.name} failed`})
     }
 
     const loadCollections = async () => {
@@ -94,12 +102,20 @@ const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:
 const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teacherid:string}) => {
     
     const [confirmDeleteActive, setConfirmDeleteActive] = useState<boolean>(false);
-
     const [addToCollectionActive, setAddToCollectionActive] = useState<boolean>(false);
+
+    const { updateMessage } = useMyStore();
    
     const deleteSimulation = async () => {
+        updateMessage({ status:1, message: `Deleting simulation ${simObj.simtitle}`});
         const response = await fileService.deleteSimulation(simObj.id, teacherid);
         setConfirmDeleteActive(false);
+
+        if (response) {
+            updateMessage({ status:2, message: `Simulation ${simObj.simtitle} was deleted`});
+        }
+
+        else updateMessage({ status:3, message: `Deleting simulation ${simObj.simtitle} failed`});
     }
 
     return (
@@ -164,7 +180,7 @@ const MySimulations = () => {
 
     const { teacherid } = useParams();
 
-    const { authHasFailed, reLoginSuccess } = useMyStore();
+    const { authHasFailed, reLoginSuccess, message } = useMyStore();
     
     const loadSimulations = async () => {
  
@@ -229,7 +245,15 @@ const MySimulations = () => {
     //basic page after load
     return (
         <>  
+
             <div className="w-full h-full overflow-y-auto">
+
+                {/* Display message */}
+                {message.status !== 0 &&
+                    <MessageBox />
+                }
+
+                {/* Display the page */}
                 <div className="flex flex-col h-full">
                     
                     <TeacherTopBar teacherid={teacherid!} />

@@ -35,7 +35,7 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
       return;
     }
 
-    onLoadSuccess();
+    onLoadSuccess(fileObject.simName);
   }
 
   useEffect(() => {

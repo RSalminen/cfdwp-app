@@ -8,7 +8,7 @@ import ButtonDark from "./buttonDark";
 import ButtonCancel from "./buttonCancel";
 
 
-const AddFile = ({onReturn} : {onReturn:Function}) => {
+const AddFile = ({onReturn, onSubmit} : {onReturn:Function, onSubmit:Function}) => {
     const [fileToAdd, setFileToAdd] = useState<File>();
     const [simNameInput, setSimNameInput] = useState<string>("");
     const { teacherid } = useParams();
@@ -20,7 +20,7 @@ const AddFile = ({onReturn} : {onReturn:Function}) => {
         e.preventDefault();
         if (!fileToAdd) return;
 
-        fileService.postFile(fileToAdd, filetypeSelection, simNameInput, teacherid!);
+        onSubmit(fileToAdd, filetypeSelection, simNameInput, teacherid!);
     }
 
     const fileSizeFormatter = (size:number) => {

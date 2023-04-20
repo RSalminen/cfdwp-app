@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import AddFile from "./addFile";
 import AddCollection from "./addCollection";
+import { fileService } from "../services/fileService";
+import useMyStore from "../store/store";
 
 const TeacherNav = ({currentPage, teacherid} : {currentPage:number, teacherid:string}) => {
     const routes = [
@@ -11,7 +13,20 @@ const TeacherNav = ({currentPage, teacherid} : {currentPage:number, teacherid:st
 
     const [addSimToggled, setAddSimToggled] = useState<boolean>(false);
     const [createCollToggled, setCreateCollToggled] = useState<boolean>(false);
+
+    const { updateMessage } = useMyStore();
     
+    const onSubmitFile = async (fileToAdd:File, filetypeSelection:string, simNameInput:string, teacherid:string) => {
+
+        setAddSimToggled(false);
+        updateMessage({ status:1, message: `Uploading simulation ${simNameInput}`});
+        const response = await fileService.postFile(fileToAdd, filetypeSelection, simNameInput, teacherid!);
+
+        if (response) updateMessage({ status:2, message: `${simNameInput} uploaded`});
+        else updateMessage({ status:3, message: `${simNameInput} failed to upload`});
+    }
+
+
     return (
         <div className="w-full py-2 flex justify-center bg-gradient-to-r from-gray-100 via-gray-100 to-emerald-100">
             <div className="w-[95%] sm:w-[85%] md:w-[80%] flex justify-between">
@@ -41,7 +56,7 @@ const TeacherNav = ({currentPage, teacherid} : {currentPage:number, teacherid:st
             </div>
 
             {addSimToggled && 
-                <AddFile onReturn={() => setAddSimToggled(false)} />
+                <AddFile onReturn={() => setAddSimToggled(false)} onSubmit={onSubmitFile} />
             }
             {createCollToggled &&
                 <AddCollection onReturn={() => setCreateCollToggled(false)} />

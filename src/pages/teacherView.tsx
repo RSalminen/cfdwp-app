@@ -23,6 +23,8 @@ const TeacherView = () => {
 
   const [simLoaded, setSimLoaded] = useState<boolean>(false);
 
+  const [simName, setSimName] = useState<string>("");
+
   const { authHasFailed, reLoginSuccess } = useMyStore();
 
   const startEffectRun = useRef<boolean>(false);
@@ -47,7 +49,7 @@ const TeacherView = () => {
   }, []);
   
 
-  const onLoadSuccess = () => {
+  const onLoadSuccess = (name:string) => {
     const defaultSource = vtkContext.current?.allData[0];
     const teacherOptions = customOptionsContext.current?.teacherOptions!;
 
@@ -59,6 +61,7 @@ const TeacherView = () => {
     if (customOptionsContext.current?.notes) setNotes(customOptionsContext.current?.notes!)
     
     setSimLoaded(true);
+    setSimName(name)
 
   }
 
@@ -86,14 +89,14 @@ const TeacherView = () => {
 
         <div className="w-full h-full flex">
             <div className="relative w-full h-full">
-              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded}} >
+              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName}} >
                 <ViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
                 <Viewer vtkContext={vtkContext} customOptionsContext={customOptionsContext} onLoadSuccess={onLoadSuccess} />
               </UIContext.Provider>
             </div>
             
             <div>
-              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded}} >
+              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName}} >
                 <TeacherViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
               </UIContext.Provider>
             </div>

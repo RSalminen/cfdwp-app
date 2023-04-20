@@ -41,7 +41,7 @@ const colorSchemes : {[key:string] : string} = {
 
 const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.MutableRefObject<IVTKContext | null>, customOptionsContext : React.MutableRefObject<ICustomOptions | null>}) => {
 
-    const { notes, visibleFields } = useContext(UIContext);
+    const { notes, visibleFields, simName } = useContext(UIContext);
 
     const nodeRef = useRef<any>(null);
 
@@ -70,8 +70,6 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
 
     const representations = ["Surface", "Surface with edge", "Points", "Wireframe"];
     const [activeRepresentation, setActiveRepresentation] = useState<string | null>("Surface");
-
-
 
     const [colorNodes, setColorNodes] = useState<any>([]);
     const [range, setRange] = useState<[number, number] | null>(null);
@@ -453,7 +451,7 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
 
       {/* Simulation title */}
       <div className="absolute z-[2] w-full pointer-events-none flex justify-center">
-        <h2 className="text-white text-[20px] ml-5 mt-3 no_selection">A simulation test</h2>
+        <h2 className="text-white text-[20px] ml-5 mt-3 no_selection">{simName}</h2>
       </div>
 
 

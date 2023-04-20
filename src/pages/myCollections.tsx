@@ -12,6 +12,7 @@ import useComponentVisible from '../hooks/useComponentIsVisible';
 import ButtonDarkSmall from '../components/buttonDarkSmall';
 import useMyStore from '../store/store';
 import { collectionService } from '../services/collectionService';
+import MessageBox from '../components/messageBox';
 
 interface ITeacherCollObj {
     name:string,
@@ -65,7 +66,7 @@ const MyCollections = () => {
 
     const { teacherid } = useParams();
 
-    const { authHasFailed, reLoginSuccess } = useMyStore();
+    const { authHasFailed, reLoginSuccess, message } = useMyStore();
     
     const loadCollections = async () => {
  
@@ -130,14 +131,23 @@ const MyCollections = () => {
     //basic page after load
     return (
         <>  
+            
+
             <div className="w-full h-full overflow-y-auto">
+
+                {/* Display message */}
+                {message.status !== 0 &&
+                    <MessageBox />
+                }
+
+                {/* Display the page */}
                 <div className="flex flex-col h-full">
                     
                     <TeacherTopBar teacherid={teacherid!} />
                     <TeacherNav currentPage={1} teacherid={teacherid!} />
                     
-                    {!authHasFailed && 
                     <div className="w-full h-full overflow-x-auto">
+
                         <div className="flex flex-col items-center mt-4 flex-grow w-[95%] md:w-[85%] mx-auto">
                             <h3 className="mb-2 font-[600] text-[17px]">My Collections</h3>
                             {activeSims.length === 0 ?
@@ -179,7 +189,6 @@ const MyCollections = () => {
                             
                         </div>
                     </div>
-                    }
                 </div>
             </div>
         </>
