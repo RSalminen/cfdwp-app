@@ -13,8 +13,9 @@ export interface IWidget {
 }
 
 export interface ITeacherOptions {
-    restrictFields: string[] | null,
-    color: string,
+    restrictFields?: string[],
+    startingField?: string,
+    startingPreset?: string,
 }
 
 export interface ITeacherCollObj {

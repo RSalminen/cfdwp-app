@@ -1,5 +1,5 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { ICustomOptions, IVTIContext, IWidget } from "../types";
+import { ICustomOptions, ITeacherOptions, IVTIContext, IWidget } from "../types";
 import MultiSelection from "./multiSelection";
 import CustomInput from "./customInput";
 import CustomTextArea from "./customTextArea";
@@ -38,7 +38,7 @@ const VtiTeacherViewerUI = ({vtiContext, customOptionsContext} : {vtiContext:Rea
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [menuTab, setMenuTab] = useState<string>("General");
 
-    const [selectedFields, setSelectedFields] = useState<string[] | null>([]);
+    const [selectedFields, setSelectedFields] = useState<string[]>([]);
     const [widgets, setWidgets] = useState<IWidget[]>([]);
 
     const [titleInput, setTitleInput] = useState<string>("");
@@ -71,28 +71,29 @@ const VtiTeacherViewerUI = ({vtiContext, customOptionsContext} : {vtiContext:Rea
       }
     
       const setCameraToSaved = () => {
-        const { renderer, renderWindow, defaultCamera } : IVTIContext = vtiContext.current!;
-    
-        if (cam === null) {
-          const newCamera :vtkCamera = vtkCamera.newInstance(defaultCamera.current!);
-          renderer!.setActiveCamera(newCamera);
-          renderWindow?.render();
-          return;
+            const { renderer, renderWindow, defaultCamera } : IVTIContext = vtiContext.current!;
+        
+            if (cam === null) {
+            const newCamera :vtkCamera = vtkCamera.newInstance(defaultCamera.current!);
+            renderer!.setActiveCamera(newCamera);
+            renderWindow?.render();
+            return;
+            }
+            
+        
+            const newCamera :vtkCamera = vtkCamera.newInstance(cam!);
+            renderer!.setActiveCamera(newCamera);
+        
+            renderWindow?.render();
+            
         }
         
-    
-        const newCamera :vtkCamera = vtkCamera.newInstance(cam!);
-        renderer!.setActiveCamera(newCamera);
-    
-        renderWindow?.render();
+        const saveChanges = async () => {
+            
         
-      }
-    
-      const saveChanges = async () => {
-        
-        const newTeacherOptions = {
-          restrictFields: selectedFields,
-          color: "jet",
+        //Conditionally adding member to the object if it has been set by the teacher
+        const newTeacherOptions : ITeacherOptions = {
+            ...(selectedFields.length > 0) && {restrictFields: selectedFields},
         }
         await fileService.updateContent(widgets, newTeacherOptions, simid!);
     

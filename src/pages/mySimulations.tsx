@@ -147,7 +147,7 @@ const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacher
     const addedDate = new Date(simObj.added_date);
 
     return(
-        <tr key={simObj.id} className={`${idx%2 === 0 && " bg-gradient-to-r from-emerald-50 to-gray-100"}`}>
+        <tr key={simObj.id} className={`${idx%2 === 0 ? "bg-gradient-to-r from-emerald-50 to-gray-100 hover:from-gray-100 hover:to-emerald-50" : "bg-white hover:bg-gradient-to-r hover:from-white hover:to-emerald-50"}`}>
             <td className="py-1 px-1 font-medium min-w-[100px]">{simObj.simtitle}</td>
             <td className="py-1 px-1">{Ifiletype[simObj.filetype]}</td>
             <td className="py-1 px-1">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</td>
@@ -252,7 +252,7 @@ const MySimulations = () => {
                     {!authHasFailed && 
                     <div className="w-full h-full overflow-x-auto">
                         <div className="flex flex-col items-center mt-4 flex-grow w-[95%] md:w-[85%] mx-auto">
-                            <h3 className="mb-2 font-[600] text-[17px]">My Simulations</h3>
+                            <h3 className="mb-2 font-semibold text-[17px] text-center">My Simulations</h3>
                             {simulationsByTeacher!==null && simulationsByTeacher.length === 0 ?
                             <div className="flex flex-col justify-evenly h-1/2">
                                 <p>You haven't posted any simulations yet</p>

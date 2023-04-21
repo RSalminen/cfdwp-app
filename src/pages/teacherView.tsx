@@ -33,7 +33,7 @@ const TeacherView = () => {
 
   const validateTeacher = async () => {
     const isValid = await userService.validateTeacherSim(simid!);
-    if (isValid) setValidationComplete(true);
+    setValidationComplete(true);
 
     return isValid;
   }

@@ -25,10 +25,15 @@ const StudentView = () => {
     const defaultSource = vtkContext.current?.allData[0];
     const teacherOptions = customOptionsContext.current?.teacherOptions!;
 
-    const allPointFields = defaultSource.getPointData().getArrays().map((ar:vtkDataArray)=> "(p) " + ar.getName());
-    const allCellFields = defaultSource.getCellData().getArrays().map((ar:vtkDataArray)=> "(c) " + ar.getName());
-    
-    setVisibleFields(["Solid color", ...allPointFields, ...allCellFields]);
+    if (teacherOptions.restrictFields && teacherOptions.restrictFields.length > 0) {
+      setVisibleFields(teacherOptions.restrictFields);
+    }
+    else {
+      const allPointFields = defaultSource.getPointData().getArrays().map((ar:vtkDataArray)=> "(p) " + ar.getName());
+      const allCellFields = defaultSource.getCellData().getArrays().map((ar:vtkDataArray)=> "(c) " + ar.getName());
+      
+      setVisibleFields(["Solid color", ...allPointFields, ...allCellFields]);
+    }
 
     if (customOptionsContext.current?.notes) setNotes(customOptionsContext.current?.notes!)
 
