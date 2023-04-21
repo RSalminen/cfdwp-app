@@ -26,39 +26,38 @@ const Ifiletype : { [key:number] : string } = {
 
 const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:ITeacherSimObj, teacherid:string, onCancel:Function, onSuccess:Function}) => {
 
-    const [colls, setColls] = useState<ITeacherCollObj[]>([]);
     const startEffectRun = useRef<boolean>(false);
     const [loading, setLoading] = useState<boolean>(true);
 
     const [selected, setSelected] = useState<ITeacherCollObj | null>(null);
-    const { updateMessage } = useMyStore();
+    const { updateMessage, collectionsByTeacher } = useMyStore();
 
     const sendUpdate = async () => {
         updateMessage({ status:1, message: `Adding ${simObj.simtitle} to the collection ${selected!.name}`});
         const response = await fileService.setToCollection(simObj.id, teacherid, selected!.id);
 
         if (response) {
-            updateMessage({ status:3, message: `${simObj.simtitle} added to the collection ${selected!.name}`});
+            updateMessage({ status:2, message: `${simObj.simtitle} added to the collection ${selected!.name}`});
             onSuccess();
         }
         else updateMessage({ status:3, message: `Adding ${simObj.simtitle} to the collection ${selected!.name} failed`})
     }
 
     const loadCollections = async () => {
-        const teacherData : ITeacherCollObj[] = await collectionService.getCollectionsByTeacher(teacherid);
+        const response = await collectionService.getCollectionsByTeacher(teacherid);
         setLoading(false);
-        if (!teacherData) return;
-
-        setColls(teacherData);
     }
 
     useEffect(() => {
         if (!startEffectRun.current) {
-            loadCollections();
+            if (collectionsByTeacher === null) loadCollections();
+            else setLoading(false);
         }
 
         return () => {startEffectRun.current = true}
-    }, [])
+    }, []);
+
+    const checkExisting = (coll:ITeacherCollObj) => coll.file_ids.includes(parseInt(simObj.id));
 
     return (
         <div className="w-full h-full fixed top-0 left-0 z-[20] bg-white border bg-opacity-90 flex justify-center items-center">
@@ -76,9 +75,9 @@ const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:
                 </div>
                 :
                 <>
-                <div className="flex flex-col max-h-full overflow-y-auto border rounded-sm px-2 py-1 mb-2">
-                    {colls.map((coll, idx) => (
-                        <div onClick={() => setSelected(coll)} className={`${idx%2 === 0 && " bg-gradient-to-r from-emerald-50 to-gray-100"} px-2 cursor-pointer`} key={coll.id}>
+                <div className="flex flex-col max-h-[90%] overflow-y-auto border rounded-sm px-2 py-1 mb-2">
+                    {collectionsByTeacher !== null && collectionsByTeacher.map((coll, idx) => (
+                        <div onClick={() => !checkExisting(coll) && setSelected(coll)} className={`${checkExisting(coll) ? "bg-red-300 cursor-not-allowed" : idx%2 === 0 && "bg-gradient-to-r from-emerald-50 to-gray-100"} px-1 cursor-pointer`} key={coll.id}>
                             {coll.name}
                         </div>
                     ))}
@@ -107,9 +106,11 @@ const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teach
     const { updateMessage } = useMyStore();
    
     const deleteSimulation = async () => {
+
         updateMessage({ status:1, message: `Deleting simulation ${simObj.simtitle}`});
-        const response = await fileService.deleteSimulation(simObj.id, teacherid);
         setConfirmDeleteActive(false);
+
+        const response = await fileService.deleteSimulation(simObj.id, teacherid);
 
         if (response) {
             updateMessage({ status:2, message: `Simulation ${simObj.simtitle} was deleted`});
@@ -167,10 +168,8 @@ const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacher
 
 const MySimulations = () => {
 
-    const [activeSims, setActiveSims] = useState<ITeacherSimObj[]>([]);
-    const allSims = useRef<ITeacherSimObj[]>([]);
-
     const simsPerPage = 20;
+
     const [activePage, setActivePage] = useState<number>(1);
     
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -180,24 +179,21 @@ const MySimulations = () => {
 
     const { teacherid } = useParams();
 
-    const { authHasFailed, reLoginSuccess, message } = useMyStore();
+    const { authHasFailed, reLoginSuccess, message, simulationsByTeacher } = useMyStore();
     
     const loadSimulations = async () => {
  
-        const teacherData : ITeacherSimObj[] = await fileService.getSimulationsByTeacher(teacherid!);
-        if (!teacherData) return;
-
-        if (teacherData.length >= simsPerPage) setActiveSims(teacherData.slice(0,simsPerPage));
-        else setActiveSims(teacherData);
-
-        allSims.current = teacherData;
+        const response = await fileService.getSimulationsByTeacher(teacherid!);
+        if (!response) return;
+        
         setLoaded(true);
     }
 
     useEffect(() => {
         if (!ranStart.current) {
             validateHelper.checkToken();
-            loadSimulations();
+            if (simulationsByTeacher === null) loadSimulations();
+            else setLoaded(true);
         }
         return () => {ranStart.current = true}
     }, []);
@@ -215,12 +211,6 @@ const MySimulations = () => {
             navigate(`/teacher/${tokenId}`);
         }
     }
-
-    useEffect(() => {
-        if (allSims.current.length > 0) {
-            setActiveSims(allSims.current.slice((activePage-1) * simsPerPage, activePage * simsPerPage));
-        }
-    }, [activePage])
 
     //Loading view and login fallback
     if (!loaded || authHasFailed) return (
@@ -263,7 +253,7 @@ const MySimulations = () => {
                     <div className="w-full h-full overflow-x-auto">
                         <div className="flex flex-col items-center mt-4 flex-grow w-[95%] md:w-[85%] mx-auto">
                             <h3 className="mb-2 font-[600] text-[17px]">My Simulations</h3>
-                            {activeSims.length === 0 ?
+                            {simulationsByTeacher!==null && simulationsByTeacher.length === 0 ?
                             <div className="flex flex-col justify-evenly h-1/2">
                                 <p>You haven't posted any simulations yet</p>
                                 <ButtonDark btnText="Lets go add a simulation!" fullWidth={true} onClickFn={() => {navigate(`/teacher/${teacherid}/addfile`)}} />
@@ -285,15 +275,15 @@ const MySimulations = () => {
                                             </thead>
 
                                             <tbody className="border border-gray-300">
-                                                {activeSims.map((simObj:ITeacherSimObj, idx:number) => (
-                                                    <SimulationsRow key={simObj.simtitle} simObj={simObj} teacherid={teacherid!} idx={idx} />
+                                                {simulationsByTeacher !== null && simulationsByTeacher.slice(simsPerPage*(activePage-1), simsPerPage*activePage).map((simObj:ITeacherSimObj, idx:number) => (
+                                                    <SimulationsRow key={simObj.id} simObj={simObj} teacherid={teacherid!} idx={idx} />
                                                 ))}
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                {allSims.current.length > 20 && <div className="flex space-x-2 mt-3 pl-1 md:pl-4">
-                                    {Array.from(Array(Math.ceil(allSims.current.length / simsPerPage)), (e,i) => (
+                                {simulationsByTeacher !== null && simulationsByTeacher.length > 20 && <div className="flex space-x-2 mt-3 pl-1 md:pl-4">
+                                    {Array.from(Array(Math.ceil(simulationsByTeacher.length / simsPerPage)), (e,i) => (
                                         activePage === (i+1) 
                                         ? <div key={i} className="border-b border-emerald-600 h-[21px] flex items-center">{i + 1}</div>
                                         : <div key={i} onClick={() => setActivePage(i+1)} className="cursor-pointer text-gray-700 h-[20px] flex items-center">{i+1}</div>

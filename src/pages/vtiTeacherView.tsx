@@ -33,7 +33,7 @@ const VtiTeacherView = () => {
 
     const validateTeacher = async () => {
         const isValid = await userService.validateTeacherSim(simid!);
-        if (isValid) setValidationComplete(true);
+        setValidationComplete(true);
     
         return isValid;
     }
@@ -49,7 +49,6 @@ const VtiTeacherView = () => {
     }, []);
 
 
-
     const onLoginSuccess = async() => {
 
         if (await validateTeacher()) {
@@ -57,7 +56,7 @@ const VtiTeacherView = () => {
         }
       }
     
-    if (!validationComplete) return (
+    if (authHasFailed && validationComplete) return (
         <LoginFallback onLoginSuccess={() => onLoginSuccess()} />
     )
 

@@ -16,16 +16,6 @@ const TeacherNav = ({currentPage, teacherid} : {currentPage:number, teacherid:st
 
     const { updateMessage } = useMyStore();
     
-    const onSubmitFile = async (fileToAdd:File, filetypeSelection:string, simNameInput:string, teacherid:string) => {
-
-        setAddSimToggled(false);
-        updateMessage({ status:1, message: `Uploading simulation ${simNameInput}`});
-        const response = await fileService.postFile(fileToAdd, filetypeSelection, simNameInput, teacherid!);
-
-        if (response) updateMessage({ status:2, message: `${simNameInput} uploaded`});
-        else updateMessage({ status:3, message: `${simNameInput} failed to upload`});
-    }
-
 
     return (
         <div className="w-full py-2 flex justify-center bg-gradient-to-r from-gray-100 via-gray-100 to-emerald-100">
@@ -56,10 +46,10 @@ const TeacherNav = ({currentPage, teacherid} : {currentPage:number, teacherid:st
             </div>
 
             {addSimToggled && 
-                <AddFile onReturn={() => setAddSimToggled(false)} onSubmit={onSubmitFile} />
+                <AddFile onReturn={() => setAddSimToggled(false)} onSubmit={() => setAddSimToggled(false)} />
             }
             {createCollToggled &&
-                <AddCollection onReturn={() => setCreateCollToggled(false)} />
+                <AddCollection onReturn={() => setCreateCollToggled(false)} onSubmit={() => setCreateCollToggled(false)} />
             }
         </div>
     )

@@ -19,8 +19,9 @@ export interface ITeacherOptions {
 
 export interface ITeacherCollObj {
     id: number,
-    name: number,
+    name: string,
     date_added: string,
+    file_ids:number[]
 }
 
 export interface ITeacherSimObj {

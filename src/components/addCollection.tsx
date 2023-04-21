@@ -4,17 +4,29 @@ import { useState } from "react";
 import ButtonDark from "./buttonDark";
 import ButtonCancel from "./buttonCancel";
 import { collectionService } from "../services/collectionService";
+import useMyStore from "../store/store";
 
-const AddCollection = ({onReturn} : {onReturn:Function}) => {
+const AddCollection = ({onReturn, onSubmit} : {onReturn:Function, onSubmit:Function}) => {
 
     const {teacherid} = useParams();
-    const [collectionTitle, setCollectionTitle] = useState<string>("")
+    const [collectionTitle, setCollectionTitle] = useState<string>("");
+
+    const { updateMessage } = useMyStore();
 
     const submitCollection = async (e:React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
+
+        onSubmit();
+
         if (collectionTitle.length === 0) return;
 
-        collectionService.postCollection(collectionTitle, teacherid!);
+
+        updateMessage({ status:1, message: `Creating collection ${collectionTitle}`});
+
+        const response = await collectionService.postCollection(collectionTitle, teacherid!);
+
+        if (response) updateMessage({ status:2, message: `${collectionTitle} uploaded`});
+        else updateMessage({ status:3, message: `Creating collection ${collectionTitle} failed`});
 
     }
 
@@ -29,7 +41,7 @@ const AddCollection = ({onReturn} : {onReturn:Function}) => {
                     <CustomInput currentValue={collectionTitle} labelText="Name" onChange={(e:any) => setCollectionTitle(e.target.value)} />
 
                     <div className="flex w-[90%] space-x-2 items-center">
-                        <ButtonDark btnText="Submit" onClickFn={submitCollection} fullWidth={true} />
+                        <ButtonDark btnText="Submit" onClickFn={submitCollection} fullWidth={true} deactive={collectionTitle.length === 0} />
                         <ButtonCancel btnText="Cancel" onClickFn={() => onReturn()} fullWidth={true} />
                     </div>
 

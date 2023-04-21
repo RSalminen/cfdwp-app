@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { ITeacherOptions, IWidget } from "../types";
+import { ITeacherOptions, ITeacherSimObj, IWidget } from "../types";
 import axiosinstance from "./customAxios";
 import { userService } from "./userService";
 import useMyStore from "../store/store";
@@ -29,6 +29,8 @@ const postFile = async (file:File, fileType:string, simName:string, teacherId:st
             }
         });
 
+        getSimulationsByTeacher(teacherId);
+
         return response.status === 200;
     } catch (e) {
         const err = e as AxiosError;
@@ -49,6 +51,9 @@ const deleteSimulation = async (simId:string, teacherId:string) => {
             }
         });
 
+        getSimulationsByTeacher(teacherId);
+
+
         return response.status;
 
     } catch (e) {
@@ -56,6 +61,8 @@ const deleteSimulation = async (simId:string, teacherId:string) => {
         if (err.response?.status === 401) {
             useMyStore.getState().authFailed();
         }
+
+        return false;
     }
 }
 
@@ -70,6 +77,8 @@ const setToCollection = async (simId:string, teacherId:string, newValue:number) 
                 Authorization: `Bearer ${userService.getToken()}`
             }
         });
+
+        getSimulationsByTeacher(teacherId);
 
         return true;
 
@@ -94,7 +103,9 @@ const getSimulationsByTeacher = async (teacherId:string) => {
             headers: {Authorization: `Bearer ${userService.getToken()}`}
         });
 
-        return response.data;
+        useMyStore.getState().setSimulationsByTeacher(response.data);
+
+        return true;
 
     } catch (e) {
         const err = e as AxiosError;

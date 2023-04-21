@@ -6,6 +6,7 @@ import Dropzone from "react-dropzone";
 import Selection from "./selection";
 import ButtonDark from "./buttonDark";
 import ButtonCancel from "./buttonCancel";
+import useMyStore from "../store/store";
 
 
 const AddFile = ({onReturn, onSubmit} : {onReturn:Function, onSubmit:Function}) => {
@@ -15,12 +16,21 @@ const AddFile = ({onReturn, onSubmit} : {onReturn:Function, onSubmit:Function}) 
 
     const [filetypeSelection, setFiletypeSelection] = useState<string>(".vtp");
 
+    const { updateMessage } = useMyStore();
 
-    const submitFile = (e:MouseEvent<HTMLButtonElement>) => {
+
+    const submitFile = async (e:MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         if (!fileToAdd) return;
 
-        onSubmit(fileToAdd, filetypeSelection, simNameInput, teacherid!);
+        onSubmit();
+
+        updateMessage({ status:1, message: `Uploading simulation ${simNameInput}`});
+        const response = await fileService.postFile(fileToAdd, filetypeSelection, simNameInput, teacherid!);
+
+        if (response) updateMessage({ status:2, message: `${simNameInput} uploaded`});
+        else updateMessage({ status:3, message: `${simNameInput} failed to upload`});
+
     }
 
     const fileSizeFormatter = (size:number) => {
@@ -82,7 +92,7 @@ const AddFile = ({onReturn, onSubmit} : {onReturn:Function, onSubmit:Function}) 
                     </div>
 
                     <div className="flex w-[90%] space-x-2">
-                        <ButtonDark btnText="Submit" onClickFn={submitFile} fullWidth={true} />
+                        <ButtonDark btnText="Submit" onClickFn={submitFile} fullWidth={true} deactive={simNameInput.length === 0 || !fileToAdd} />
                         <ButtonCancel btnText="Cancel" onClickFn={() => onReturn()} fullWidth={true} />
                     </div>
 

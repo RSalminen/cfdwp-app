@@ -13,19 +13,42 @@ import ButtonDarkSmall from '../components/buttonDarkSmall';
 import useMyStore from '../store/store';
 import { collectionService } from '../services/collectionService';
 import MessageBox from '../components/messageBox';
+import { ITeacherCollObj } from '../types';
+import ConfirmCard from '../components/confirmCard';
 
-interface ITeacherCollObj {
-    name:string,
-    date_added: string,
-}
 
-const CollectionActionsCard = ({collObj, teacherid}:{collObj:ITeacherCollObj, teacherid:string}) => (
-    <div className="absolute border shadow-md translate-x-[-65px] px-3 py-2 bg-white rounded-sm">
-        <div className="flex flex-col space-y-1">
-            <ButtonDarkSmall btnText="Delete" onClickFn={() => {}} fullWidth={true} />
+const CollectionActionsCard = ({collObj, teacherid}:{collObj:ITeacherCollObj, teacherid:string}) => {
+
+    const [confirmDeleteActive, setConfirmDeleteActive] = useState<boolean>(false);
+
+    const { updateMessage } = useMyStore();
+
+    const deleteCollection = async () => {
+        updateMessage({ status:1, message: `Deleting simulation ${collObj.name}`});
+        setConfirmDeleteActive(false);
+        
+        const response = await collectionService.deleteCollection(collObj.id, teacherid);
+
+        if (response) {
+            updateMessage({ status:2, message: `${collObj.name} deleted`});
+        }
+
+        else updateMessage({ status:3, message: `Deleting simulation ${collObj.name} failed`});
+    }
+
+    return (
+        <>
+        {confirmDeleteActive && 
+            <ConfirmCard message="Are you sure you want to delete simulation" itemName={collObj.name} onConfirm={deleteCollection} onCancel={() => setConfirmDeleteActive(false)} />
+        }
+        <div className="absolute border shadow-md translate-x-[-65px] px-3 py-2 bg-white rounded-sm">
+            <div className="flex flex-col space-y-1">
+                <ButtonDarkSmall btnText="Delete" onClickFn={() => setConfirmDeleteActive(true)} fullWidth={true} />
+            </div>
         </div>
-    </div>
-)
+        </>
+    )
+}
 
 const CollectionsRow = ({collObj, teacherid, idx}:{collObj:ITeacherCollObj, teacherid:string, idx:number}) => {
 
@@ -53,10 +76,7 @@ const CollectionsRow = ({collObj, teacherid, idx}:{collObj:ITeacherCollObj, teac
 
 const MyCollections = () => {
 
-    const [activeSims, setActiveSims] = useState<ITeacherCollObj[]>([]);
-    const allSims = useRef<ITeacherCollObj[]>([]);
-
-    const simsPerPage = 20;
+    const collsPerPage = 20;
     const [activePage, setActivePage] = useState<number>(1);
     
     const [loaded, setLoaded] = useState<boolean>(false);
@@ -66,24 +86,21 @@ const MyCollections = () => {
 
     const { teacherid } = useParams();
 
-    const { authHasFailed, reLoginSuccess, message } = useMyStore();
+    const { authHasFailed, reLoginSuccess, message, collectionsByTeacher } = useMyStore();
     
     const loadCollections = async () => {
  
-        const teacherData : ITeacherCollObj[] = await collectionService.getCollectionsByTeacher(teacherid!)
-        if (!teacherData) return;
+        const response = await collectionService.getCollectionsByTeacher(teacherid!)
+        if (!response) return;
 
-        if (teacherData.length >= simsPerPage) setActiveSims(teacherData.slice(0,simsPerPage));
-        else setActiveSims(teacherData);
-
-        allSims.current = teacherData;
         setLoaded(true);
     }
 
     useEffect(() => {
         if (!ranStart.current) {
             validateHelper.checkToken();
-            loadCollections();
+            if (collectionsByTeacher === null) loadCollections();
+            else setLoaded(true);
         }
         return () => {ranStart.current = true}
     }, []);
@@ -101,12 +118,6 @@ const MyCollections = () => {
             navigate(`/teacher/${tokenId}`);
         }
     }
-
-    useEffect(() => {
-        if (allSims.current.length > 0) {
-            setActiveSims(allSims.current.slice((activePage-1) * simsPerPage, activePage * simsPerPage));
-        }
-    }, [activePage])
 
     //Loading view and login fallback
     if (!loaded || authHasFailed) return (
@@ -150,7 +161,7 @@ const MyCollections = () => {
 
                         <div className="flex flex-col items-center mt-4 flex-grow w-[95%] md:w-[85%] mx-auto">
                             <h3 className="mb-2 font-[600] text-[17px]">My Collections</h3>
-                            {activeSims.length === 0 ?
+                            {collectionsByTeacher !== null && collectionsByTeacher.length === 0 ?
                             <div className="flex flex-col justify-evenly h-1/2">
                                 <p>You haven't posted any simulations yet</p>
                                 <ButtonDark btnText="Lets go add a simulation!" fullWidth={true} onClickFn={() => {navigate(`/teacher/${teacherid}/addfile`)}} />
@@ -170,15 +181,15 @@ const MyCollections = () => {
                                             </thead>
 
                                             <tbody className="border border-gray-300">
-                                                {activeSims.map((collObj:ITeacherCollObj, idx:number) => (
-                                                    <CollectionsRow key={collObj.name} collObj={collObj} teacherid={teacherid!} idx={idx} />
+                                                {collectionsByTeacher !== null && collectionsByTeacher.slice(collsPerPage*(activePage-1), collsPerPage*activePage).map((collObj:ITeacherCollObj, idx:number) => (
+                                                    <CollectionsRow key={collObj.id} collObj={collObj} teacherid={teacherid!} idx={idx} />
                                                 ))}
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
-                                {allSims.current.length > 20 && <div className="flex space-x-2 mt-3 pl-1 md:pl-4">
-                                    {Array.from(Array(Math.ceil(allSims.current.length / simsPerPage)), (e,i) => (
+                                {collectionsByTeacher !== null && collectionsByTeacher.length > 20 && <div className="flex space-x-2 mt-3 pl-1 md:pl-4">
+                                    {Array.from(Array(Math.ceil(collectionsByTeacher.length / collsPerPage)), (e,i) => (
                                         activePage === (i+1) 
                                         ? <div key={i} className="border-b border-emerald-600 h-[21px] flex items-center">{i + 1}</div>
                                         : <div key={i} onClick={() => setActivePage(i+1)} className="cursor-pointer text-gray-700 h-[20px] flex items-center">{i+1}</div>

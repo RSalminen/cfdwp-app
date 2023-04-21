@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { IMessage } from "../types";
+import { IMessage, ITeacherCollObj, ITeacherSimObj } from "../types";
 
 type MyStore = {
     authHasFailed: boolean;
@@ -7,6 +7,10 @@ type MyStore = {
     reLoginSuccess: () => void;
     message:IMessage;
     updateMessage: (input:IMessage) => void;
+    simulationsByTeacher:ITeacherSimObj[] | null;
+    setSimulationsByTeacher: (input:ITeacherSimObj[]) => void;
+    collectionsByTeacher:ITeacherCollObj[] | null;
+    setCollectionsByTeacher: (input:ITeacherCollObj[]) => void;
 };
 
 const useMyStore = create<MyStore>((set) => ({
@@ -18,8 +22,12 @@ const useMyStore = create<MyStore>((set) => ({
         message:"",
         status: 0,
     },
-    updateMessage: (input:IMessage) => set(() => ({ message: input }))
+    updateMessage: (input:IMessage) => set(() => ({ message: input })),
+    simulationsByTeacher: null,
+    setSimulationsByTeacher: (input:ITeacherSimObj[]) => set({ simulationsByTeacher: input}),
+    collectionsByTeacher: null,
+    setCollectionsByTeacher: (input:ITeacherCollObj[]) => set({ collectionsByTeacher: input })
 
-}))
+}));
 
 export default useMyStore;

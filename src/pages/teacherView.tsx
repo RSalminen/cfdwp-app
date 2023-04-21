@@ -72,7 +72,7 @@ const TeacherView = () => {
     }
   }
 
-  if (!validationComplete) return (
+  if (authHasFailed && validationComplete) return (
     <LoginFallback onLoginSuccess={() => onLoginSuccess()} />
   )
 

@@ -3,7 +3,7 @@ import axiosinstance from "./customAxios";
 import { userService } from "./userService";
 import useMyStore from "../store/store";
 
-const postCollection = async (title:string, teacherid:string) => {
+const postCollection = async (title:string, teacherId:string) => {
 
     const postDate = (new Date()).toISOString();
     try {
@@ -12,11 +12,33 @@ const postCollection = async (title:string, teacherid:string) => {
             url:"/api/teacher/postcollection",
             data: {
                 title,
-                teacherid,
+                teacherId,
                 postDate,
             },
             headers: {Authorization: `Bearer ${userService.getToken()}`}
         });
+
+        getCollectionsByTeacher(teacherId);
+        return response.status === 200; 
+    } catch (e) {
+        const err = e as AxiosError;
+        if (err.response?.status === 401) useMyStore.getState().authFailed();
+    }
+}
+
+const deleteCollection = async (collectionId:number, teacherId:string) => {
+    try {
+        const response = await axiosinstance({
+            method:"delete",
+            url:"/api/teacher/deleteCollection",
+            params: {
+                collectionId,
+                teacherId
+            },
+            headers: {Authorization: `Bearer ${userService.getToken()}`}
+        });
+
+        getCollectionsByTeacher(teacherId);
 
         return response.status === 200; 
     } catch (e) {
@@ -35,11 +57,16 @@ const getCollectionsByTeacher = async (teacherId:string) => {
             headers: { Authorization: `Bearer ${userService.getToken()}` }
         });
 
-        return response.data;
+        useMyStore.getState().setCollectionsByTeacher(response.data);
+
+        return true;
     } catch (e) {
         const err = e as AxiosError;
         if (err.response?.status === 401) useMyStore.getState().authFailed();
+
+        return false;
     }
 }
 
-export const collectionService = { postCollection, getCollectionsByTeacher }
+
+export const collectionService = { postCollection, deleteCollection, getCollectionsByTeacher }
