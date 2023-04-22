@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useState } from "react";
-import useComponentVisible from "../hooks/useComponentIsVisible";
+import useComponentVisible from "../../hooks/useComponentIsVisible";
 
-const MultiSelection = ({selectedItems, setSelectedItems, allItems}: {selectedItems:string[], setSelectedItems:Dispatch<SetStateAction<string[] | null>>, allItems:string[]}) => {
+const MultiSelection = ({selectedItems, setSelectedItems, allItems}: {selectedItems:string[], setSelectedItems:Dispatch<SetStateAction<string[]>>, allItems:string[]}) => {
     
     const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
 
@@ -17,10 +17,10 @@ const MultiSelection = ({selectedItems, setSelectedItems, allItems}: {selectedIt
 
     return (
         <div className="w-full relative">
-            <div ref={ref} className="my-2">
-                <div className="py-2 px-2 flex items-center text-[15px] lg:cursor-pointer border border-black w-full rounded-t-sm" onClick={() => setIsComponentVisible(!isComponentVisible)}>
+            <div ref={ref}>
+                <div className="py-2 px-2 flex items-center text-[14px] lg:cursor-pointer border border-black w-full rounded-t-sm" onClick={() => setIsComponentVisible(!isComponentVisible)}>
                     {selectedItems.length === 0 ?
-                    <div className="text-gray-600">Select Fields...</div>
+                    <div className="text-gray-700">Select Fields...</div>
                     :
                     <div className='w-full flex flex-wrap'>{selectedItems.map((item:string, idx:number) => 
                         <div key={item + idx} className="flex items-center text-[11px] text-black mx-0.5 my-0.5 pl-1 pr-[2px] bg-gray-300 rounded-[2px]">
@@ -39,10 +39,10 @@ const MultiSelection = ({selectedItems, setSelectedItems, allItems}: {selectedIt
                         
                         <div className="relative">
                             <div className="min-h-fit max-h-[300px] overflow-y-auto pb-[1px]">
-                                <div onClick={() => selectedItems.length === allItems.length ? setSelectedItems([]) : setSelectedItems(allItems)} className={`font-semibold block text-[13px] px-2.5 py-1 w-full lg:cursor-pointer ${selectedItems.length === allItems.length ? "bg-blue-100 hover:bg-blue-50" : "bg-white lg:hover:bg-gray-400"}`}>All fields</div>
+                                <div onClick={() => selectedItems.length === allItems.length ? setSelectedItems([]) : setSelectedItems(allItems)} className={`font-semibold block text-[13px] px-2.5 py-1 w-full lg:cursor-pointer ${selectedItems.length === allItems.length ? "bg-blue-100 hover:bg-blue-50" : "bg-white lg:hover:bg-gray-300"}`}>All fields</div>
                                 
                                 {allItems.map((item:string) => 
-                                    <div key={item} onClick={() => addItem(item)} className={`my-[-1px] text-[13px] h-[30px] px-2.5 py-1 w-full ${!selectedItems.includes(item) && "lg:hover:bg-gray-400"} lg:cursor-pointer ${selectedItems.includes(item) ? "bg-blue-100 hover:bg-blue-50" : "bg-white"}`}>{item}</div>
+                                    <div key={item} onClick={() => addItem(item)} className={`my-[-1px] text-[13px] h-[30px] px-2.5 py-1 w-full ${!selectedItems.includes(item) && "lg:hover:bg-gray-300"} lg:cursor-pointer ${selectedItems.includes(item) ? "bg-blue-100 hover:bg-blue-50" : "bg-white"}`}>{item}</div>
                                 )}
                             </div>
                         </div>

@@ -116,7 +116,7 @@ const getSimulationsByTeacher = async (teacherId:string) => {
     
 }
 
-const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetStateAction<number>>) => {
+const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetStateAction<number>>, setOptionsLoaded?:React.Dispatch<React.SetStateAction<boolean>>) => {
 
     const response = await axiosinstance({
        method: "get",
@@ -125,6 +125,8 @@ const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetSt
     });
 
     const { url, simName, filetype, notes, teacher_options } = response.data;
+
+    setOptionsLoaded!(true);
 
     const signedUrl = url;
 

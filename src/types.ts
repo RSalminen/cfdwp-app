@@ -65,6 +65,8 @@ export interface IUIContext {
     visibleFields: string[] | null;
     simLoaded: boolean;
     simName: string;
+    optionsLoaded:boolean;
+    setOptionsLoaded:React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface IVTIContext {

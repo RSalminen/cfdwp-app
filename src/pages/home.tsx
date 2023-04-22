@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom';
 import { useMediaQuery } from 'react-responsive'
 import { useEffect, useRef, useState } from 'react';
 import { fileService } from '../services/fileService';
-import LoadingSpinner from '../components/loadingSpinner';
-import SearchBar from '../components/searchBar';
+import LoadingSpinner from '../components/uiComponents/loadingSpinner';
+import SearchBar from '../components/uiComponents/searchBar';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
-import WhiteOverlay from '../components/whiteOverlay';
+import WhiteOverlay from '../components/uiComponents/whiteOverlay';
 
 
 interface ISimCard {
@@ -241,13 +241,13 @@ const Home = () => {
                   <div className="w-full relative">
 
                     <Carousel showThumbs={false} showIndicators={false} showStatus={false} 
-                      renderArrowNext={(onClickHandler, hasNext) => (
+                      renderArrowNext={(onClickHandler:any, hasNext:boolean) => (
                         hasNext && 
                         <div className="absolute z-[3] top-0 right-0 h-full pointer-events-none flex items-center">
                           <svg onClick={onClickHandler} className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 text-gray-700 hover:text-gray-500 cursor-pointer" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M210.7 147.6c7.5-7.5 19.8-7.5 27.3 0l95.4 95.7c7.3 7.3 7.5 19.1.6 26.6l-94 94.3c-3.8 3.8-8.7 5.7-13.7 5.7-4.9 0-9.9-1.9-13.6-5.6-7.5-7.5-7.6-19.7 0-27.3l79.9-81.1-81.9-81.1c-7.6-7.4-7.6-19.6 0-27.2z"></path><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm32 0c0-47 18.3-91.2 51.6-124.4C164.8 98.3 209 80 256 80s91.2 18.3 124.4 51.6C413.7 164.8 432 209 432 256s-18.3 91.2-51.6 124.4C347.2 413.7 303 432 256 432s-91.2-18.3-124.4-51.6C98.3 347.2 80 303 80 256z"></path></svg>
                         </div>
                       )}
-                      renderArrowPrev={(onClickHandler, hasPrev) => (
+                      renderArrowPrev={(onClickHandler:any, hasPrev:boolean) => (
                         hasPrev && 
                         <div className="absolute z-[3] top-0 left-0 h-full pointer-events-none flex items-center">
                           <svg onClick={onClickHandler} className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 text-gray-700 hover:text-gray-500 cursor-pointer rotate-180" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M210.7 147.6c7.5-7.5 19.8-7.5 27.3 0l95.4 95.7c7.3 7.3 7.5 19.1.6 26.6l-94 94.3c-3.8 3.8-8.7 5.7-13.7 5.7-4.9 0-9.9-1.9-13.6-5.6-7.5-7.5-7.6-19.7 0-27.3l79.9-81.1-81.9-81.1c-7.6-7.4-7.6-19.6 0-27.2z"></path><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm32 0c0-47 18.3-91.2 51.6-124.4C164.8 98.3 209 80 256 80s91.2 18.3 124.4 51.6C413.7 164.8 432 209 432 256s-18.3 91.2-51.6 124.4C347.2 413.7 303 432 256 432s-91.2-18.3-124.4-51.6C98.3 347.2 80 303 80 256z"></path></svg>
@@ -314,13 +314,13 @@ const Home = () => {
                     <div className="w-full relative">
 
                       <Carousel showThumbs={false} showIndicators={false} showStatus={false} 
-                        renderArrowNext={(onClickHandler, hasNext) => (
+                        renderArrowNext={(onClickHandler:any, hasNext:boolean) => (
                           hasNext && 
                           <div className="absolute z-[3] top-0 right-0 h-full pointer-events-none flex items-center">
                             <svg onClick={onClickHandler} className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 text-gray-700 hover:text-gray-500 cursor-pointer" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M210.7 147.6c7.5-7.5 19.8-7.5 27.3 0l95.4 95.7c7.3 7.3 7.5 19.1.6 26.6l-94 94.3c-3.8 3.8-8.7 5.7-13.7 5.7-4.9 0-9.9-1.9-13.6-5.6-7.5-7.5-7.6-19.7 0-27.3l79.9-81.1-81.9-81.1c-7.6-7.4-7.6-19.6 0-27.2z"></path><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm32 0c0-47 18.3-91.2 51.6-124.4C164.8 98.3 209 80 256 80s91.2 18.3 124.4 51.6C413.7 164.8 432 209 432 256s-18.3 91.2-51.6 124.4C347.2 413.7 303 432 256 432s-91.2-18.3-124.4-51.6C98.3 347.2 80 303 80 256z"></path></svg>
                           </div>
                         )}
-                        renderArrowPrev={(onClickHandler, hasPrev) => (
+                        renderArrowPrev={(onClickHandler:any, hasPrev:boolean) => (
                           hasPrev && 
                           <div className="absolute z-[3] top-0 left-0 h-full pointer-events-none flex items-center">
                             <svg onClick={onClickHandler} className="pointer-events-auto w-6 h-6 sm:w-8 sm:h-8 text-gray-700 hover:text-gray-500 cursor-pointer rotate-180" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 512 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M210.7 147.6c7.5-7.5 19.8-7.5 27.3 0l95.4 95.7c7.3 7.3 7.5 19.1.6 26.6l-94 94.3c-3.8 3.8-8.7 5.7-13.7 5.7-4.9 0-9.9-1.9-13.6-5.6-7.5-7.5-7.6-19.7 0-27.3l79.9-81.1-81.9-81.1c-7.6-7.4-7.6-19.6 0-27.2z"></path><path d="M48 256c0 114.9 93.1 208 208 208s208-93.1 208-208S370.9 48 256 48 48 141.1 48 256zm32 0c0-47 18.3-91.2 51.6-124.4C164.8 98.3 209 80 256 80s91.2 18.3 124.4 51.6C413.7 164.8 432 209 432 256s-18.3 91.2-51.6 124.4C347.2 413.7 303 432 256 432s-91.2-18.3-124.4-51.6C98.3 347.2 80 303 80 256z"></path></svg>
@@ -374,7 +374,7 @@ const Home = () => {
     {(openCollection && openCollection.file_ids && openCollection.file_ids.length > 0) &&
       <WhiteOverlay>
         <div className="bg-white py-3 m-2 px-4 sm:px-10 border rounded-md max-w-[600px] max-h-[80%] overflow-y-auto overflow-x-hidden relative">
-        <svg onClick={() => setOpenCollection(null)} className="absolute top-2 right-1 sm:right-2 h-3 w-3 cursor-pointer" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
+        <svg onClick={() => setOpenCollection(null)} className="absolute top-[10px] right-3 sm:right-2 h-[14px] w-[14px] cursor-pointer" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
           <div className="flex flex-col space-y-3 items-center">
             <h3 className="font-semibold">{openCollection.name}</h3>
             

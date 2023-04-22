@@ -1,16 +1,16 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { ICustomOptions, ITeacherOptions, IVTIContext, IWidget } from "../types";
-import MultiSelection from "./multiSelection";
-import CustomInput from "./customInput";
-import CustomTextArea from "./customTextArea";
-import ButtonDarkMid from "./buttonDarkMid";
+import MultiSelection from "./uiComponents/multiSelection";
+import CustomInput from "./uiComponents/customInput";
+import CustomTextArea from "./uiComponents/customTextArea";
+import ButtonDarkMid from "./uiComponents/buttonDarkMid";
 import { useParams } from "react-router-dom";
 
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera'
 
 import { fileService } from "../services/fileService";
-import ButtonDark from "./buttonDark";
+import ButtonDark from "./uiComponents/buttonDark";
 import { VtiUIContext } from "../pages/vtiStudentView";
 
 
@@ -70,25 +70,25 @@ const VtiTeacherViewerUI = ({vtiContext, customOptionsContext} : {vtiContext:Rea
         
       }
     
-      const setCameraToSaved = () => {
-            const { renderer, renderWindow, defaultCamera } : IVTIContext = vtiContext.current!;
-        
-            if (cam === null) {
-            const newCamera :vtkCamera = vtkCamera.newInstance(defaultCamera.current!);
-            renderer!.setActiveCamera(newCamera);
-            renderWindow?.render();
-            return;
-            }
-            
-        
-            const newCamera :vtkCamera = vtkCamera.newInstance(cam!);
-            renderer!.setActiveCamera(newCamera);
-        
-            renderWindow?.render();
-            
+    const setCameraToSaved = () => {
+        const { renderer, renderWindow, defaultCamera } : IVTIContext = vtiContext.current!;
+    
+        if (cam === null) {
+        const newCamera :vtkCamera = vtkCamera.newInstance(defaultCamera.current!);
+        renderer!.setActiveCamera(newCamera);
+        renderWindow?.render();
+        return;
         }
         
-        const saveChanges = async () => {
+    
+        const newCamera :vtkCamera = vtkCamera.newInstance(cam!);
+        renderer!.setActiveCamera(newCamera);
+    
+        renderWindow?.render();
+        
+    }
+    
+    const saveChanges = async () => {
             
         
         //Conditionally adding member to the object if it has been set by the teacher
@@ -134,7 +134,7 @@ const VtiTeacherViewerUI = ({vtiContext, customOptionsContext} : {vtiContext:Rea
 
                     </div>
 
-                    <div className="flex flex-col items-center border-y border-emerald-600 py-2 space-y-2 px-4">
+                    <div className="flex flex-col items-center border-y border-gray-500 py-2 space-y-2 px-4">
                         <h5 className="font-semibold">Add widget</h5>
                         <CustomInput labelText="Title" onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setTitleInput(e.target.value)}} currentValue={titleInput} />
                         <CustomTextArea labelText="Description" onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setDescriptionArea(e.target.value)}} currentValue={descriptionArea} />

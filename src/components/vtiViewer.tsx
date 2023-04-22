@@ -22,9 +22,9 @@ import VolumeControl from '../widgets/VolumeController/volumeControl';
 import vtkVolumeController from '../widgets/VolumeController'
 
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
-import SelectionSmaller from './selectionSmaller';
+import SelectionSmaller from './uiComponents/selectionSmaller';
 import ToggleSwitch from './toggleSwitch';
-import Range from './range';
+import Range from './uiComponents/range';
 import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera';
 import Draggable from 'react-draggable';
 import WidgetCard from './widgetCard';

@@ -1,7 +1,7 @@
 import useMyStore from "../store/store"
-import ButtonDarkMid from "./buttonDarkMid";
-import ButtonDarkSmall from "./buttonDarkSmall";
-import LoadingSpinner from "./loadingSpinner";
+import ButtonDarkMid from "./uiComponents/buttonDarkMid";
+import ButtonDarkSmall from "./uiComponents/buttonDarkSmall";
+import LoadingSpinner from "./uiComponents/loadingSpinner";
 
 
 const MessageBox = () => {

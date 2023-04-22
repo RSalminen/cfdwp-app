@@ -1,20 +1,20 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react'
 import { fileService } from '../services/fileService';
-import ButtonDark from '../components/buttonDark';
-import SmallButtonDarkLink from '../components/smallButtonDarkLink';
+import ButtonDark from '../components/uiComponents/buttonDark';
+import SmallButtonDarkLink from '../components/uiComponents/smallButtonDarkLink';
 import TeacherTopBar from '../components/teacherTopBar';
 import TeacherNav from '../components/teacherNav';
 import { validateHelper } from '../helpers/validateHelper';
 import LoginFallback from '../components/loginFallback';
-import LoadingSpinner from '../components/loadingSpinner';
+import LoadingSpinner from '../components/uiComponents/loadingSpinner';
 import useComponentVisible from '../hooks/useComponentIsVisible';
-import ButtonDarkSmall from '../components/buttonDarkSmall';
+import ButtonDarkSmall from '../components/uiComponents/buttonDarkSmall';
 import useMyStore from '../store/store';
 import ConfirmCard from '../components/confirmCard';
 import { ITeacherCollObj, ITeacherSimObj } from '../types';
 import { collectionService } from '../services/collectionService';
-import ButtonCancel from '../components/buttonCancel';
+import ButtonCancel from '../components/uiComponents/buttonCancel';
 import MessageBox from '../components/messageBox';
 
 const Ifiletype : { [key:number] : string } = {

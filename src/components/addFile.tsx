@@ -1,11 +1,11 @@
 import { MouseEvent, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fileService } from "../services/fileService";
-import CustomInput from "./customInput";
+import CustomInput from "./uiComponents/customInput";
 import Dropzone from "react-dropzone";
-import Selection from "./selection";
-import ButtonDark from "./buttonDark";
-import ButtonCancel from "./buttonCancel";
+import Selection from "./uiComponents/selection";
+import ButtonDark from "./uiComponents/buttonDark";
+import ButtonCancel from "./uiComponents/buttonCancel";
 import useMyStore from "../store/store";
 
 

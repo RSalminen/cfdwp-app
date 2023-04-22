@@ -1,5 +1,5 @@
-import ButtonCancel from "./buttonCancel";
-import ButtonDark from "./buttonDark";
+import ButtonCancel from "./uiComponents/buttonCancel";
+import ButtonDark from "./uiComponents/buttonDark";
 
 const ConfirmCard = ({message, itemName="", onConfirm, onCancel} : {message:string, itemName?:string, onConfirm:Function, onCancel:Function}) => {
 

@@ -1,8 +1,8 @@
 import { useParams } from "react-router-dom";
-import CustomInput from "./customInput";
+import CustomInput from "./uiComponents/customInput";
 import { useState } from "react";
-import ButtonDark from "./buttonDark";
-import ButtonCancel from "./buttonCancel";
+import ButtonDark from "./uiComponents/buttonDark";
+import ButtonCancel from "./uiComponents/buttonCancel";
 import { collectionService } from "../services/collectionService";
 import useMyStore from "../store/store";
 

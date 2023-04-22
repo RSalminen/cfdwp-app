@@ -16,9 +16,9 @@ import { Link } from 'react-router-dom';
 import { ICustomOptions, IVTKContext, IWidget } from '../types';
 import Draggable from 'react-draggable';
 import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera';
-import SelectionSmaller from '../components/selectionSmaller';
+import SelectionSmaller from './uiComponents/selectionSmaller';
 import { UIContext } from '../pages/studentView';
-import ButtonDarkMid from './buttonDarkMid';
+import ButtonDarkMid from './uiComponents/buttonDarkMid';
 import useInterval from '../hooks/useInterval';
 import { vtkjsHelper } from '../helpers/vtkjsHelper';
 import WidgetCard from './widgetCard';
@@ -74,10 +74,22 @@ const ViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.Mutable
     const [colorNodes, setColorNodes] = useState<any>([]);
     const [range, setRange] = useState<[number, number] | null>(null);
 
+    const loadTeacherOptions = () => {
+
+      const teacherOptions = customOptionsContext.current?.teacherOptions;
+
+      console.log(teacherOptions);
+      
+      if (teacherOptions?.startingField) {
+        changeField(teacherOptions.startingField);
+      }
+
+    }
+
     useEffect(() => {
 
         if (!effectRun.current) {
-
+          loadTeacherOptions();
         
         }
 

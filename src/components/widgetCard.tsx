@@ -1,5 +1,5 @@
 import { IWidget } from "../types";
-import ButtonDarkMid from "./buttonDarkMid";
+import ButtonDarkMid from "./uiComponents/buttonDarkMid";
 
 const WidgetCard = ({widgets, currentWidgetNr, changeWidgetFn, setWidgetOpen} : {widgets:IWidget[], currentWidgetNr:number, changeWidgetFn:Function, setWidgetOpen:React.Dispatch<React.SetStateAction<boolean>>}) => {
 

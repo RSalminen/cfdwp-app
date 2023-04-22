@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom";
-import CustomInput from "../components/customInput";
+import CustomInput from "../components/uiComponents/customInput";
 import { userService } from "../services/userService";
 import useMyStore from "../store/store";
 import { useMediaQuery } from "react-responsive";

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
-import useComponentVisible from "../hooks/useComponentIsVisible";
+import useComponentVisible from "../../hooks/useComponentIsVisible";
 
 const SelectionSmaller = ({selectedItem, onChangeFn, thisItem, allItems, light, fullWidth=false}: {thisItem:string | null, selectedItem:string | null, onChangeFn:Function, allItems:string[], light?:boolean, fullWidth?:boolean }) => {
     

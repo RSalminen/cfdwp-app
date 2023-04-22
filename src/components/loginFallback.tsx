@@ -1,5 +1,5 @@
 import { useState } from "react"
-import CustomInput from "../components/customInput";
+import CustomInput from "./uiComponents/customInput";
 import { userService } from "../services/userService";
 
 const ButtonDarkForm = ({btnText, fullWidth}:{btnText:string, fullWidth:boolean}) => {

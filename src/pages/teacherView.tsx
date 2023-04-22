@@ -31,6 +31,8 @@ const TeacherView = () => {
 
   const [validationComplete, setValidationComplete] = useState<boolean>(false);
 
+  const [optionsLoaded, setOptionsLoaded] = useState<boolean>(false);
+
   const validateTeacher = async () => {
     const isValid = await userService.validateTeacherSim(simid!);
     setValidationComplete(true);
@@ -53,10 +55,15 @@ const TeacherView = () => {
     const defaultSource = vtkContext.current?.allData[0];
     const teacherOptions = customOptionsContext.current?.teacherOptions!;
 
-    const allPointFields = defaultSource.getPointData().getArrays().map((ar:vtkDataArray)=> "(p) " + ar.getName());
-    const allCellFields = defaultSource.getCellData().getArrays().map((ar:vtkDataArray)=> "(c) " + ar.getName());
-    
-    setVisibleFields(["Solid color", ...allPointFields, ...allCellFields]);
+    //Apply field restrictions if they are applied
+    if (teacherOptions.restrictFields && teacherOptions.restrictFields.length > 0) {
+      setVisibleFields(teacherOptions.restrictFields);
+    } else {
+      const allPointFields = defaultSource.getPointData().getArrays().map((ar:vtkDataArray)=> "(p) " + ar.getName());
+      const allCellFields = defaultSource.getCellData().getArrays().map((ar:vtkDataArray)=> "(c) " + ar.getName());
+      
+      setVisibleFields(["Solid color", ...allPointFields, ...allCellFields]);
+    }
 
     if (customOptionsContext.current?.notes) setNotes(customOptionsContext.current?.notes!)
     
@@ -89,14 +96,14 @@ const TeacherView = () => {
 
         <div className="w-full h-full flex">
             <div className="relative w-full h-full">
-              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName}} >
+              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName, optionsLoaded, setOptionsLoaded}} >
                 <ViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
                 <Viewer vtkContext={vtkContext} customOptionsContext={customOptionsContext} onLoadSuccess={onLoadSuccess} />
               </UIContext.Provider>
             </div>
             
             <div>
-              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName}} >
+              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName, optionsLoaded, setOptionsLoaded}} >
                 <TeacherViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
               </UIContext.Provider>
             </div>

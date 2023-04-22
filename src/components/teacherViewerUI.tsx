@@ -1,17 +1,18 @@
 import { useContext, useEffect, useRef, useState } from "react";
-import { ICustomOptions, IVTKContext, IWidget } from "../types";
-import MultiSelection from "./multiSelection";
+import { ICustomOptions, ITeacherOptions, IVTKContext, IWidget } from "../types";
+import MultiSelection from "./uiComponents/multiSelection";
 import { UIContext } from "../pages/studentView";
-import CustomInput from "./customInput";
-import CustomTextArea from "./customTextArea";
-import ButtonDarkMid from "./buttonDarkMid";
+import CustomInput from "./uiComponents/customInput";
+import CustomTextArea from "./uiComponents/customTextArea";
+import ButtonDarkMid from "./uiComponents/buttonDarkMid";
 import { useParams } from "react-router-dom";
 
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera'
 
 import { fileService } from "../services/fileService";
-import ButtonDark from "./buttonDark";
+import ButtonDark from "./uiComponents/buttonDark";
+import Selection from "./uiComponents/selection";
 
 
 const ListedWidget = ({widget, widgets, setWidgets} : {widget:IWidget, widgets:IWidget[], setWidgets:React.Dispatch<React.SetStateAction<IWidget[]>>}) => {
@@ -38,7 +39,10 @@ const TeacherViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [menuTab, setMenuTab] = useState<string>("General");
 
-    const [selectedFields, setSelectedFields] = useState<string[] | null>([]);
+    const [selectedFields, setSelectedFields] = useState<string[]>([]);
+    const [selectedStartingField, setSelectedStartingField] = useState<string>("Solid color");
+
+
     const [widgets, setWidgets] = useState<IWidget[]>([]);
 
     const [allFields, setAllFields] = useState<string[]>([]);
@@ -50,6 +54,9 @@ const TeacherViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.
 
     useEffect(() => {
         if (simLoaded) {
+
+            const restrictFields = customOptionsContext.current?.teacherOptions.restrictFields;
+            const startingField = customOptionsContext.current?.teacherOptions.startingField;
             
             const defaultSource = vtkContext.current?.allData[0];
         
@@ -57,6 +64,10 @@ const TeacherViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.
             const allCellFields = defaultSource.getCellData().getArrays().map((ar:vtkDataArray)=> "(c) " + ar.getName());
             
             setAllFields(["Solid color", ...allPointFields, ...allCellFields]);
+
+            if (restrictFields) setSelectedFields(restrictFields);
+
+            if (startingField) setSelectedStartingField(startingField);
 
         }
 
@@ -106,9 +117,9 @@ const TeacherViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.
     
       const saveChanges = async () => {
         
-        const newTeacherOptions = {
-          restrictFields: selectedFields,
-          color: "jet",
+        const newTeacherOptions : ITeacherOptions = {
+            ...(selectedFields.length > 0) && {restrictFields: selectedFields},
+            ...(selectedStartingField) && {startingField: selectedStartingField},
         }
         await fileService.updateContent(widgets, newTeacherOptions, simid!);
     
@@ -129,10 +140,15 @@ const TeacherViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.
                 {menuTab === "General" &&
                 <div className="flex flex-col space-y-3 h-full">
                     
-                    <div className="flex flex-col w-full space-y-2">
-                        <div className="border-b border-emerald-600 flex-col">
+                    <div className="flex flex-col w-full">
+                        <div className="border-b border-gray-500 flex flex-col pb-2">
                             <h4 className="font-semibold">Select fields:</h4>
                             <MultiSelection selectedItems={selectedFields!} setSelectedItems={setSelectedFields} allItems={allFields} />
+                        </div>
+
+                        <div className="border-b border-gray-500 flex-col pb-2">
+                            <h4 className="font-semibold">Starting field:</h4>
+                            <Selection selectedItem={selectedStartingField} allItems={allFields} onChangeFn={(str:string) => setSelectedStartingField(str)} fullWidth={false} thisItem={null} light />
                         </div>
                     </div>
                 </div>
@@ -150,7 +166,7 @@ const TeacherViewerUI = ({vtkContext, customOptionsContext} : {vtkContext:React.
 
                     </div>
 
-                    <div className="flex flex-col items-center border-y border-emerald-600 py-2 space-y-2 px-4">
+                    <div className="flex flex-col items-center border-y border-gray-500 py-2 space-y-2 px-4">
                         <h5 className="font-semibold">Add widget</h5>
                         <CustomInput labelText="Title" onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setTitleInput(e.target.value)}} currentValue={titleInput} />
                         <CustomTextArea labelText="Description" onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setDescriptionArea(e.target.value)}} currentValue={descriptionArea} />
