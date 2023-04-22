@@ -16,12 +16,12 @@ import { vtkjsHelper } from './vtkjsHelper';
 
 
 const createViewer = async (vtkContext:React.MutableRefObject<IVTKContext | null>, 
-                            customOptionsContext:React.MutableRefObject<ICustomOptions | null>, 
+                            customOptionsContext:ICustomOptions, 
                             vtkContainerRef:React.MutableRefObject<HTMLDivElement | null>,
                             file:File,
                             filetype:number) => {
 
-  const { notes, teacherOptions } = customOptionsContext.current!;
+  const { notes, teacherOptions } = customOptionsContext;
 
   const fullScreenRenderWindow = (vtkFullScreenRenderWindow as any).newInstance({
     background: [0.04, 0.04, 0.04],

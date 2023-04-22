@@ -29,7 +29,7 @@ const ListedWidget = ({widget, widgets, setWidgets} : {widget:IWidget, widgets:I
 }
 
 
-const VtiTeacherViewerUI = ({vtiContext, customOptionsContext} : {vtiContext:React.MutableRefObject<IVTIContext | null>, customOptionsContext : React.MutableRefObject<ICustomOptions | null>}) => {
+const VtiTeacherViewerUI = ({vtiContext} : {vtiContext:React.MutableRefObject<IVTIContext | null>}) => {
     
     const { notes, setNotes, simLoaded } = useContext(VtiUIContext);
 

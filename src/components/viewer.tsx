@@ -7,9 +7,9 @@ import { UIContext } from "../pages/studentView";
 import ViewerLoadingScreen from "./viewerLoadingScreen";
 
 
-const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext:React.MutableRefObject<IVTKContext | null>, customOptionsContext : React.MutableRefObject<ICustomOptions | null>, onLoadSuccess:Function}) => {
+const Viewer = ( {vtkContext, onLoadSuccess} : {vtkContext:React.MutableRefObject<IVTKContext | null>, onLoadSuccess:Function}) => {
 
-  const { simLoaded, setOptionsLoaded } = useContext(UIContext);
+  const { simLoaded, setCustomOptionsContext } = useContext(UIContext);
 
   const hasEnded = useRef<boolean>(false);
 
@@ -21,13 +21,14 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
   const { simid } = useParams();
 
   const load = async () => {
-    const fileObject : IFileObject = await fileService.getFile(simid!, setLoadProgress, setOptionsLoaded);
-    customOptionsContext.current = {notes:fileObject.notes, teacherOptions:fileObject.teacher_options}
+    const fileObject : IFileObject = await fileService.getFile(simid!, setLoadProgress);
     
+    const customOptionsResult : ICustomOptions = {notes:fileObject.notes, teacherOptions:fileObject.teacher_options}
+
     //I want to stop execution if the user goes back while loading the simulation
     if (hasEnded.current) return;
 
-    await viewerHelper.createViewer(vtkContext, customOptionsContext, vtkContainerRef, fileObject.file, fileObject.filetype);
+    await viewerHelper.createViewer(vtkContext, customOptionsResult, vtkContainerRef, fileObject.file, fileObject.filetype);
     
     //Clean up if the user goes back after file is loaded and viewer is loading
     if (hasEnded.current) {
@@ -36,6 +37,7 @@ const Viewer = ( {vtkContext, customOptionsContext, onLoadSuccess} : {vtkContext
     }
 
     onLoadSuccess(fileObject.simName);
+    setCustomOptionsContext({notes:fileObject.notes, teacherOptions:fileObject.teacher_options});
   }
 
   useEffect(() => {

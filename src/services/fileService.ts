@@ -1,5 +1,5 @@
 import { AxiosError } from "axios";
-import { ITeacherOptions, ITeacherSimObj, IWidget } from "../types";
+import { ICustomOptions, ITeacherOptions, IWidget } from "../types";
 import axiosinstance from "./customAxios";
 import { userService } from "./userService";
 import useMyStore from "../store/store";
@@ -69,7 +69,7 @@ const deleteSimulation = async (simId:string, teacherId:string) => {
 const setToCollection = async (simId:string, teacherId:string, newValue:number) => {
 
     try {
-        const response = await axiosinstance({
+        await axiosinstance({
             method:"put",
             url:"/api/teacher/setToCollection",
             data: { simId, teacherId, collectionId:newValue},
@@ -116,7 +116,7 @@ const getSimulationsByTeacher = async (teacherId:string) => {
     
 }
 
-const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetStateAction<number>>, setOptionsLoaded?:React.Dispatch<React.SetStateAction<boolean>>) => {
+const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetStateAction<number>>) => {
 
     const response = await axiosinstance({
        method: "get",
@@ -125,8 +125,6 @@ const getFile = async (simId:string, setLoadProgress: React.Dispatch<React.SetSt
     });
 
     const { url, simName, filetype, notes, teacher_options } = response.data;
-
-    setOptionsLoaded!(true);
 
     const signedUrl = url;
 

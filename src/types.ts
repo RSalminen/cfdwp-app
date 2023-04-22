@@ -16,6 +16,9 @@ export interface ITeacherOptions {
     restrictFields?: string[],
     startingField?: string,
     startingPreset?: string,
+    controllerHidden?: boolean,
+    noteShown?: boolean,
+    startingCamera?: object
 }
 
 export interface ITeacherCollObj {
@@ -63,10 +66,20 @@ export interface IUIContext {
     notes: IWidget[];
     setNotes: React.Dispatch<React.SetStateAction<IWidget[]>>;
     visibleFields: string[] | null;
+    setVisibleFields: React.Dispatch<React.SetStateAction<string[] | null>>;
     simLoaded: boolean;
+    setSimLoaded: React.Dispatch<React.SetStateAction<boolean>>;
     simName: string;
-    optionsLoaded:boolean;
-    setOptionsLoaded:React.Dispatch<React.SetStateAction<boolean>>;
+    customOptionsContext:ICustomOptions | null;
+    setCustomOptionsContext: React.Dispatch<React.SetStateAction<ICustomOptions | null>>;
+}
+
+export interface IVtiUIContext {
+    notes:IWidget[];
+    setNotes:React.Dispatch<React.SetStateAction<IWidget[]>>
+    simLoaded:boolean;
+    customOptionsContext:ICustomOptions | null;
+    setCustomOptionsContext: React.Dispatch<React.SetStateAction<ICustomOptions | null>>;
 }
 
 export interface IVTIContext {

@@ -1,7 +1,7 @@
-import { createContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Viewer from "../components/viewer";
 import ViewerUI from "../components/viewerUI";
-import { ICustomOptions, IUIContext, IVTKContext, IWidget } from "../types";
+import { ICustomOptions, IVTKContext, IWidget } from "../types";
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import TeacherViewerUI from "../components/teacherViewerUI";
 import { UIContext } from "./studentView";
@@ -16,7 +16,7 @@ const TeacherView = () => {
   const { simid } = useParams();
 
   const vtkContext = useRef<IVTKContext>(null);
-  const customOptionsContext = useRef<ICustomOptions | null>(null);
+  const [customOptionsContext, setCustomOptionsContext] = useState<ICustomOptions | null>(null);
 
   const [notes, setNotes] = useState<IWidget[]>([]);
   const [visibleFields, setVisibleFields] = useState<string[] | null>([]);
@@ -30,8 +30,6 @@ const TeacherView = () => {
   const startEffectRun = useRef<boolean>(false);
 
   const [validationComplete, setValidationComplete] = useState<boolean>(false);
-
-  const [optionsLoaded, setOptionsLoaded] = useState<boolean>(false);
 
   const validateTeacher = async () => {
     const isValid = await userService.validateTeacherSim(simid!);
@@ -49,25 +47,9 @@ const TeacherView = () => {
 
     }
   }, []);
-  
 
   const onLoadSuccess = (name:string) => {
-    const defaultSource = vtkContext.current?.allData[0];
-    const teacherOptions = customOptionsContext.current?.teacherOptions!;
-
-    //Apply field restrictions if they are applied
-    if (teacherOptions.restrictFields && teacherOptions.restrictFields.length > 0) {
-      setVisibleFields(teacherOptions.restrictFields);
-    } else {
-      const allPointFields = defaultSource.getPointData().getArrays().map((ar:vtkDataArray)=> "(p) " + ar.getName());
-      const allCellFields = defaultSource.getCellData().getArrays().map((ar:vtkDataArray)=> "(c) " + ar.getName());
-      
-      setVisibleFields(["Solid color", ...allPointFields, ...allCellFields]);
-    }
-
-    if (customOptionsContext.current?.notes) setNotes(customOptionsContext.current?.notes!)
     
-    setSimLoaded(true);
     setSimName(name)
 
   }
@@ -86,7 +68,7 @@ const TeacherView = () => {
 
   else return (
     <>
-      <div className="h-full w-full absolute flex flex-col">
+      <div className="h-full w-full fixed flex flex-col">
 
         <div className="h-[60px] flex items-center bg-gradient-to-r from-gray-100 via-gray-100 to-emerald-100">
           <div className="flex justify-between w-[98%] m-auto items-center">
@@ -95,16 +77,16 @@ const TeacherView = () => {
         </div>
 
         <div className="w-full h-full flex">
-            <div className="relative w-full h-full">
-              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName, optionsLoaded, setOptionsLoaded}} >
-                <ViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
-                <Viewer vtkContext={vtkContext} customOptionsContext={customOptionsContext} onLoadSuccess={onLoadSuccess} />
+            <div className="relative flex-1 h-full">
+              <UIContext.Provider value={{notes, setNotes, visibleFields, setVisibleFields, simLoaded, setSimLoaded, simName, customOptionsContext, setCustomOptionsContext}} >
+                <ViewerUI vtkContext={vtkContext} />
+                <Viewer vtkContext={vtkContext} onLoadSuccess={onLoadSuccess} />
               </UIContext.Provider>
             </div>
             
-            <div>
-              <UIContext.Provider value={{notes, setNotes, visibleFields, simLoaded, simName, optionsLoaded, setOptionsLoaded}} >
-                <TeacherViewerUI vtkContext={vtkContext} customOptionsContext={customOptionsContext} />
+            <div className="h-full w-[280px] relative">
+              <UIContext.Provider value={{notes, setNotes, visibleFields, setVisibleFields, simLoaded, setSimLoaded, simName, customOptionsContext, setCustomOptionsContext}} >
+                <TeacherViewerUI vtkContext={vtkContext} />
               </UIContext.Provider>
             </div>
           </div>

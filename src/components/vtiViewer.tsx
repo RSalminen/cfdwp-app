@@ -23,7 +23,7 @@ import vtkVolumeController from '../widgets/VolumeController'
 
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import SelectionSmaller from './uiComponents/selectionSmaller';
-import ToggleSwitch from './toggleSwitch';
+import ToggleSwitch from './uiComponents/toggleSwitch';
 import Range from './uiComponents/range';
 import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera';
 import Draggable from 'react-draggable';
@@ -172,9 +172,9 @@ const createVtiViewer = async (vtiContainerRef:React.MutableRefObject<HTMLDivEle
 
 
 
-const VtiViewer = ({vtiContext, customOptionsContext, onLoadSuccess} : {vtiContext:React.MutableRefObject<IVTIContext | null>, customOptionsContext:React.MutableRefObject<ICustomOptions | null>, onLoadSuccess:Function}) => {
+const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObject<IVTIContext | null>, onLoadSuccess:Function}) => {
 
-  const { notes, setNotes, simLoaded } = useContext(VtiUIContext);
+  const { notes, setNotes, simLoaded, customOptionsContext } = useContext(VtiUIContext);
       
   const hasEnded = useRef<boolean>(false);
 
@@ -210,7 +210,7 @@ const VtiViewer = ({vtiContext, customOptionsContext, onLoadSuccess} : {vtiConte
   const load = async () => {
 
       const fileObject : IFileObject = await fileService.getFile(simid!, setLoadProgress);
-      customOptionsContext.current = {notes:fileObject.notes, teacherOptions:fileObject.teacher_options}
+      
       setNotes(fileObject.notes);
       setSimName(fileObject.simName);
 
@@ -352,7 +352,7 @@ const VtiViewer = ({vtiContext, customOptionsContext, onLoadSuccess} : {vtiConte
                   
                   <div className="flex w-full px-4 justify-between space-x-1 items-center">
                     <SelectionSmaller selectedItem={activecolorScheme} onChangeFn={presetChanged} allItems={Object.keys(colorSchemes)} thisItem={null} fullWidth={true} />
-                    <ToggleSwitch isActive={shadowActive} onChangeFn={ShadowChanged} />
+                    <ToggleSwitch text="Shadow" isActive={shadowActive} onChangeFn={ShadowChanged} />
                   </div>
 
                   <div className="flex w-full justify-center sm:px-2">

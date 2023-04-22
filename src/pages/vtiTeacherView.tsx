@@ -17,7 +17,7 @@ const VtiTeacherView = () => {
     const startEffectRun = useRef<boolean>(false);
 
     const vtiContext = useRef<IVTIContext | null>(null);
-    const customOptionsContext = useRef<ICustomOptions | null>(null);
+    const [customOptionsContext, setCustomOptionsContext] = useState<ICustomOptions | null>(null);
 
     const [simLoaded, setSimLoaded] = useState<boolean>(false);
 
@@ -72,14 +72,14 @@ const VtiTeacherView = () => {
 
                 <div className="w-full h-full flex">
                     <div className="relative w-full h-full">
-                        <VtiUIContext.Provider value={{notes, setNotes, simLoaded}} >
-                            <VtiViewer vtiContext={vtiContext} customOptionsContext={customOptionsContext} onLoadSuccess={loadSuccess} />
+                        <VtiUIContext.Provider value={{notes, setNotes, simLoaded, customOptionsContext, setCustomOptionsContext}} >
+                            <VtiViewer vtiContext={vtiContext} onLoadSuccess={loadSuccess} />
                         </VtiUIContext.Provider>
                     </div>
                     
                     <div>
-                        <VtiUIContext.Provider value={{notes, setNotes, simLoaded}} >
-                            <VtiTeacherViewerUI vtiContext={vtiContext} customOptionsContext={customOptionsContext} />
+                        <VtiUIContext.Provider value={{notes, setNotes, simLoaded, customOptionsContext, setCustomOptionsContext}} >
+                            <VtiTeacherViewerUI vtiContext={vtiContext} />
                         </VtiUIContext.Provider>
                     </div>
                 </div>
