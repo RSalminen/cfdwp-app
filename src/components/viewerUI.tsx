@@ -352,7 +352,7 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
   return (
     <>
     {/* Displaying the note */}
-    {widgetOpen &&
+    {(widgetOpen && notes && notes.length > 0)  &&
     <div className="h-full w-full absolute z-[8] overflow-hidden pointer-events-none flex justify-end items-end p-4">
       <Draggable handle=".widgetHandle" bounds="body" nodeRef={nodeRef}>
         <div ref={nodeRef} className=" w-[340px] sm:w-[370px] h-[220px] bg-white bg-opacity-95 border-2 border-emerald-900 shadow-lg shadow-black rounded-md pointer-events-auto">

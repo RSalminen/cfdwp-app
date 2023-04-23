@@ -127,8 +127,8 @@ img {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2; /* number of lines to show */
-  line-height: 20px;        /* fallback */
-  max-height: 50px;       /* fallback */
+  /* line-height: 20px;   */      /* fallback */
+  /* max-height: 50px;   */     /* fallback */
 }
 
 .c-break-word {

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import { ITeacherOptions, IVTKContext, IWidget } from "../types";
+import { ICustomOptions, ITeacherOptions, IVTKContext, IWidget } from "../types";
 import MultiSelection from "./uiComponents/multiSelection";
 import { UIContext } from "../pages/studentView";
 import CustomInput from "./uiComponents/customInput";
@@ -16,27 +16,36 @@ import Selection from "./uiComponents/selection";
 import { colorSchemes } from "./viewerUI";
 import ToggleSwitch from "./uiComponents/toggleSwitch";
 
+import { isEqual } from "lodash"; 
+import SortableList, { SortableItem } from "react-easy-sort";
+import { arrayMoveImmutable } from "array-move";
+import ButtonCancel from "./uiComponents/buttonCancel";
+import ButtonYellow from "./uiComponents/buttonYellow";
+import MessageBox from "./messageBox";
+import useMyStore from "../store/store";
+import LoadingSpinner from "./uiComponents/loadingSpinner";
+
 
 const ListedWidget = ({widget, widgets, setWidgets} : {widget:IWidget, widgets:IWidget[], setWidgets:React.Dispatch<React.SetStateAction<IWidget[]>>}) => {
 
-    const [editing, setEditing] = useState<boolean>(false);
     return (
-        <div className="flex justify-between bg-gray-300 px-1">
-            <p className="overflow-x-clip text-ellipsis">{widget.title}</p>
-            <div className="flex items-center space-x-1">
-                <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M880 836H144c-17.7 0-32 14.3-32 32v36c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-36c0-17.7-14.3-32-32-32zm-622.3-84c2 0 4-.2 6-.5L431.9 722c2-.4 3.9-1.3 5.3-2.8l423.9-423.9a9.96 9.96 0 0 0 0-14.1L694.9 114.9c-1.9-1.9-4.4-2.9-7.1-2.9s-5.2 1-7.1 2.9L256.8 538.8c-1.5 1.5-2.4 3.3-2.8 5.3l-29.5 168.2a33.5 33.5 0 0 0 9.4 29.8c6.6 6.4 14.9 9.9 23.8 9.9z"></path></svg>
-                <svg className="cursor-pointer" onClick={() => setWidgets(widgets.filter((x:IWidget) => x !== widget))} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
+        <SortableItem>
+            <div className="flex justify-between items-center bg-gray-200 px-2 py-0.5 item rounded-md w-full overflow-hidden text-ellipsis border cursor-grab hover:bg-emerald-50">
+                <p className="overflow-x-clip text-[13px] mt-[-1px] text-ellipsis whitespace-nowrap flex-1">{widget.title.length > 0 ? widget.title : widget.description}</p>
+                <svg className="cursor-pointer text-gray-700 hover:text-gray-800" onClick={() => setWidgets(widgets.filter((x:IWidget) => x !== widget))} stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 24 24" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg>
             </div>
-        </div>
-    )
+        </SortableItem>
+    );
 }
 
 
 const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext | null>}) => {
     
-    const { notes, setNotes, visibleFields, simLoaded, customOptionsContext } = useContext(UIContext);
+    const { simLoaded, customOptionsContext, setCustomOptionsContext } = useContext(UIContext);
 
-    const { simid, teacherid } = useParams();
+    const { message, updateMessage } = useMyStore();
+
+    const { simid } = useParams();
 
     const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [menuTab, setMenuTab] = useState<string>("General");
@@ -48,51 +57,63 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
     const [noteShownAtStart, setNoteShownAtStart] = useState<boolean>(false);
     const [startingCam, setStartingCam] = useState<object | null>(null);
 
-
     const [widgets, setWidgets] = useState<IWidget[]>([]);
 
-    const [allFields, setAllFields] = useState<string[]>([]);
+    const [allFields, setAllFields] = useState<string[] | null>(null);
 
     const [titleInput, setTitleInput] = useState<string>("");
     const [descriptionArea, setDescriptionArea] = useState<string>("");
     const [widgetCam, setWidgetCam] = useState<object | null>(null);
 
 
+    const [oldOptionsContext, setOldOptionsContext] = useState<ICustomOptions | null>(null);
+
+    const startupValues = (context:ICustomOptions | null) => {
+
+        if (!context) return;
+
+        const restrictFields = context.teacherOptions.restrictFields;
+        const startingField = context.teacherOptions.startingField;
+        const startingColor = context.teacherOptions.startingPreset;
+        const hiddenAtStart = context.teacherOptions.controllerHidden;
+        const noteShown = context.teacherOptions.noteShown;
+        const startingCamera = context.teacherOptions.startingCamera;
+        const widgets = context.notes;
+        
+        const defaultSource = vtkContext.current?.allData[0];
+    
+        const allPointFields = defaultSource.getPointData().getArrays().map((ar:vtkDataArray)=> "(p) " + ar.getName());
+        const allCellFields = defaultSource.getCellData().getArrays().map((ar:vtkDataArray)=> "(c) " + ar.getName());
+        
+        setAllFields(["Solid color", ...allPointFields, ...allCellFields]);
+
+        if (restrictFields) setSelectedFields(restrictFields);
+
+        if (startingField) setSelectedStartingField(startingField);
+
+        if (startingColor) setSelectedStartingPreset(startingColor);
+
+        if (hiddenAtStart) setControllerHiddenAtStart(hiddenAtStart);
+
+        if (noteShown) setNoteShownAtStart(noteShown);
+
+        if (startingCamera) setStartingCam(startingCamera);
+
+        if (widgets) setWidgets(widgets);
+    }
+
+
     useEffect(() => {
         if (customOptionsContext) {
 
-            const restrictFields = customOptionsContext.teacherOptions.restrictFields;
-            const startingField = customOptionsContext.teacherOptions.startingField;
-            const startingColor = customOptionsContext.teacherOptions.startingPreset;
-            const hiddenAtStart = customOptionsContext.teacherOptions.controllerHidden;
-            const noteShown = customOptionsContext.teacherOptions.noteShown;
-            const startingCamera = customOptionsContext.teacherOptions.startingCamera;
-            
-            const defaultSource = vtkContext.current?.allData[0];
-        
-            const allPointFields = defaultSource.getPointData().getArrays().map((ar:vtkDataArray)=> "(p) " + ar.getName());
-            const allCellFields = defaultSource.getCellData().getArrays().map((ar:vtkDataArray)=> "(c) " + ar.getName());
-            
-            setAllFields(["Solid color", ...allPointFields, ...allCellFields]);
-
-            if (restrictFields) setSelectedFields(restrictFields);
-
-            if (startingField) setSelectedStartingField(startingField);
-
-            if (startingColor) setSelectedStartingPreset(startingColor);
-
-            if (hiddenAtStart) setControllerHiddenAtStart(hiddenAtStart);
-
-            if (noteShown) setNoteShownAtStart(noteShown);
-
-            if (startingCamera) setStartingCam(startingCamera);
+            startupValues(customOptionsContext);
+            setOldOptionsContext(customOptionsContext);
 
         }
 
     }, [simLoaded]);
 
     const addWidget = () => {
-        const { sceneImporter, allData, currentTimeStep } =  vtkContext.current!;
     
         const widgetObject:IWidget = {
           title: titleInput,
@@ -100,17 +121,23 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
           camera:widgetCam,
         }
     
+        resetWidget();
+    
+        const newWidgets = widgets.concat(widgetObject)
+        setWidgets(newWidgets);
+
+    }
+
+    const resetWidget = () => {
         setTitleInput("");
         setDescriptionArea("");
         setWidgetCam(null);
-    
-        setWidgets(widgets.concat(widgetObject));
-    
     }
     
     const saveCamera = (setCam:React.Dispatch<React.SetStateAction<object | null>>) => {
         const { renderer } : IVTKContext = vtkContext.current!;
         setCam(renderer!.getActiveCamera().toJSON());
+
     }
 
     const setCameraToSaved = (cam:object) => {
@@ -130,29 +157,97 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
         
     }
 
-    const saveChanges = async () => {
-        
-        //Creating the teacher_options object and only including the members that are not null
-        const newTeacherOptions : ITeacherOptions = {
+    const createTeacherOptionsObj = () => {
+        const newOptions : ITeacherOptions = {
             ...(selectedFields.length > 0) && {restrictFields: selectedFields},
             ...(selectedStartingField) && {startingField: selectedStartingField},
             ...(selectedStartingPreset) && {startingPreset: selectedStartingPreset},
             ...(controllerHiddenAtStart) && {controllerHidden:controllerHiddenAtStart},
             ...(noteShownAtStart) && {noteShown:noteShownAtStart},
             ...(startingCam) && {startingCamera:startingCam}
-            
         }
-        await fileService.updateContent(widgets, newTeacherOptions, simid!);
+
+        return newOptions;
+    }
+
+    const checkIfChanges = () => {
+        
+        
+        if (!oldOptionsContext) return;
+        const newOptions : ITeacherOptions = createTeacherOptionsObj();
+        
+        //The checking if the objects are equal, regardless of order
+        const teacherOptionsChanged = !isEqual(newOptions, oldOptionsContext?.teacherOptions);
+
+        //The teacher can manually change the order, so whether order is the same is checked here        
+        const notesChanged = JSON.stringify(widgets) !== JSON.stringify(oldOptionsContext?.notes);
+
+        return teacherOptionsChanged || notesChanged;
+
+    }
+
+    const saveChanges = async () => {
+        
+        //Creating the teacher_options object and only including the members that are not null
+        const newTeacherOptions : ITeacherOptions = createTeacherOptionsObj();
+
+        updateMessage({message: "Saving changes...", status:1});
+
+        const response = await fileService.updateContent(widgets, newTeacherOptions, simid!);
     
+        if (response) {
+            updateMessage({message: "Changes saved!", status:2});
+
+            const newTeacherOptions = applyPreview();
+            setOldOptionsContext(newTeacherOptions);
+
+        }
+        else updateMessage({message: "Saving the changes failed", status:3});
+    }
+
+    const onSortEnd = (oldIndex: number, newIndex: number) => {
+        setWidgets((array:IWidget[]) => arrayMoveImmutable(array, oldIndex, newIndex));
+    };
+
+    const isAddWidgetEmpty = () => {
+        return (titleInput.length === 0 && descriptionArea.length === 0 && widgetCam === null);
+    }
+
+    const applyPreview = () => {
+        const newTeacherOptions : ITeacherOptions = createTeacherOptionsObj()
+        
+        const newOptionsContext = {teacherOptions:newTeacherOptions, notes:widgets}
+        setCustomOptionsContext(newOptionsContext);
+
+        return newOptionsContext;
+    }
+
+    const cancelChanges = () => {
+        setCustomOptionsContext(oldOptionsContext);
+        startupValues(oldOptionsContext);
     }
 
     return (
         
         <>
-        {(!menuVisible) &&
-        <div className="w-full h-full absolute top-0 right-0 z-[6]">
-            <div className="w-full h-full bg-white pointer-events-auto px-2 py-2 flex flex-col justify-between">
+        <div className="w-full h-full absolute top-0 right-0 z-[20]">
 
+            {/* Display message */}
+            {message.status !== 0 &&
+                <MessageBox />
+            }
+
+            <div className="w-full h-full bg-white pointer-events-auto px-2 py-2 flex flex-col justify-between">
+                
+                {/* Loading teacher options */}
+                {allFields === null ?
+                <div className="w-full h-full flex flex-col justify-center items-center space-y-2">
+                    <div className="h-20 w-20"><LoadingSpinner /></div>
+                    <div>Loading options...</div>
+                </div>
+                :
+                <>
+                {/* Sidebar with teacher options */}
                 <div className="flex space-x-4 pb-2 border-b border-emerald-900">
                     <div className={`${menuTab === "General" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("General")}>General</div>
                     <div className={`${menuTab === "Notes" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("Notes")}>Notes</div>
@@ -201,13 +296,18 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
 
                 {menuTab === "Notes" &&
                 <div className="overflow-y-auto mb-2 h-full w-full">
-                    <div className="w-full flex flex-col items-center px-4">
+                    <div className="w-full flex flex-col items-center px-4 py-1.5">
                         <h5 className="font-semibold">My widgets</h5>
                         {widgets.length === 0 && <p className="text-[13px] mt-2">No widgets added</p>}
-                        <div className='flex flex-col space-y-1 mb-2 pb-2 w-full'>{widgets.map((widget, idx) => (
-                            <ListedWidget key={widget.title + idx} widget={widget} widgets={widgets} setWidgets={setWidgets} />
-                        ))}
-                    </div>
+                        
+
+                        <SortableList onSortEnd={onSortEnd} className="list w-full flex flex-col space-y-1 pb-2 pt-1" draggedItemClassName="dragged">
+                            {widgets.map((widget,idx) => (
+                                <ListedWidget key={widget.title + idx} widget={widget} widgets={widgets} setWidgets={setWidgets} />
+                                
+                            ))}
+                        </SortableList>
+                    
 
                     </div>
 
@@ -224,23 +324,23 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
                         </div>
 
                         <div className="flex space-x-1 w-full pt-2">
-                            <ButtonDarkMid btnText="Reset" onClickFn={addWidget} fullWidth={true} />
-                            <ButtonDarkMid btnText="Add widget" onClickFn={addWidget} fullWidth={true} />
+                            <ButtonDarkMid btnText="Add widget" onClickFn={addWidget} fullWidth={true} deactive={isAddWidgetEmpty()} />
+                            <ButtonCancel btnText="Reset" onClickFn={resetWidget} fullWidth={true} deactive={isAddWidgetEmpty()} />
                         </div>
                     </div>
                 </div>
                 }
 
                 <div className="flex space-x-1 w-full mt-1">
-                    <ButtonDark btnText="Cancel" onClickFn={saveCamera} fullWidth={true} />
-                    <ButtonDark btnText="Save changes" onClickFn={saveChanges} fullWidth={true} />
+                    <ButtonDark btnText="Save changes" onClickFn={saveChanges} fullWidth={true} deactive={!checkIfChanges()} />
+                    <ButtonYellow btnText="Preview" onClickFn={applyPreview} fullWidth={true} deactive={!checkIfChanges()} />       
+                    <ButtonCancel btnText="Cancel" onClickFn={cancelChanges} fullWidth={true} deactive={!checkIfChanges()} />                    
                 </div>
+                </>
+            }
 
             </div>
         </div>
-
-        }
-
         </>
 
     )

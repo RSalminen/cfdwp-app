@@ -1,6 +1,5 @@
 import useMyStore from "../store/store"
 import ButtonDarkMid from "./uiComponents/buttonDarkMid";
-import ButtonDarkSmall from "./uiComponents/buttonDarkSmall";
 import LoadingSpinner from "./uiComponents/loadingSpinner";
 
 
@@ -9,7 +8,7 @@ const MessageBox = () => {
     const { message, updateMessage } = useMyStore();
 
     return (
-        <div className="fixed z-[29] bottom-10 right-2 md:right-[200px] px-8 py-6 border bg-gray-50 w-[300px] max-w-[95%] rounded-md fade-in-card-fast shadow-lg">
+        <div className="fixed z-[29] bottom-10 right-2 md:right-[200px] px-8 py-6 border bg-gray-50 w-[300px] max-w-[95%] rounded-md fade-in-card-fast shadow-lg shadow-gray-700">
             <div className="flex flex-col space-y-2 items-center w-full">
                 
                 <h3 className="text-[18px] font-semibold">Notification</h3>

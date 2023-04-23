@@ -154,6 +154,8 @@ const updateContent = async (widgets:IWidget[], teacherOptions:ITeacherOptions, 
     } catch (e) {
         const err = e as AxiosError;
         if (err.response?.status === 401) useMyStore.getState().authFailed();
+
+        return false;
     }
 }
 
