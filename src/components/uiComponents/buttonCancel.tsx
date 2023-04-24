@@ -2,7 +2,7 @@ const ButtonCancel = ({btnText, onClickFn, fullWidth=false, deactive=false}:{btn
 
     return (
         <div className={`${fullWidth && "w-full flex justify-center items-center"}`}>
-            <button className={`${deactive ? "cursor-not-allowed text-gray-500" : "border-b-2 border-gray-700"}`} onClick={(e) => onClickFn(e)}>
+            <button className={`${deactive ? "cursor-not-allowed text-gray-500" : "border-b-2 border-gray-700"}`} onClick={(e) => !deactive && onClickFn(e)}>
                 {btnText}
             </button>
         </div>
