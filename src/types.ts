@@ -18,7 +18,8 @@ export interface ITeacherOptions {
     startingPreset?: string,
     controllerHidden?: boolean,
     noteShown?: boolean,
-    startingCamera?: object
+    startingCamera?: object,
+    startingGaussians?:object[],
 }
 
 export interface ITeacherCollObj {

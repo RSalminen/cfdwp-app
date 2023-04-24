@@ -27,7 +27,7 @@ const VtiTeacherView = () => {
 
     const { authHasFailed, reLoginSuccess } = useMyStore();
 
-    const loadSuccess = () => {        
+    const loadSuccess = () => {
         setSimLoaded(true);
     }
 
@@ -71,13 +71,13 @@ const VtiTeacherView = () => {
                 </div>
 
                 <div className="w-full h-full flex">
-                    <div className="relative w-full h-full">
+                    <div className="relative w-full h-full flex-1">
                         <VtiUIContext.Provider value={{notes, setNotes, simLoaded, customOptionsContext, setCustomOptionsContext}} >
                             <VtiViewer vtiContext={vtiContext} onLoadSuccess={loadSuccess} />
                         </VtiUIContext.Provider>
                     </div>
                     
-                    <div>
+                    <div className="h-full w-[280px] relative">
                         <VtiUIContext.Provider value={{notes, setNotes, simLoaded, customOptionsContext, setCustomOptionsContext}} >
                             <VtiTeacherViewerUI vtiContext={vtiContext} />
                         </VtiUIContext.Provider>

@@ -47,7 +47,6 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
 
     const { simid } = useParams();
 
-    const [menuVisible, setMenuVisible] = useState<boolean>(false);
     const [menuTab, setMenuTab] = useState<string>("General");
 
     const [selectedFields, setSelectedFields] = useState<string[]>([]);
@@ -98,6 +97,7 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
         if (noteShown) setNoteShownAtStart(noteShown);
 
         if (startingCamera) setStartingCam(startingCamera);
+        else setStartingCam(null);
 
         if (widgets) setWidgets(widgets);
     }

@@ -50,7 +50,8 @@ const TeacherView = () => {
 
   const onLoadSuccess = (name:string) => {
     
-    setSimName(name)
+    setSimName(name);
+    setSimLoaded(true);
 
   }
 
@@ -77,21 +78,20 @@ const TeacherView = () => {
         </div>
 
         <div className="w-full h-full flex">
-            <div className="relative flex-1 h-full">
-              <UIContext.Provider value={{notes, setNotes, visibleFields, setVisibleFields, simLoaded, setSimLoaded, simName, customOptionsContext, setCustomOptionsContext}} >
-                <ViewerUI vtkContext={vtkContext} />
-                <Viewer vtkContext={vtkContext} onLoadSuccess={onLoadSuccess} />
-              </UIContext.Provider>
-            </div>
-            
-            <div className="h-full w-[280px] relative">
-              <UIContext.Provider value={{notes, setNotes, visibleFields, setVisibleFields, simLoaded, setSimLoaded, simName, customOptionsContext, setCustomOptionsContext}} >
-                <TeacherViewerUI vtkContext={vtkContext} />
-              </UIContext.Provider>
-            </div>
+          <div className="relative flex-1 h-full">
+            <UIContext.Provider value={{notes, setNotes, visibleFields, setVisibleFields, simLoaded, setSimLoaded, simName, customOptionsContext, setCustomOptionsContext}} >
+              <ViewerUI vtkContext={vtkContext} />
+              <Viewer vtkContext={vtkContext} onLoadSuccess={onLoadSuccess} />
+            </UIContext.Provider>
+          </div>
+          
+          <div className="h-full w-[280px] relative">
+            <UIContext.Provider value={{notes, setNotes, visibleFields, setVisibleFields, simLoaded, setSimLoaded, simName, customOptionsContext, setCustomOptionsContext}} >
+              <TeacherViewerUI vtkContext={vtkContext} />
+            </UIContext.Provider>
           </div>
         </div>
-
+      </div>
     </>
   );
 }

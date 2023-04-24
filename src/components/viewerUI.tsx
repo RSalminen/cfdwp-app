@@ -103,8 +103,7 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
     if (teacherOptions.controllerHidden) setOptionsVisible(false);
 
     if (teacherOptions.noteShown === true && customOptionsContext.notes && customOptionsContext.notes.length > 0) {
-      setCurrentWidget(0);
-      setWidgetOpen(true);
+      openNote(0)
     };
 
     setSimLoaded(true);

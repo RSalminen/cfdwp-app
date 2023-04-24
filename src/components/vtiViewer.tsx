@@ -3,7 +3,7 @@
 import '@kitware/vtk.js/Rendering/Profiles/Volume';
 
 import { useContext, useEffect, useRef, useState } from 'react'
-import { ICustomOptions, IFileObject, IVTIContext, IWidget } from '../types';
+import { IFileObject, IVTIContext, IWidget } from '../types';
 import { fileService } from '../services/fileService';
 import { Link, useParams } from 'react-router-dom';
 import ViewerLoadingScreen from './viewerLoadingScreen';
@@ -14,14 +14,13 @@ import vtkVolume from '@kitware/vtk.js/Rendering/Core/Volume';
 import vtkVolumeMapper from '@kitware/vtk.js/Rendering/Core/VolumeMapper';
 import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction';
 import vtkPiecewiseFunction from '@kitware/vtk.js/Common/DataModel/PiecewiseFunction';
-import vtkPiecewiseGaussianWidget from '@kitware/vtk.js/Interaction/Widgets/PiecewiseGaussianWidget';
+
 import vtkBoundingBox from '@kitware/vtk.js/Common/DataModel/BoundingBox';
 
 import JSZip from 'jszip';
-import VolumeControl from '../widgets/VolumeController/volumeControl';
+
 import vtkVolumeController from '../widgets/VolumeController'
 
-import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import SelectionSmaller from './uiComponents/selectionSmaller';
 import ToggleSwitch from './uiComponents/toggleSwitch';
 import Range from './uiComponents/range';
@@ -31,7 +30,7 @@ import WidgetCard from './widgetCard';
 import { useMediaQuery } from 'react-responsive';
 
 
-const colorSchemes : {[key:string] : string} = {
+export const vtiColorSchemes : {[key:string] : string} = {
   "Rainbow": "erdc_rainbow_bright",
   "Cool to Warm": "Cool to Warm",
   "Grayscale": "Grayscale"
@@ -174,7 +173,7 @@ const createVtiViewer = async (vtiContainerRef:React.MutableRefObject<HTMLDivEle
 
 const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObject<IVTIContext | null>, onLoadSuccess:Function}) => {
 
-  const { notes, setNotes, simLoaded, customOptionsContext } = useContext(VtiUIContext);
+  const { notes, setNotes, simLoaded, customOptionsContext, setCustomOptionsContext } = useContext(VtiUIContext);
       
   const hasEnded = useRef<boolean>(false);
 
@@ -207,24 +206,71 @@ const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObj
   const [simName, setSimName] = useState<string>();
 
 
+
+  const loadTeacherOptions = () => {
+
+    if (!customOptionsContext) return;
+
+    const { renderer, renderWindow, controllerWidget } = vtiContext.current!;
+  
+    const teacherOptions = customOptionsContext!.teacherOptions;
+
+
+    if (customOptionsContext!.notes) setNotes(customOptionsContext!.notes!);
+
+    if (teacherOptions.startingPreset) presetChanged(teacherOptions.startingPreset);
+
+    if (teacherOptions.controllerHidden) setOptionsVisible(false);
+
+    if (teacherOptions.noteShown === true && customOptionsContext.notes && customOptionsContext.notes.length > 0) {
+      openNote(0);
+    };
+
+    console.log(teacherOptions.startingGaussians);
+    
+
+    if (teacherOptions.startingGaussians) {
+      controllerWidget.getWidget().setGaussians(teacherOptions.startingGaussians);
+    }
+    
+    if (teacherOptions.startingCamera) {
+      const newCamera :vtkCamera = vtkCamera.newInstance(teacherOptions.startingCamera);
+      renderer!.setActiveCamera(newCamera);
+      renderWindow?.render();
+    }
+
+    onLoadSuccess();
+
+  }
+
+  useEffect(() => {
+
+    // loading the custom options
+    if (!customOptionsContext) return;
+
+    loadTeacherOptions();
+  }, [customOptionsContext]);
+
+
+
   const load = async () => {
 
-      const fileObject : IFileObject = await fileService.getFile(simid!, setLoadProgress);
-      
-      setNotes(fileObject.notes);
-      setSimName(fileObject.simName);
+    const fileObject : IFileObject = await fileService.getFile(simid!, setLoadProgress);
+    
+    setNotes(fileObject.notes);
+    setSimName(fileObject.simName);
 
-      //I want to stop execution if the user goes back while loading the simulation
-      if (hasEnded.current) return;
-      
-      await createVtiViewer(vtiContainerRef, vtiContext, widgetRef, fileObject.file, isMobile);
-      //Clean up if the user goes back after file is loaded and viewer is loading
-      if (hasEnded.current) {
-      //cleanup();
-      return;
-      }
+    //I want to stop execution if the user goes back while loading the simulation
+    if (hasEnded.current) return;
+    
+    await createVtiViewer(vtiContainerRef, vtiContext, widgetRef, fileObject.file, isMobile);
+    //Clean up if the user goes back after file is loaded and viewer is loading
+    if (hasEnded.current) {
+    //cleanup();
+    return;
+    }
 
-      onLoadSuccess();
+    setCustomOptionsContext({notes:fileObject.notes, teacherOptions:fileObject.teacher_options});
   }
 
   useEffect(() => {
@@ -258,7 +304,7 @@ const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObj
 
     const { controllerWidget } = vtiContext.current!;
 
-    controllerWidget.updatePreset(colorSchemes[str]);
+    controllerWidget.updatePreset(vtiColorSchemes[str]);
     
     setActiveColorScheme(str);
   }
@@ -351,7 +397,7 @@ const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObj
                 <div className="flex flex-col items-center space-y-2">
                   
                   <div className="flex w-full px-4 justify-between space-x-1 items-center">
-                    <SelectionSmaller selectedItem={activecolorScheme} onChangeFn={presetChanged} allItems={Object.keys(colorSchemes)} thisItem={null} fullWidth={true} />
+                    <SelectionSmaller selectedItem={activecolorScheme} onChangeFn={presetChanged} allItems={Object.keys(vtiColorSchemes)} thisItem={null} fullWidth={true} />
                     <ToggleSwitch text="Shadow" isActive={shadowActive} onChangeFn={ShadowChanged} />
                   </div>
 

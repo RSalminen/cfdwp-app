@@ -6,8 +6,6 @@ export const VtiUIContext = createContext<IVtiUIContext>({} as IVtiUIContext);
 
 const VtiStudentView = () => {
 
-    const startEffectRun = useRef<boolean>(false);
-
     const vtiContext = useRef<IVTIContext | null>(null);
     const [customOptionsContext, setCustomOptionsContext] = useState<ICustomOptions | null>(null);
 
