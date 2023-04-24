@@ -158,10 +158,17 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
     }
 
     const createTeacherOptionsObj = () => {
+
+        let realStartingField : string | null = selectedStartingField;
+        let realStartingColor : string | null = selectedStartingPreset;
+
+        if (selectedStartingField === "Solid color") realStartingField = null;
+        if (selectedStartingPreset === "Jet") realStartingColor = null;
+
         const newOptions : ITeacherOptions = {
             ...(selectedFields.length > 0) && {restrictFields: selectedFields},
-            ...(selectedStartingField) && {startingField: selectedStartingField},
-            ...(selectedStartingPreset) && {startingPreset: selectedStartingPreset},
+            ...(realStartingField) && {startingField: realStartingField},
+            ...(realStartingColor) && {startingPreset: realStartingColor},
             ...(controllerHiddenAtStart) && {controllerHidden:controllerHiddenAtStart},
             ...(noteShownAtStart) && {noteShown:noteShownAtStart},
             ...(startingCam) && {startingCamera:startingCam}
