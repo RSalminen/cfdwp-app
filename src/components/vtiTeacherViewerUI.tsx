@@ -77,10 +77,13 @@ const VtiTeacherViewerUI = ({vtiContext} : {vtiContext:React.MutableRefObject<IV
         
 
         if (startingColor) setSelectedStartingPreset(startingColor);
+        else setSelectedStartingPreset("Rainbow");
 
         if (hiddenAtStart) setControllerHiddenAtStart(hiddenAtStart);
+        else setControllerHiddenAtStart(false);
 
         if (noteShown) setNoteShownAtStart(noteShown);
+        else setNoteShownAtStart(false);
 
         if (startingCamera) {
             setStartingCam(startingCamera);
@@ -88,6 +91,7 @@ const VtiTeacherViewerUI = ({vtiContext} : {vtiContext:React.MutableRefObject<IV
         else setStartingCam(null);
 
         if (widgets) setWidgets(widgets);
+        else setWidgets([]);
 
         if (gaussians) setStartingGaussians(gaussians);
         else setStartingGaussians(null);
