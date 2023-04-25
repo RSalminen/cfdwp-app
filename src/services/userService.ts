@@ -52,7 +52,7 @@ const validateToken = async (teacherid:string) => {
             method: "get",
             url: "/api/teacher/validatetoken",
             headers: { Authorization: `Bearer ${token}`},
-            params: {teacherid}
+            params: {teacherId: teacherid}
         });
     
         return true;

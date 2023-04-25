@@ -87,19 +87,25 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
         setAllFields(["Solid color", ...allPointFields, ...allCellFields]);
 
         if (restrictFields) setSelectedFields(restrictFields);
+        else setSelectedFields([]);
 
         if (startingField) setSelectedStartingField(startingField);
+        else setSelectedStartingField("Solid color");
 
         if (startingColor) setSelectedStartingPreset(startingColor);
+        else setSelectedStartingPreset("Jet");
 
         if (hiddenAtStart) setControllerHiddenAtStart(hiddenAtStart);
+        else setControllerHiddenAtStart(false);
 
         if (noteShown) setNoteShownAtStart(noteShown);
+        else setNoteShownAtStart(false);
 
         if (startingCamera) setStartingCam(startingCamera);
         else setStartingCam(null);
 
         if (widgets) setWidgets(widgets);
+        else setWidgets([]);
     }
 
 
