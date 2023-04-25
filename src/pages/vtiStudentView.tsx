@@ -19,9 +19,11 @@ const VtiStudentView = () => {
 
     return (
         <>
-        <VtiUIContext.Provider value={{notes, setNotes, simLoaded, customOptionsContext, setCustomOptionsContext}} >
-            <VtiViewer vtiContext={vtiContext} onLoadSuccess={loadSuccess} />
-        </VtiUIContext.Provider>
+        <div className="fixed w-full h-full top-0 left-0">
+            <VtiUIContext.Provider value={{notes, setNotes, simLoaded, customOptionsContext, setCustomOptionsContext}} >
+                <VtiViewer vtiContext={vtiContext} onLoadSuccess={loadSuccess} />
+            </VtiUIContext.Provider>
+        </div>
         </>
     )
 }
