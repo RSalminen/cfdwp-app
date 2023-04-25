@@ -223,8 +223,8 @@ const Home = () => {
             <div ref={simCardRef} className="fade-in-card overflow-x-auto w-full bg-white shadow-md shadow-gray-600 rounded-md px-5 py-4 flex flex-col space-y-6 items-center sm:items-start">
               
               <div className="flex items-center justify-center md:justify-between w-full flex-wrap">
-                <h3 className="text-[18px] md:text-[22px] font-semibold mx-5">Simulations</h3>
-                <div className="mx-5"><SearchBar placeholder="Search simulations..." onSearch={searchSimulations} /></div>
+                <h3 className="text-[18px] md:text-[22px] font-semibold px-5">Simulations</h3>
+                <div className="px-5"><SearchBar placeholder="Search simulations..." onSearch={searchSimulations} /></div>
               </div>
 
               {(searchedSimulations !== null && dataLoaded) &&
