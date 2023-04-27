@@ -314,7 +314,7 @@ const VtiTeacherViewerUI = ({vtiContext} : {vtiContext:React.MutableRefObject<IV
                 {menuTab === "Notes" &&
                 <div className="overflow-y-auto mb-2 h-full w-full">
                     <div className="w-full flex flex-col items-center px-4 py-1.5">
-                        <h5 className="font-semibold">My widgets</h5>
+                        <h5 className="font-semibold">My Notes</h5>
                         {widgets.length === 0 && <p className="text-[13px] mt-2">No widgets added</p>}
                         
 
@@ -329,7 +329,7 @@ const VtiTeacherViewerUI = ({vtiContext} : {vtiContext:React.MutableRefObject<IV
                     </div>
 
                     <div className="flex flex-col items-center border-y border-gray-500 py-2 space-y-2 px-4">
-                        <h5 className="font-semibold">Add widget</h5>
+                        <h5 className="font-semibold">Add Note</h5>
                         <CustomInput labelText="Title" onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setTitleInput(e.target.value)}} currentValue={titleInput} />
                         <CustomTextArea labelText="Description" onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setDescriptionArea(e.target.value)}} currentValue={descriptionArea} />
                         
@@ -341,7 +341,7 @@ const VtiTeacherViewerUI = ({vtiContext} : {vtiContext:React.MutableRefObject<IV
                         </div>
 
                         <div className="flex space-x-1 w-full pt-2">
-                            <ButtonDarkMid btnText="Add widget" onClickFn={addWidget} fullWidth={true} deactive={isAddWidgetEmpty()} />
+                            <ButtonDarkMid btnText="Add Note" onClickFn={addWidget} fullWidth={true} deactive={isAddWidgetEmpty()} />
                             <ButtonCancel btnText="Reset" onClickFn={resetWidget} fullWidth={true} deactive={isAddWidgetEmpty()} />
                         </div>
                     </div>

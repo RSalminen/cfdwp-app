@@ -480,7 +480,7 @@ const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObj
             <div className= "border-b-2 w-full">Notes</div>
           </div>
 
-          <div className="flex flex-col justify-between flex-1 h-0 pb-1">
+          <div className="flex flex-col justify-between flex-1 h-0 py-1">
             
             <div className="flex flex-col">
                 {notes.map((note:IWidget, idx:number) => (
