@@ -16,11 +16,78 @@ import { ITeacherCollObj, ITeacherSimObj } from '../types';
 import { collectionService } from '../services/collectionService';
 import ButtonCancel from '../components/uiComponents/buttonCancel';
 import MessageBox from '../components/messageBox';
+import WhiteOverlay from '../components/uiComponents/whiteOverlay';
 
 const Ifiletype : { [key:number] : string } = {
     1: "vtp",
     2: "vti",
     3: "vtkjs"
+}
+
+const SimulationCard = ({simObj, onClose, teacherid} : {simObj:ITeacherSimObj, onClose:Function, teacherid:string}) => {
+
+    const addedDate = new Date(simObj.added_date);
+
+    const [confirmDeleteActive, setConfirmDeleteActive] = useState<boolean>(false);
+    const [addToCollectionActive, setAddToCollectionActive] = useState<boolean>(false);
+
+    const { updateMessage } = useMyStore();
+   
+    const deleteSimulation = async () => {
+
+        updateMessage({ status:1, message: `Deleting simulation ${simObj.simtitle}`});
+        setConfirmDeleteActive(false);
+
+        const response = await fileService.deleteSimulation(simObj.id, teacherid);
+
+        if (response) {
+            updateMessage({ status:2, message: `Simulation ${simObj.simtitle} was deleted`});
+        }
+
+        else updateMessage({ status:3, message: `Deleting simulation ${simObj.simtitle} failed`});
+    }
+
+    return (
+        <WhiteOverlay onClickOutside={() => onClose()} >
+
+            {confirmDeleteActive && 
+                <div onClick={e => e.stopPropagation()}>
+                    <ConfirmCard message="Are you sure you want to delete simulation" itemName={simObj.simtitle} onConfirm={deleteSimulation} onCancel={() => setConfirmDeleteActive(false)} />
+                </div>
+            }
+
+            {addToCollectionActive &&
+                <div onClick={e => e.stopPropagation()}>
+                    <AddToCollectionCard simObj={simObj} teacherid={teacherid} onCancel={() => setAddToCollectionActive(false)} onSuccess={() => setAddToCollectionActive(false)} />
+                </div>
+            }
+
+            <div onClick={e => e.stopPropagation()} className="bg-white px-6 py-3 border rounded-md shadow-lg max-w[90%] sm:max-w-[70%] md:max-w-[60%] relative">
+                
+                <svg onClick={() => onClose()} className="cursor-pointer absolute right-2 top-2 h-4 w-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
+                
+                <h3 className='pb-2 pl-2 text-[20px] font-medium'>Simulation</h3>
+                <div className="flex flex-wrap justify-around w-full overflow-hidden">
+                    <div className="flex flex-col pb-2 px-2 max-w-[50%]">
+                        <h5 className="text-sm text-center">Name</h5>
+                        <p className="font-medium two-lines">{simObj.simtitle}</p>
+                    </div>
+
+                    <div className="flex flex-col pb-2 px-2 max-w-[50%]">
+                        <h5 className="text-sm text-center">Added</h5>
+                        <p className="font-medium two-lines">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</p>
+                    </div>
+                </div>
+
+                <div className="flex space-x-2 w-full pt-2">
+                    <SmallButtonDarkLink btnText="View" url={simObj.filetype !== 2  ? `/view/${simObj.id}/` : `/viewvti/${simObj.id}/`} fullWidth={true} />
+                    <SmallButtonDarkLink btnText="Edit" url={simObj.filetype !== 2  ? `/view/${simObj.id}/${teacherid}` : `/viewvti/${simObj.id}/${teacherid}`} fullWidth={true} />
+                    <ButtonDarkSmall btnText="Add to collection" onClickFn={() => setAddToCollectionActive(true)} fullWidth={true} />
+                    <ButtonDarkSmall btnText="Delete" onClickFn={() => setConfirmDeleteActive(true)} fullWidth={true} />
+                </div>
+            </div>
+        </WhiteOverlay>
+    );
 }
 
 
@@ -140,18 +207,19 @@ const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teach
     )
 }
 
-const SimulationsRow = ({simObj, teacherid, idx}:{simObj:ITeacherSimObj, teacherid:string, idx:number}) => {
+const SimulationsRow = ({simObj, teacherid, idx, onClickFn}:{simObj:ITeacherSimObj, teacherid:string, idx:number, onClickFn:Function}) => {
 
     const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(false);
 
     const addedDate = new Date(simObj.added_date);
 
     return(
-        <tr key={simObj.id} className={`${idx%2 === 0 ? "bg-gradient-to-r from-emerald-50 to-gray-100 hover:from-gray-100 hover:to-emerald-50" : "bg-white hover:bg-gradient-to-r hover:from-white hover:to-emerald-50"}`}>
-            <td className="py-1 px-1 font-medium min-w-[100px]">{simObj.simtitle}</td>
-            <td className="py-1 px-1">{Ifiletype[simObj.filetype]}</td>
-            <td className="py-1 px-1">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</td>
-            <td className="py-1 px-1">{"None"}</td>
+        <tr key={simObj.id}
+         className={`${idx%2 === 0 ? "bg-gradient-to-r from-emerald-50 to-gray-100 hover:from-gray-100 hover:to-emerald-50" : "bg-white hover:bg-gradient-to-r hover:from-white hover:to-emerald-50"} cursor-pointer`}>
+            <td onClick={() => onClickFn()} className="py-1 px-1 font-medium min-w-[100px]">{simObj.simtitle}</td>
+            <td onClick={() => onClickFn()} className="py-1 px-1">{Ifiletype[simObj.filetype]}</td>
+            <td onClick={() => onClickFn()} className="py-1 px-1">{addedDate.toLocaleString([], {year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute:'2-digit'})}</td>
+            <td onClick={() => onClickFn()} className="py-1 px-1">{"None"}</td>
             <td className="py-1 px-1 w-[0px]">
                 <div ref={ref} className="relative">
                     <svg className={`${isComponentVisible && "stroke-emerald-600"} cursor-pointer`} onClick={() => setIsComponentVisible(!isComponentVisible)} stroke="currentColor" fill="none" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
@@ -173,6 +241,8 @@ const MySimulations = () => {
     const [activePage, setActivePage] = useState<number>(1);
     
     const [loaded, setLoaded] = useState<boolean>(false);
+
+    const [activeRow, setActiveRow] = useState<ITeacherSimObj | null>(null);
 
     const ranStart = useRef<boolean>(false);
     const navigate = useNavigate();
@@ -243,6 +313,11 @@ const MySimulations = () => {
                     <MessageBox />
                 }
 
+                {/* Display a simulation card */}
+                {activeRow && 
+                    <SimulationCard simObj={activeRow} onClose={() => setActiveRow(null)} teacherid={teacherid!} />
+                }
+
                 {/* Display the page */}
                 <div className="flex flex-col h-full">
                     
@@ -276,7 +351,7 @@ const MySimulations = () => {
 
                                             <tbody className="border border-gray-300">
                                                 {simulationsByTeacher !== null && simulationsByTeacher.slice(simsPerPage*(activePage-1), simsPerPage*activePage).map((simObj:ITeacherSimObj, idx:number) => (
-                                                    <SimulationsRow key={simObj.id} simObj={simObj} teacherid={teacherid!} idx={idx} />
+                                                    <SimulationsRow key={simObj.id} simObj={simObj} teacherid={teacherid!} idx={idx} onClickFn={() => setActiveRow(simObj)} />
                                                 ))}
                                             </tbody>
                                         </table>

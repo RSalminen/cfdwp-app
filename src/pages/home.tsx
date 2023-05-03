@@ -42,7 +42,7 @@ const SingleCard = ({title, type}:{title:string, type:number}) => {
 const ShowMore = ({isVisible, showMoreClick, showLessClick}:{isVisible:boolean, showMoreClick:Function, showLessClick:Function}) => {
 
   return (
-    <div className="w-full flex justify-center transition-all">
+    <div className="w-full flex justify-center transition-all pt-2">
       {isVisible ?
       <div onClick={() => showMoreClick()} className="flex items-center text-center space-x-1 text-blue-900 cursor-pointer">
         <p className="text-[13px]">Show more</p>
@@ -271,15 +271,21 @@ const Home = () => {
               }
 
               <div className="flex flex-wrap w-full justify-center">
-                {dataLoaded ? simulations.current.slice(0,simsToShow).map((simulation:ISimCard) => (
+                {dataLoaded ? 
+                <>
+                  {simulations.current.slice(0,simsToShow).map((simulation:ISimCard) => (
                   <Link to={(simulation.filetype === 2 ? "/viewvti/" : "/view/") + simulation.id} key={simulation.id}>
                     <SingleCard title={simulation.simtitle} type={1} />
-                  </Link>))
+                  </Link>))}
+
+                  <ShowMore isVisible={simShowmoreVisible} showMoreClick={showMoreSims} showLessClick={showLessSims} />
+                </>
+                  
                 : <div className="h-36 w-36 p-6">
                     <LoadingSpinner />
                   </div>}
               </div>
-              <ShowMore isVisible={simShowmoreVisible} showMoreClick={showMoreSims} showLessClick={showLessSims} />
+      
             
             </div>
 
@@ -344,16 +350,20 @@ const Home = () => {
                 }
 
                 <div className="flex flex-wrap w-full justify-center">
-                  {dataLoaded ? collections.current.slice(0, collsToShow).map((collection:ICollCard) => (
+                  {dataLoaded ? 
+                  <>
+                  {collections.current.slice(0, collsToShow).map((collection:ICollCard) => (
                   <div onClick={() => setOpenCollection(collection)}>
                     <SingleCard key={collection.id} title={collection.name} type={2} />
                   </div>
-                  ))
+                  ))}
+
+                  <ShowMore isVisible={collShowmoreVisible} showMoreClick={showMoreColls} showLessClick={showLessColls} />
+                  </>
                   : <div className="h-36 w-36 p-6">
                       <LoadingSpinner />
                     </div>}
                 </div>
-                <ShowMore isVisible={collShowmoreVisible} showMoreClick={showMoreColls} showLessClick={showLessColls} />
               </div>
             </div>
 

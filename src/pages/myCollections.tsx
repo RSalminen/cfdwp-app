@@ -1,8 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react'
-import { fileService } from '../services/fileService';
 import ButtonDark from '../components/uiComponents/buttonDark';
-import SmallButtonDarkLink from '../components/uiComponents/smallButtonDarkLink';
 import TeacherTopBar from '../components/teacherTopBar';
 import TeacherNav from '../components/teacherNav';
 import { validateHelper } from '../helpers/validateHelper';
@@ -15,6 +13,17 @@ import { collectionService } from '../services/collectionService';
 import MessageBox from '../components/messageBox';
 import { ITeacherCollObj } from '../types';
 import ConfirmCard from '../components/confirmCard';
+import WhiteOverlay from '../components/uiComponents/whiteOverlay';
+
+const CollectionCard = () => {
+
+
+    return (
+        <WhiteOverlay>
+
+        </WhiteOverlay>
+    );
+}
 
 
 const CollectionActionsCard = ({collObj, teacherid}:{collObj:ITeacherCollObj, teacherid:string}) => {
