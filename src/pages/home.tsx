@@ -7,6 +7,8 @@ import SearchBar from '../components/uiComponents/searchBar';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from 'react-responsive-carousel';
 import WhiteOverlay from '../components/uiComponents/whiteOverlay';
+import HomeBG from '../assets/wavebg1.svg';
+import BaseLogo from '../assets/cfdviewerlogo.svg'
 
 
 interface ISimCard {
@@ -64,8 +66,6 @@ const Home = () => {
 
   
   const simCardRef = useRef<any>();
-
-  const [bgLoaded, setBgLoaded] = useState<boolean>(false);
   const fitCount = useRef<number>();
 
   const simulations = useRef<ISimCard[]>([]);
@@ -118,22 +118,20 @@ const Home = () => {
 
   //Calculating at startup how many cards can fit in one row
   useEffect(() => {
+    const cardSize = isMobile ? 224 : 256;
+    const {width} = simCardRef.current.getBoundingClientRect();
+    const totalwidth = width - 40;
 
-    if (bgLoaded) {
-      const cardSize = isMobile ? 224 : 256;
-      const {width} = simCardRef.current.getBoundingClientRect();
-      const totalwidth = width - 40;
+    const calculatedCount = Math.floor(totalwidth / cardSize);
 
-      const calculatedCount = Math.floor(totalwidth / cardSize);
+    
+    if (calculatedCount < 3) fitCount.current = 4;
+    else fitCount.current = calculatedCount;
 
-      
-      if (calculatedCount < 3) fitCount.current = 4;
-      else fitCount.current = calculatedCount;
-
-      setSimsToShow(fitCount.current);
-      setCollsToShow(fitCount.current);
-    }
-  }, [bgLoaded]);
+    setSimsToShow(fitCount.current);
+    setCollsToShow(fitCount.current);
+    
+  }, []);
 
   const getSearchFit = () => {
 
@@ -171,12 +169,6 @@ const Home = () => {
     setCollsToShow(collsToShow!/2);
   }
 
-  if (!bgLoaded) return (
-    <div>
-      <img role="presentation" className="hidden h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
-      <img className="hidden" width={isMobile ? 200 : 280} src="/cfdviewerlogo.svg" alt="CFD Viewer logo" onLoad={() => setBgLoaded(true)} />
-    </div>
-  )
 
   const searchSimulations = (str:string) => {
     setSearchedSimulations(simulations.current.filter((item:ISimCard) => item.simtitle.toLowerCase().startsWith(str.toLowerCase())));
@@ -200,13 +192,13 @@ const Home = () => {
       <div className="flex justify-center h-full w-full py-2">
         
         {/* background */}
-        <img transition-style="in:wipe:right" role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src="wavebg1.svg"/>
+        <img transition-style="in:wipe:right" role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none" src={HomeBG} />
         <div className="fixed w-full h-full top-0 left-0 -z-[11] backgroundcolor"></div>
 
         <div className="w-[90%] sm:w-[80%] flex flex-col space-y-20 mb-4">
           <div className="flex justify-between items-center">
 
-            <img width={isMobile ? 200 : 280} src="/cfdviewerlogo.svg" alt="CFD Viewer logo" />
+            <img width={isMobile ? 200 : 280} src={BaseLogo} alt="CFD Viewer logo" />
 
             {/* Login button */}
             <Link to="/login">

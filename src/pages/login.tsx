@@ -4,6 +4,8 @@ import CustomInput from "../components/uiComponents/customInput";
 import { userService } from "../services/userService";
 import useMyStore from "../store/store";
 import { useMediaQuery } from "react-responsive";
+import BaseLogo from '../assets/cfdviewerlogo.svg'
+import loginBG from '../assets/wavebg2.svg'
 
 const ButtonDarkForm = ({btnText, fullWidth}:{btnText:string, fullWidth:boolean}) => {
 
@@ -44,14 +46,14 @@ const Login = () => {
             <div className="h-full w-full flex flex-col justify-center items-center">
 
                 {/* background */}
-                <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none fade-in-card" src="wavebg2.svg"/>
+                <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none fade-in-card" src={loginBG} />
                 <div className="h-full w-full fixed object-cover z-[-11] top-0 left-0 loginBackgroundColor" />
 
                 <div className="border py-6 px-8 sm:px-12 w-[270px] sm:w-[300px] rounded-md shadow-lg shadow-gray-700 bg-white overflow-auto">
                     
                     <div className="h-[35px] sm:h-[45px] w-full flex justify-center items-start">
                         <Link to="/">
-                            <img width={isMobile ? 140 : 170} src="/cfdviewerlogo.svg" alt="CFD Viewer logo" />
+                            <img width={isMobile ? 140 : 190} src={BaseLogo} alt="CFD Viewer logo" />
                         </Link>
                     </div>
                     

@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import Viewer from "../components/viewer";
 import ViewerUI from "../components/viewerUI";
 import { ICustomOptions, IVTKContext, IWidget } from "../types";
-import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import TeacherViewerUI from "../components/teacherViewerUI";
 import { UIContext } from "./studentView";
 import useMyStore from "../store/store";
@@ -10,6 +9,7 @@ import LoginFallback from "../components/loginFallback";
 import { userService } from "../services/userService";
 import { validateHelper } from "../helpers/validateHelper";
 import { useParams } from "react-router-dom";
+import BaseLogo from '../assets/cfdviewerlogo.svg'
 
 const TeacherView = () => {
   
@@ -73,7 +73,7 @@ const TeacherView = () => {
 
         <div className="h-[60px] flex items-center bg-gradient-to-r from-gray-100 via-gray-100 to-emerald-100">
           <div className="flex justify-between w-[98%] m-auto items-center">
-              <img width={180} src="/cfdviewerlogo.svg" alt="CFD Viewer logo" />
+              <img width={180} src={BaseLogo} alt="CFD Viewer logo" />
           </div>
         </div>
 
