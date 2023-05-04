@@ -24,6 +24,7 @@ import ButtonYellow from "./uiComponents/buttonYellow";
 import MessageBox from "./messageBox";
 import useMyStore from "../store/store";
 import LoadingSpinner from "./uiComponents/loadingSpinner";
+import ShareTab from "./shareTab";
 
 
 const ListedWidget = ({widget, widgets, setWidgets} : {widget:IWidget, widgets:IWidget[], setWidgets:React.Dispatch<React.SetStateAction<IWidget[]>>}) => {
@@ -264,6 +265,7 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
                 <div className="flex space-x-4 pb-2 border-b border-emerald-900">
                     <div className={`${menuTab === "General" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("General")}>General</div>
                     <div className={`${menuTab === "Notes" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("Notes")}>Notes</div>
+                    <div className={`${menuTab === "Share" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("Share")}>Share</div>
                 </div>
 
                 {menuTab === "General" &&
@@ -310,7 +312,7 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
                 {menuTab === "Notes" &&
                 <div className="overflow-y-auto mb-2 h-full w-full">
                     <div className="w-full flex flex-col items-center px-4 py-1.5">
-                        <h5 className="font-semibold">My widgets</h5>
+                        <h5 className="font-semibold">My Notes</h5>
                         {widgets.length === 0 && <p className="text-[13px] mt-2">No widgets added</p>}
                         
 
@@ -325,7 +327,7 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
                     </div>
 
                     <div className="flex flex-col items-center border-y border-gray-500 py-2 space-y-2 px-4">
-                        <h5 className="font-semibold">Add widget</h5>
+                        <h5 className="font-semibold">Add Note</h5>
                         <CustomInput labelText="Title" onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setTitleInput(e.target.value)}} currentValue={titleInput} />
                         <CustomTextArea labelText="Description" onChange={(e:React.ChangeEvent<HTMLInputElement>) => {setDescriptionArea(e.target.value)}} currentValue={descriptionArea} />
                         
@@ -337,11 +339,15 @@ const TeacherViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKC
                         </div>
 
                         <div className="flex space-x-1 w-full pt-2">
-                            <ButtonDarkMid btnText="Add widget" onClickFn={addWidget} fullWidth={true} deactive={isAddWidgetEmpty()} />
+                            <ButtonDarkMid btnText="Add Note" onClickFn={addWidget} fullWidth={true} deactive={isAddWidgetEmpty()} />
                             <ButtonCancel btnText="Reset" onClickFn={resetWidget} fullWidth={true} deactive={isAddWidgetEmpty()} />
                         </div>
                     </div>
                 </div>
+                }
+
+                {menuTab === "Share" &&
+                <ShareTab simId={simid!} />
                 }
 
                 <div className="flex space-x-1 w-full mt-1">

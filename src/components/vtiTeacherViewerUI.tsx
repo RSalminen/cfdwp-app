@@ -23,6 +23,7 @@ import LoadingSpinner from "./uiComponents/loadingSpinner";
 import { vtiColorSchemes } from "./vtiViewer";
 import { ICustomOptions, ITeacherOptions, IVTIContext, IWidget } from "../types";
 import { VtiUIContext } from "../pages/vtiStudentView";
+import ShareTab from "./shareTab";
 
 
 const ListedWidget = ({widget, widgets, setWidgets} : {widget:IWidget, widgets:IWidget[], setWidgets:React.Dispatch<React.SetStateAction<IWidget[]>>}) => {
@@ -270,6 +271,7 @@ const VtiTeacherViewerUI = ({vtiContext} : {vtiContext:React.MutableRefObject<IV
                 <div className="flex space-x-4 pb-2 border-b border-emerald-900">
                     <div className={`${menuTab === "General" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("General")}>General</div>
                     <div className={`${menuTab === "Notes" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("Notes")}>Notes</div>
+                    <div className={`${menuTab === "Share" && "border-b-[3px] border-emerald-600"} cursor-pointer`} onClick={() => setMenuTab("Share")}>Share</div>
                 </div>
 
                 {menuTab === "General" &&
@@ -346,6 +348,10 @@ const VtiTeacherViewerUI = ({vtiContext} : {vtiContext:React.MutableRefObject<IV
                         </div>
                     </div>
                 </div>
+                }
+
+                {menuTab === "Share" && 
+                <ShareTab simId={simid!} />
                 }
 
                 <div className="flex space-x-1 w-full mt-1">
