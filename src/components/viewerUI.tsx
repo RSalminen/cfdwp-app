@@ -62,7 +62,7 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
   const [noteMenuVisible, setNoteMenuVisible] = useState<boolean>(false);
 
   const [widgetOpen, setWidgetOpen] = useState<boolean>(false);
-  const [currentWidget, setCurrentWidget] = useState<number>(0);
+  const [currentWidget, setCurrentWidget] = useState<number | null>(null);
 
   const representations = ["Surface", "Surface with edge", "Points", "Wireframe"];
   const [activeRepresentation, setActiveRepresentation] = useState<string | null>("Surface");
@@ -103,9 +103,10 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
     if (teacherOptions.controllerHidden) setOptionsVisible(false);
 
     if (teacherOptions.noteShown === true && customOptionsContext.notes && customOptionsContext.notes.length > 0) {
-      openNote(0)
+      openNote(0);
     };
 
+    setCurrentWidget(0);
     setSimLoaded(true);
     
     if (teacherOptions.startingCamera) {
@@ -318,11 +319,18 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
 
   //Note handling
   const openNote = (widgetNr:number) => {
+    setWidgetOpen(true);
+    setCurrentWidget(widgetNr);
+      
+  }
+
+  useEffect(() => {
+    
+    if (!currentWidget) return;
+
     const { renderer, renderWindow } : IVTKContext = vtkContext.current!;
     
-    const widget : IWidget = notes[widgetNr];
-
-    if (!widgetOpen) setWidgetOpen(true);
+    const widget : IWidget = notes[currentWidget];
     
     //Check if a custom camera position is set for the note
     if (widget.camera) {
@@ -330,10 +338,7 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
       renderer!.setActiveCamera(newCamera);
       renderWindow?.render();
     }
-
-    setCurrentWidget(widgetNr);
-      
-  }
+  }, [currentWidget]);
 
 
   //Number formatting
@@ -355,7 +360,7 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
     <div className="h-full w-full absolute z-[8] overflow-hidden pointer-events-none flex justify-end items-end p-4">
       <Draggable handle=".widgetHandle" bounds="body" nodeRef={nodeRef}>
         <div ref={nodeRef} className=" w-[340px] sm:w-[370px] h-[220px] bg-white bg-opacity-95 border-2 border-emerald-900 shadow-lg shadow-black rounded-md pointer-events-auto">
-          <WidgetCard widgets={notes} currentWidgetNr={currentWidget} changeWidgetFn={openNote} setWidgetOpen={setWidgetOpen} />
+          <WidgetCard widgets={notes} currentWidgetNr={currentWidget!} changeWidgetFn={openNote} setWidgetOpen={setWidgetOpen} />
         </div>
       </Draggable>
     </div>
@@ -476,7 +481,7 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
           {notes && notes.length > 0 &&
           <>
           <div className="border-y border-white py-1 w-full flex justify-center">
-            <div onClick={() => widgetOpen ? setWidgetOpen(false) : openNote(currentWidget)} className={`${widgetOpen && "bg-emerald-900 p-0.5 rounded-[3px]"} flex justify-center w-full`}>
+            <div onClick={() => widgetOpen ? setWidgetOpen(false) : openNote(!currentWidget ? 0 : currentWidget)} className={`${widgetOpen && "bg-emerald-900 p-0.5 rounded-[3px]"} flex justify-center w-full`}>
               <svg onClick={() => {}} className="h-[22px] w-[22px] fill-white cursor-pointer" stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M928 161H699.2c-49.1 0-97.1 14.1-138.4 40.7L512 233l-48.8-31.3A255.2 255.2 0 0 0 324.8 161H96c-17.7 0-32 14.3-32 32v568c0 17.7 14.3 32 32 32h228.8c49.1 0 97.1 14.1 138.4 40.7l44.4 28.6c1.3.8 2.8 1.3 4.3 1.3s3-.4 4.3-1.3l44.4-28.6C602 807.1 650.1 793 699.2 793H928c17.7 0 32-14.3 32-32V193c0-17.7-14.3-32-32-32zM324.8 721H136V233h188.8c35.4 0 69.8 10.1 99.5 29.2l48.8 31.3 6.9 4.5v462c-47.6-25.6-100.8-39-155.2-39zm563.2 0H699.2c-54.4 0-107.6 13.4-155.2 39V298l6.9-4.5 48.8-31.3c29.7-19.1 64.1-29.2 99.5-29.2H888v488zM396.9 361H211.1c-3.9 0-7.1 3.4-7.1 7.5v45c0 4.1 3.2 7.5 7.1 7.5h185.7c3.9 0 7.1-3.4 7.1-7.5v-45c.1-4.1-3.1-7.5-7-7.5zm223.1 7.5v45c0 4.1 3.2 7.5 7.1 7.5h185.7c3.9 0 7.1-3.4 7.1-7.5v-45c0-4.1-3.2-7.5-7.1-7.5H627.1c-3.9 0-7.1 3.4-7.1 7.5zM396.9 501H211.1c-3.9 0-7.1 3.4-7.1 7.5v45c0 4.1 3.2 7.5 7.1 7.5h185.7c3.9 0 7.1-3.4 7.1-7.5v-45c.1-4.1-3.1-7.5-7-7.5zm416 0H627.1c-3.9 0-7.1 3.4-7.1 7.5v45c0 4.1 3.2 7.5 7.1 7.5h185.7c3.9 0 7.1-3.4 7.1-7.5v-45c.1-4.1-3.1-7.5-7-7.5z"></path></svg>
             </div>
           </div>
