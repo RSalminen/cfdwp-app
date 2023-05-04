@@ -1,8 +1,9 @@
 import { AxiosError } from "axios";
-import { ICustomOptions, ITeacherOptions, IWidget } from "../types";
+import { ITeacherOptions, IWidget } from "../types";
 import axiosinstance from "./customAxios";
 import { userService } from "./userService";
 import useMyStore from "../store/store";
+import { collectionService } from "./collectionService";
 
 
 const postFile = async (file:File, fileType:string, simName:string, teacherId:string) => {
@@ -78,7 +79,33 @@ const setToCollection = async (simId:string, teacherId:string, newValue:number) 
             }
         });
 
-        getSimulationsByTeacher(teacherId);
+        collectionService.getCollectionsByTeacher(teacherId);
+
+        return true;
+
+    } catch (e) {
+        const err = e as AxiosError;
+        if (err.response?.status === 401) {
+            useMyStore.getState().authFailed();
+        }
+
+        return false;
+    }
+}
+
+const removeFromCollection = async (simId:string, collId:string, teacherId:string) => {
+
+    try {
+        await axiosinstance({
+            method:"delete",
+            url:"/api/teacher/removeFromCollection",
+            data: { simId, teacherId, collectionId:collId},
+            headers: {
+                Authorization: `Bearer ${userService.getToken()}`
+            }
+        });
+
+        collectionService.getCollectionsByTeacher(teacherId);
 
         return true;
 
@@ -183,6 +210,7 @@ export const fileService = {
     postFile, 
     deleteSimulation,
     setToCollection,
+    removeFromCollection,
     getSimulationsByTeacher,
     getFile,
     updateContent,
