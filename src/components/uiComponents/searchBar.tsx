@@ -25,7 +25,7 @@ const SearchBar = ({placeholder, onSearch} : {placeholder:string, onSearch:Funct
             
             <div className="absolute z-[2] px-1.5 top-0 w-full h-full pointer-events-none flex justify-end items-center">
                 
-                <input type="submit" className="cursor-pointer h-8 w-16 md:w-20 md:h-[36px] text-white rounded-md bg-blue-800 hover:bg-blue-700 active:bg-blue-900 pointer-events-auto" value="Search" />
+                <input type="submit" className="cursor-pointer h-8 w-16 md:w-20 md:h-[36px] text-white rounded-md bg-emerald-800 hover:bg-emerald-700 active:bg-emerald-900 pointer-events-auto" value="Search" />
                 
             </div>
         </form>
