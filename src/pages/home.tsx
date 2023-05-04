@@ -216,7 +216,7 @@ const Home = () => {
               
               <div className="flex items-center justify-center md:justify-between w-full flex-wrap">
                 <h3 className="text-[18px] md:text-[22px] font-semibold px-5">Simulations</h3>
-                <div className="px-5"><SearchBar placeholder="Search simulations..." onSearch={searchSimulations} /></div>
+                {dataLoaded && <div className="px-5"><SearchBar placeholder="Search simulations..." onSearch={searchSimulations} /></div>}
               </div>
 
               {(searchedSimulations !== null && dataLoaded) &&
@@ -295,7 +295,7 @@ const Home = () => {
               
                 <div className="flex items-center justify-center md:justify-between w-full flex-wrap">
                   <h3 className="text-[18px] md:text-[22px] font-semibold mx-5">Collections</h3>
-                  <div className="mx-5"><SearchBar placeholder="Search collections..." onSearch={searchCollections} /></div>
+                  {dataLoaded && <div className="mx-5"><SearchBar placeholder="Search collections..." onSearch={searchCollections} /></div>}
                 </div>
 
                 {(searchedCollections !== null && dataLoaded) &&
