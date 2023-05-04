@@ -480,7 +480,7 @@ const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObj
       {/* Note list */}
       {(noteMenuVisible && notes.length > 0) && 
       <div className="absolute z-[2] top-0 right-0 h-full w-full flex justify-end pointer-events-none">
-        <div className="bg-white bg-opacity-95 px-3 py-2 min-w-[250px] fade-in-card-fast pointer-events-auto">
+        <div className="bg-white bg-opacity-95 px-3 py-2 min-w-[250px] max-w-[90%] sm:max-w-[400px] fade-in-card-fast pointer-events-auto">
           <div className="w-full">
             <div className= "border-b-2 w-full">Notes</div>
           </div>
