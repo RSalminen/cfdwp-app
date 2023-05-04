@@ -219,6 +219,7 @@ const Home = () => {
                 {dataLoaded && <div className="px-5"><SearchBar placeholder="Search simulations..." onSearch={searchSimulations} /></div>}
               </div>
 
+              {/* Search results */}
               {(searchedSimulations !== null && dataLoaded) &&
               <div className="my-3 border-b w-full flex flex-col bg-gray-50 border pt-2 pb-4 px-1 sm:px-4 rounded-md">
                 
@@ -269,7 +270,8 @@ const Home = () => {
                 </div>
               </div>
               }
-
+              
+              {/* Simulations */}
               <div className="flex flex-wrap w-full justify-center">
                 {dataLoaded ? 
                 <>
@@ -278,7 +280,8 @@ const Home = () => {
                     <SingleCard title={simulation.simtitle} type={1} />
                   </Link>))}
 
-                  <ShowMore isVisible={simShowmoreVisible} showMoreClick={showMoreSims} showLessClick={showLessSims} />
+                  {/* Show more */}
+                  {simulations.current.length > simsToShow! && <ShowMore isVisible={simShowmoreVisible} showMoreClick={showMoreSims} showLessClick={showLessSims} />}
                 </>
                   
                 : <div className="h-36 w-36 p-6">
@@ -297,7 +300,8 @@ const Home = () => {
                   <h3 className="text-[18px] md:text-[22px] font-semibold mx-5">Collections</h3>
                   {dataLoaded && <div className="mx-5"><SearchBar placeholder="Search collections..." onSearch={searchCollections} /></div>}
                 </div>
-
+                
+                {/* search results */}
                 {(searchedCollections !== null && dataLoaded) &&
                 <div className="my-3 border-b w-full flex flex-col bg-gray-50 border pt-2 pb-4 px-1 sm:px-4 rounded-md">
                   
@@ -349,16 +353,18 @@ const Home = () => {
                 </div>
                 }
 
+                {/* Collections */}
                 <div className="flex flex-wrap w-full justify-center">
                   {dataLoaded ? 
                   <>
                   {collections.current.slice(0, collsToShow).map((collection:ICollCard) => (
-                  <div onClick={() => setOpenCollection(collection)}>
-                    <SingleCard key={collection.id} title={collection.name} type={2} />
+                  <div key={collection.id} onClick={() => setOpenCollection(collection)}>
+                    <SingleCard title={collection.name} type={2} />
                   </div>
                   ))}
 
-                  <ShowMore isVisible={collShowmoreVisible} showMoreClick={showMoreColls} showLessClick={showLessColls} />
+                  {/* Show more */}
+                  {collections.current.length > collsToShow! && <ShowMore isVisible={collShowmoreVisible} showMoreClick={showMoreColls} showLessClick={showLessColls} />}
                   </>
                   : <div className="h-36 w-36 p-6">
                       <LoadingSpinner />
