@@ -84,7 +84,7 @@ const Viewer = ( {vtkContext, onLoadSuccess} : {vtkContext:React.MutableRefObjec
 
   return (
     <>
-      {(simLoaded || !simLoaded) &&
+      {(!simLoaded) &&
         <ViewerLoadingScreen loadProgress={loadProgress} />
       }
       
