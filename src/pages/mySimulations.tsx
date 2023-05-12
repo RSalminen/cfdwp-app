@@ -31,10 +31,10 @@ const SimulationCard = ({simObj, onClose, teacherid} : {simObj:ITeacherSimObj, o
     const [confirmDeleteActive, setConfirmDeleteActive] = useState<boolean>(false);
     const [addToCollectionActive, setAddToCollectionActive] = useState<boolean>(false);
 
-    const { updateMessage } = useMyStore();
+    const { message, updateMessage } = useMyStore();
    
     const deleteSimulation = async () => {
-
+        onClose();
         updateMessage({ status:1, message: `Deleting simulation ${simObj.simtitle}`});
         setConfirmDeleteActive(false);
 
@@ -50,19 +50,19 @@ const SimulationCard = ({simObj, onClose, teacherid} : {simObj:ITeacherSimObj, o
     return (
         <WhiteOverlay onClickOutside={() => onClose()} >
 
-            {confirmDeleteActive && 
-                <div onClick={e => e.stopPropagation()}>
-                    <ConfirmCard message="Are you sure you want to delete simulation" itemName={simObj.simtitle} onConfirm={deleteSimulation} onCancel={() => setConfirmDeleteActive(false)} />
-                </div>
+            {confirmDeleteActive &&     
+                <ConfirmCard message="Are you sure you want to delete simulation" itemName={simObj.simtitle} onConfirm={deleteSimulation} onCancel={() => setConfirmDeleteActive(false)} />
             }
 
             {addToCollectionActive &&
-                <div onClick={e => e.stopPropagation()}>
-                    <AddToCollectionCard simObj={simObj} teacherid={teacherid} onCancel={() => setAddToCollectionActive(false)} onSuccess={() => setAddToCollectionActive(false)} />
-                </div>
+                <AddToCollectionCard simObj={simObj} teacherid={teacherid} onCancel={() => setAddToCollectionActive(false)} onSuccess={() => setAddToCollectionActive(false)} />
             }
 
-            <div onClick={e => e.stopPropagation()} className="bg-white px-6 py-3 border rounded-md shadow-lg max-w[90%] sm:max-w-[70%] md:max-w-[60%] relative">
+            {message.status !== 0 &&
+                <MessageBox />
+            }
+
+            <div className="bg-white px-6 py-3 border rounded-md shadow-lg max-w[90%] sm:max-w-[70%] md:max-w-[60%] relative">
                 
                 <svg onClick={() => onClose()} className="cursor-pointer absolute right-2 top-2 h-4 w-4" stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M563.8 512l262.5-312.9c4.4-5.2.7-13.1-6.1-13.1h-79.8c-4.7 0-9.2 2.1-12.3 5.7L511.6 449.8 295.1 191.7c-3-3.6-7.5-5.7-12.3-5.7H203c-6.8 0-10.5 7.9-6.1 13.1L459.4 512 196.9 824.9A7.95 7.95 0 0 0 203 838h79.8c4.7 0 9.2-2.1 12.3-5.7l216.5-258.1 216.5 258.1c3 3.6 7.5 5.7 12.3 5.7h79.8c6.8 0 10.5-7.9 6.1-13.1L563.8 512z"></path></svg>
                 
@@ -97,7 +97,7 @@ const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:
     const [loading, setLoading] = useState<boolean>(true);
 
     const [selected, setSelected] = useState<ITeacherCollObj | null>(null);
-    const { updateMessage, collectionsByTeacher } = useMyStore();
+    const { message, updateMessage, collectionsByTeacher } = useMyStore();
 
     const sendUpdate = async () => {
         updateMessage({ status:1, message: `Adding ${simObj.simtitle} to the collection ${selected!.name}`});
@@ -127,7 +127,11 @@ const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:
     const checkExisting = (coll:ITeacherCollObj) => coll.file_ids.includes(parseInt(simObj.id));
 
     return (
-        <div className="w-full h-full fixed top-0 left-0 z-[20] bg-white border bg-opacity-90 flex justify-center items-center">
+        <WhiteOverlay onClickOutside={() => onCancel()}>
+            <>
+            {message.status !== 0 &&
+                <MessageBox />
+            }
             <div className="flex flex-col border shadow-lg bg-white px-6 py-8 max-h-[80%] rounded-md max-w-[95%] sm:max-w-[80%]">
                 <div className="flex justify-center space-x-1 text-[17px] mb-2">
                     <h3>Add <span className="font-semibold">{simObj.simtitle}</span> to collection</h3>
@@ -161,8 +165,9 @@ const AddToCollectionCard = ({simObj, teacherid, onCancel, onSuccess} : {simObj:
                     <ButtonCancel btnText="Cancel" onClickFn={onCancel} fullWidth={true} />
                 </div>
             </div>
-        </div>
-    )
+            </>
+        </WhiteOverlay>
+    );
 }
 
 const SimulationActionsCard = ({simObj, teacherid}:{simObj:ITeacherSimObj, teacherid:string}) => {
