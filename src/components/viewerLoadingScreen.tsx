@@ -8,6 +8,8 @@ const ViewerLoadingScreen = ({loadProgress} : { loadProgress:number}) => {
           <div style={{width: `${100-loadProgress}%`}} className={`absolute h-full top-0 right-0 bg-gray-700 rounded-sm`}></div>
         </div>
         <p className="my-2">{loadProgress}%</p>
+
+        <div className="pt-10">Powered by vtk.js</div>
       </div>
     )
 }
