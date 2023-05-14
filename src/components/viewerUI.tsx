@@ -461,9 +461,7 @@ const ViewerUI = ({vtkContext} : {vtkContext:React.MutableRefObject<IVTKContext 
             </div>
 
             {baseVisible &&
-              <div className="absolute z-10 right-10 top-[-12px] flex flex-col space-y-1 items-end pointer-events-none text-[14px]">
-                <div onClick={() => setHelpActive(!helpActive)} className="bg-white px-1 py-0.5 border border-emerald-900 shadow-lg rounded-[3px] cursor-pointer w-fit pointer-events-auto">Help</div>
-                
+              <div className="absolute z-10 right-10 top-[-12px] flex flex-col space-y-1 items-end pointer-events-none text-[14px]">      
                 <Link to="/">
                   <div className="bg-white px-1 py-0.5 border border-emerald-900 shadow-lg rounded-[3px] whitespace-nowrap cursor-pointer pointer-events-auto">
                     Return to Main Menu

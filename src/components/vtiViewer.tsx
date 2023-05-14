@@ -388,7 +388,7 @@ const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObj
       <div className="w-full h-full absolute z-[8] overflow-hidden flex justify-between pointer-events-none">
         
         {/* Left bar */}
-        <div className="flex items-center">
+        <div className="flex items-end sm:items-center py-2">
           <div className={`${!optionsVisible && "hidden"} fade-in-card-fast bg-black bg-opacity-90 ml-1 sm:ml-4 py-4 px-4 text-white flex flex-col pointer-events-auto rounded-md border border-emerald-900 shadow-lg shadow-black overflow-y-auto}`}>
             <div className="flex justify-between pb-1 border-b-2">
               <h3 className="text-[17px]">Controller</h3>
@@ -424,7 +424,7 @@ const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObj
         </div>
         
         {/* Right toolbar */}
-        <div className="flex items-center pr-4">
+        <div className="flex items-end sm:items-center pr-4 py-2">
 
           <div className="flex flex-col border border-emerald-900 bg-black bg-opacity-90 px-2 rounded-md pointer-events-auto shadow-lg shadow-black">
             
@@ -434,9 +434,7 @@ const VtiViewer = ({vtiContext, onLoadSuccess} : {vtiContext:React.MutableRefObj
               </div>
 
               {baseVisible &&
-                <div className="absolute z-10 right-10 top-[-12px] flex flex-col space-y-1 items-end pointer-events-none text-[14px]">
-                  <div onClick={() => setHelpActive(!helpActive)} className="bg-white px-1 py-0.5 border border-emerald-900 shadow-lg rounded-[3px] cursor-pointer w-fit pointer-events-auto">Help</div>
-                  
+                <div className="absolute z-10 right-10 top-[-12px] flex flex-col space-y-1 items-end pointer-events-none text-[14px]">                  
                   <Link to="/">
                     <div className="bg-white px-1 py-0.5 border border-emerald-900 shadow-lg rounded-[3px] whitespace-nowrap cursor-pointer pointer-events-auto">
                       Return to Main Menu

@@ -17,11 +17,43 @@ import { collectionService } from '../services/collectionService';
 import ButtonCancel from '../components/uiComponents/buttonCancel';
 import MessageBox from '../components/messageBox';
 import WhiteOverlay from '../components/uiComponents/whiteOverlay';
+import ButtonDarkMid from '../components/uiComponents/buttonDarkMid';
 
 const Ifiletype : { [key:number] : string } = {
     1: "vtp",
     2: "vti",
     3: "vtkjs"
+}
+
+const RenameCard = ({oldName, simId, onClose} : {oldName:string, simId:string, onClose:Function}) => {
+
+    const [newValue, setNewValue] = useState<string>(oldName);
+    const {updateMessage} = useMyStore();
+    const { teacherid } = useParams();
+
+    const saveChanges = async () => {
+
+        onClose();
+        updateMessage({ status:1, message: `Renaming...`});
+        const response = await fileService.renameFile(simId, newValue, teacherid!);
+
+        if (response) updateMessage({ status:2, message: `Rename successful`});
+        else updateMessage({ status:3, message: `Rename failed`});
+    }
+
+    return (
+        <WhiteOverlay>
+            <div className="bg-white px-6 py-3 border rounded-md shadow-lg max-w[90%] sm:max-w-[70%] md:max-w-[60%] relative">
+                <h4 className="text-[18px] font-medium pb-1">Rename</h4>
+                <input className="border py-1 px-2 rounded-sm text-[14px]" onChange={e => setNewValue(e.target.value)} defaultValue={oldName} />
+
+                <div className="flex justify-center pt-2">
+                    <ButtonDarkMid btnText='Save' onClickFn={() => saveChanges()} deactive={oldName === newValue} fullWidth />
+                    <ButtonCancel btnText='Cancel' onClickFn={() => onClose()} fullWidth />
+                </div>
+            </div>
+        </WhiteOverlay>
+    );
 }
 
 const SimulationCard = ({simObj, onClose, teacherid} : {simObj:ITeacherSimObj, onClose:Function, teacherid:string}) => {
@@ -30,6 +62,7 @@ const SimulationCard = ({simObj, onClose, teacherid} : {simObj:ITeacherSimObj, o
 
     const [confirmDeleteActive, setConfirmDeleteActive] = useState<boolean>(false);
     const [addToCollectionActive, setAddToCollectionActive] = useState<boolean>(false);
+    const [renameActive, setRenameActive] = useState<boolean>(false);
 
     const { message, updateMessage } = useMyStore();
    
@@ -58,6 +91,10 @@ const SimulationCard = ({simObj, onClose, teacherid} : {simObj:ITeacherSimObj, o
                 <AddToCollectionCard simObj={simObj} teacherid={teacherid} onCancel={() => setAddToCollectionActive(false)} onSuccess={() => setAddToCollectionActive(false)} />
             }
 
+            {renameActive &&
+                <RenameCard oldName={simObj.simtitle} simId={simObj.id} onClose={() => setRenameActive(false)} />
+            }
+
             {message.status !== 0 &&
                 <MessageBox />
             }
@@ -79,11 +116,12 @@ const SimulationCard = ({simObj, onClose, teacherid} : {simObj:ITeacherSimObj, o
                     </div>
                 </div>
 
-                <div className="flex space-x-2 w-full pt-2">
-                    <SmallButtonDarkLink btnText="View" url={simObj.filetype !== 2  ? `/view/${simObj.id}/` : `/viewvti/${simObj.id}/`} fullWidth={true} />
-                    <SmallButtonDarkLink btnText="Edit" url={simObj.filetype !== 2  ? `/view/${simObj.id}/${teacherid}` : `/viewvti/${simObj.id}/${teacherid}`} fullWidth={true} />
-                    <ButtonDarkSmall btnText="Add to collection" onClickFn={() => setAddToCollectionActive(true)} fullWidth={true} />
-                    <ButtonDarkSmall btnText="Delete" onClickFn={() => setConfirmDeleteActive(true)} fullWidth={true} />
+                <div className="flex gap-2 w-full pt-2 flex-wrap justify-center">
+                    <SmallButtonDarkLink btnText="View" url={simObj.filetype !== 2  ? `/view/${simObj.id}/` : `/viewvti/${simObj.id}/`} />
+                    <SmallButtonDarkLink btnText="Edit" url={simObj.filetype !== 2  ? `/view/${simObj.id}/${teacherid}` : `/viewvti/${simObj.id}/${teacherid}`} />
+                    <ButtonDarkSmall btnText="Add to collection" onClickFn={() => setAddToCollectionActive(true)} />
+                    <ButtonDarkSmall btnText="Delete" onClickFn={() => setConfirmDeleteActive(true)} />
+                    <ButtonDarkSmall btnText="Rename" onClickFn={() => setRenameActive(true)} />
                 </div>
             </div>
         </WhiteOverlay>
@@ -247,7 +285,7 @@ const MySimulations = () => {
     
     const [loaded, setLoaded] = useState<boolean>(false);
 
-    const [activeRow, setActiveRow] = useState<ITeacherSimObj | null>(null);
+    const [activeRow, setActiveRow] = useState<string | null>(null);
 
     const ranStart = useRef<boolean>(false);
     const navigate = useNavigate();
@@ -320,7 +358,7 @@ const MySimulations = () => {
 
                 {/* Display a simulation card */}
                 {activeRow && 
-                    <SimulationCard simObj={activeRow} onClose={() => setActiveRow(null)} teacherid={teacherid!} />
+                    <SimulationCard simObj={simulationsByTeacher!.find((obj) => obj.id === activeRow)!} onClose={() => setActiveRow(null)} teacherid={teacherid!} />
                 }
 
                 {/* Display the page */}
@@ -356,7 +394,7 @@ const MySimulations = () => {
 
                                             <tbody className="border border-gray-300">
                                                 {simulationsByTeacher !== null && simulationsByTeacher.slice(simsPerPage*(activePage-1), simsPerPage*activePage).map((simObj:ITeacherSimObj, idx:number) => (
-                                                    <SimulationsRow key={simObj.id} simObj={simObj} teacherid={teacherid!} idx={idx} onClickFn={() => setActiveRow(simObj)} />
+                                                    <SimulationsRow key={simObj.id} simObj={simObj} teacherid={teacherid!} idx={idx} onClickFn={() => setActiveRow(simObj.id)} />
                                                 ))}
                                             </tbody>
                                         </table>

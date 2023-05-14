@@ -19,6 +19,8 @@ const ButtonDarkForm = ({btnText, fullWidth}:{btnText:string, fullWidth:boolean}
 
 const Login = () => {
 
+    const [message, setMessage] = useState<string>("");
+
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
@@ -38,12 +40,16 @@ const Login = () => {
         else {
             setUsername("");
             setPassword("");
+            setMessage("Invalid username or password");
+            setTimeout(() => setMessage(""), 5000);
         }
     }
 
     return (
         <div className="h-full w-full min-h-[350px]">
-            <div className="h-full w-full flex flex-col justify-center items-center">
+
+
+            <div className="h-full w-full flex flex-col justify-center items-center relative">
 
                 {/* background */}
                 <img role="presentation" className="h-full w-full fixed object-cover -z-10 top-0 left-0 pointer-events-none fade-in-card" src={loginBG} />
@@ -69,11 +75,17 @@ const Login = () => {
                                 }
                             </div>
                         </div>
-                        <div className="pt-1 flex flex-col space-y-1 w-full">
+                        <div className="pt-1 w-full">
                             <ButtonDarkForm btnText="Log in" fullWidth={true} />
-                            <div className="flex justify-end text-[13px]"><p className="border-b border-gray-600 border-dashed cursor-pointer">Forgot password?</p></div>
                         </div>
                     </form>
+                </div>
+                <div className="relative w-full flex justify-center">
+                    {message.length > 0 &&
+                    <div className="bg-white border shadow-lg p-2 text-red-800 absolute top-4">
+                        {message}
+                    </div>
+                    }
                 </div>
             </div>
         </div>

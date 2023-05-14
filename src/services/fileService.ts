@@ -186,6 +186,26 @@ const updateContent = async (widgets:IWidget[], teacherOptions:ITeacherOptions, 
     }
 }
 
+const renameFile = async (simId:string, newValue:string, teacherId:string) => {
+    try {
+        const response = await axiosinstance({
+            method: "put",
+            url: "/api/teacher/renameFile",
+            data: {simId, newValue},
+            headers: {Authorization: `Bearer ${userService.getToken()}`}
+        });
+
+        getSimulationsByTeacher(teacherId);
+
+        return response.status === 200;
+    } catch (e) {
+        const err = e as AxiosError;
+        if (err.response?.status === 401) useMyStore.getState().authFailed();
+
+        return false;
+    }
+}
+
 const getContent = async (simId:string) => {
 
     const response = await axiosinstance({
@@ -214,6 +234,7 @@ export const fileService = {
     getSimulationsByTeacher,
     getFile,
     updateContent,
+    renameFile,
     getContent,
     getAllSims
 };
